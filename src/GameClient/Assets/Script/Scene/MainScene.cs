@@ -9,6 +9,7 @@ using DG.Tweening;
 public class MainScene : MonoBehaviour
 {
     public RectTransform LoginPanel;
+    public RectTransform LoadingPanel;
     public RectTransform MainPanel;
 
     private UserRef _user;
@@ -25,19 +26,13 @@ public class MainScene : MonoBehaviour
         StartCoroutine(ProcessLoginUser());
 
         LoginPanel.gameObject.SetActive(true);
+        LoadingPanel.gameObject.SetActive(false);
         MainPanel.gameObject.SetActive(false);
     }
 
     public void OnLoginButtonClick()
     {
-        var y = LoginPanel.anchoredPosition.y;
-        LoginPanel.anchoredPosition = new Vector2(0, y);
-        LoginPanel.DOAnchorPos(new Vector2(-700, y), 0.3f)
-                  .OnComplete(() => LoginPanel.gameObject.SetActive(false));
-
-        MainPanel.gameObject.SetActive(true);
-        MainPanel.anchoredPosition = new Vector2(700, y);
-        MainPanel.DOAnchorPos(new Vector2(0, y), 0.3f);
+        SwitchPanel(LoginPanel, LoadingPanel);
     }
 
     public void OnPlayButtonClick()
@@ -48,6 +43,18 @@ public class MainScene : MonoBehaviour
 
     public void OnSpectateButtonClick()
     {
+    }
+
+    private void SwitchPanel(RectTransform panelFrom, RectTransform panelTo)
+    {
+        var y = panelFrom.anchoredPosition.y;
+        panelFrom.anchoredPosition = new Vector2(0, y);
+        panelFrom.DOAnchorPos(new Vector2(-700, y), 0.25f)
+                 .OnComplete(() => panelFrom.gameObject.SetActive(false));
+
+        panelTo.gameObject.SetActive(true);
+        panelTo.anchoredPosition = new Vector2(700, y);
+        panelTo.DOAnchorPos(new Vector2(0, y), 0.25f);
     }
 
     private IEnumerator ProcessLoginUser()
