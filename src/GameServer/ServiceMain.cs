@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -22,6 +23,19 @@ namespace GameServer
             var type = typeof(IUser);
             if (type == null)
                 throw new InvalidProgramException("!");
+
+            // connect to redis
+
+            try
+            {
+                var cstr = ConfigurationManager.ConnectionStrings["MongoDb"].ConnectionString;
+                MongoDbStorage.Instance = new MongoDbStorage(cstr);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in connecting redis server: " + e);
+                return;
+            }
 
             // run cluster nodes
 
@@ -126,7 +140,7 @@ namespace GameServer
 
                     case "user":
                         rootActor = system.ActorOf(Props.Create<ClientGateway>(context), "client_gateway");
-                        rootActor.Tell(new ClientGatewayMessage.Start { ServiceEndPoint = new IPEndPoint(0, clientPort) });
+                        rootActor.Tell(new ClientGatewayMessage.Start { ServiceEndPoint = new IPEndPoint(IPAddress.Any, clientPort) });
                         break;
 
                     //case "bot":

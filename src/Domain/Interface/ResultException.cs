@@ -36,7 +36,7 @@ namespace Domain.Interfaced
 
         public override string ToString()
         {
-            return string.Format("ResultException({0})", ResultCode);
+            return string.Format("!{0}!", ResultCode);
         }
     }
 }

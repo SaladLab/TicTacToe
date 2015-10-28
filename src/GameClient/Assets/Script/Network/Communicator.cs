@@ -65,7 +65,7 @@ public class Communicator
     private readonly Dictionary<int, IInterfacedObserver> _observerMap = new Dictionary<int, IInterfacedObserver>();
     private int _lastObserverId;
 
-    private static readonly TimeSpan kConnectTimeout = new TimeSpan(0, 0, 0, 20);
+    private static readonly TimeSpan kConnectTimeout = new TimeSpan(0, 0, 0, 10);
     private static readonly TimeSpan kIdleEchoTimeout = new TimeSpan(0, 0, 0, 30);
 
     public Communicator(ILog logger, MonoBehaviour owner)

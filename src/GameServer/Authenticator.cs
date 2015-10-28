@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace GameServer
@@ -10,6 +11,7 @@ namespace GameServer
         // Password will be stored as a plain-text because it's for demo only.
         private class AccountInfo
         {
+            public string Id;
             public string Password;
             public DateTime LastLoginTime; 
         }
@@ -21,39 +23,27 @@ namespace GameServer
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
-            return true;
-            /*
-            AccountInfo account;
-
-            var data = await RedisStorage.Db.HashGetAsync("Accounts", id);
-            if (data.HasValue)
+            var accountCollection = MongoDbStorage.Instance.Database.GetCollection<AccountInfo>("Account");
+            var account = await accountCollection.Find(a => a.Id == id).FirstOrDefaultAsync();
+            if (account != null)
             {
-                try
-                {
-                    account = JsonConvert.DeserializeObject<AccountInfo>(data.ToString());
-                    if (account.Password != password)
-                        return false;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                if (account.Password != password)
                     return false;
-                }
+
                 account.LastLoginTime = DateTime.UtcNow;
             }
             else
             {
                 account = new AccountInfo
                 {
+                    Id = id,
                     Password = password,
                     LastLoginTime = DateTime.UtcNow
                 };
             }
 
-            var dataNew = JsonConvert.SerializeObject(account);
-            await RedisStorage.Db.HashSetAsync("Accounts", id, dataNew);
+            await accountCollection.ReplaceOneAsync(a => a.Id == id, account, new UpdateOptions { IsUpsert = true });
             return true;
-            */
         }
     }
 }

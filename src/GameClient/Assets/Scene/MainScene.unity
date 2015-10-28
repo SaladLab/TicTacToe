@@ -1003,6 +1003,9 @@ MonoBehaviour:
   LoginPanel: {fileID: 630530864}
   LoadingPanel: {fileID: 1231587377}
   MainPanel: {fileID: 1893601927}
+  IdInput: {fileID: 1529340570}
+  PasswordInput: {fileID: 697941684}
+  LoadingText: {fileID: 1096760198}
 --- !u!4 &1053529840
 Transform:
   m_ObjectHideFlags: 0
