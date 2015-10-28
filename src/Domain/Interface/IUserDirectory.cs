@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Akka.Interfaced;
-using ProtoBuf;
-using TypeAlias;
 
 namespace Domain.Interfaced
 {

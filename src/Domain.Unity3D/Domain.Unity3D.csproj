@@ -79,8 +79,17 @@
     <Compile Include="..\Domain\Data\IUserData.cs">
       <Link>Data\IUserData.cs</Link>
     </Compile>
+    <Compile Include="..\Domain\Interface\IGame.cs">
+      <Link>Interface\IGame.cs</Link>
+    </Compile>
+    <Compile Include="..\Domain\Interface\IGameObserver.cs">
+      <Link>Interface\IGameObserver.cs</Link>
+    </Compile>
     <Compile Include="..\Domain\Interface\IUser.cs">
       <Link>Interface\IUser.cs</Link>
+    </Compile>
+    <Compile Include="..\Domain\Interface\IUserEventObserver.cs">
+      <Link>Interface\IUserEventObserver.cs</Link>
     </Compile>
     <Compile Include="..\Domain\Interface\IUserLogin.cs">
       <Link>Interface\IUserLogin.cs</Link>
@@ -88,6 +97,7 @@
     <Compile Include="..\Domain\Interface\ResultException.cs">
       <Link>Interface\ResultException.cs</Link>
     </Compile>
+    <Compile Include="Interface\IGamePlayer.cs" />
     <Compile Include="Properties\Akka.Interfaced.CodeGen.Slim.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\TrackableData.CodeGen.cs" />

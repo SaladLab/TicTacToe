@@ -24,7 +24,7 @@ namespace GameServer
             if (type == null)
                 throw new InvalidProgramException("!");
 
-            // connect to redis
+            // connect to mongo-db
 
             try
             {
@@ -33,7 +33,7 @@ namespace GameServer
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error in connecting redis server: " + e);
+                Console.WriteLine("Error in connecting mongo-db: " + e);
                 return;
             }
 

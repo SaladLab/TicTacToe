@@ -15,6 +15,489 @@ using ProtoBuf;
 using TypeAlias;
 using System.ComponentModel;
 
+#region Domain.Interfaced.IGame
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGame))]
+    public static class IGame_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+            };
+        }
+    }
+
+    public interface IGame_NoReply
+    {
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GameRef : InterfacedActorRef, IGame, IGame_NoReply
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return (ActorRefBase)Actor; }
+            set { Actor = value; }
+        }
+
+        private GameRef()
+            : base(null)
+        {
+        }
+
+        public GameRef(IActorRef actor)
+            : base(actor)
+        {
+        }
+
+        public GameRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGame_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GameRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GameRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GameRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GameRef(Actor, RequestWaiter, timeout);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGameDirectory
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGameDirectory))]
+    public static class IGameDirectory_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+                {typeof(GetGameList_Invoke), typeof(GetGameList_Return)},
+                {typeof(GetOrCreateGame_Invoke), typeof(GetOrCreateGame_Return)},
+                {typeof(RemoveGame_Invoke), null},
+            };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetGameList_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                var __v = await((IGameDirectory)target).GetGameList();
+                return (IValueGetable)(new GetGameList_Return { v = (System.Collections.Generic.List<System.String>)__v });
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetGameList_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public System.Collections.Generic.List<System.String> v;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public object Value { get { return v; } }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetOrCreateGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String name;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                var __v = await((IGameDirectory)target).GetOrCreateGame(name);
+                return (IValueGetable)(new GetOrCreateGame_Return { v = (Domain.Interfaced.GameRef)__v });
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetOrCreateGame_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public Domain.Interfaced.GameRef v;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public object Value { get { return v; } }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class RemoveGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String name;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                await ((IGameDirectory)target).RemoveGame(name);
+                return null;
+            }
+        }
+    }
+
+    public interface IGameDirectory_NoReply
+    {
+        void GetGameList();
+        void GetOrCreateGame(System.String name);
+        void RemoveGame(System.String name);
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GameDirectoryRef : InterfacedActorRef, IGameDirectory, IGameDirectory_NoReply
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return (ActorRefBase)Actor; }
+            set { Actor = value; }
+        }
+
+        private GameDirectoryRef()
+            : base(null)
+        {
+        }
+
+        public GameDirectoryRef(IActorRef actor)
+            : base(actor)
+        {
+        }
+
+        public GameDirectoryRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGameDirectory_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GameDirectoryRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GameDirectoryRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GameDirectoryRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GameDirectoryRef(Actor, RequestWaiter, timeout);
+        }
+
+        public Task<System.Collections.Generic.List<System.String>> GetGameList()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetGameList_Invoke {  }
+            };
+            return SendRequestAndReceive<System.Collections.Generic.List<System.String>>(requestMessage);
+        }
+
+        public Task<Domain.Interfaced.IGame> GetOrCreateGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetOrCreateGame_Invoke { name = name }
+            };
+            return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
+        }
+
+        public Task RemoveGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.RemoveGame_Invoke { name = name }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IGameDirectory_NoReply.GetGameList()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetGameList_Invoke {  }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IGameDirectory_NoReply.GetOrCreateGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetOrCreateGame_Invoke { name = name }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IGameDirectory_NoReply.RemoveGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.RemoveGame_Invoke { name = name }
+            };
+            SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGameDirectoryWorker
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGameDirectoryWorker))]
+    public static class IGameDirectoryWorker_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+                {typeof(CreateGame_Invoke), typeof(CreateGame_Return)},
+                {typeof(RemoveGame_Invoke), null},
+            };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class CreateGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String name;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectoryWorker); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                var __v = await((IGameDirectoryWorker)target).CreateGame(name);
+                return (IValueGetable)(new CreateGame_Return { v = (Domain.Interfaced.GameRef)__v });
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class CreateGame_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public Domain.Interfaced.GameRef v;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectoryWorker); }
+
+            public object Value { get { return v; } }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class RemoveGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String name;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectoryWorker); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                await ((IGameDirectoryWorker)target).RemoveGame(name);
+                return null;
+            }
+        }
+    }
+
+    public interface IGameDirectoryWorker_NoReply
+    {
+        void CreateGame(System.String name);
+        void RemoveGame(System.String name);
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GameDirectoryWorkerRef : InterfacedActorRef, IGameDirectoryWorker, IGameDirectoryWorker_NoReply
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return (ActorRefBase)Actor; }
+            set { Actor = value; }
+        }
+
+        private GameDirectoryWorkerRef()
+            : base(null)
+        {
+        }
+
+        public GameDirectoryWorkerRef(IActorRef actor)
+            : base(actor)
+        {
+        }
+
+        public GameDirectoryWorkerRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGameDirectoryWorker_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GameDirectoryWorkerRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GameDirectoryWorkerRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GameDirectoryWorkerRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GameDirectoryWorkerRef(Actor, RequestWaiter, timeout);
+        }
+
+        public Task<Domain.Interfaced.IGame> CreateGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { name = name }
+            };
+            return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
+        }
+
+        public Task RemoveGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.RemoveGame_Invoke { name = name }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IGameDirectoryWorker_NoReply.CreateGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { name = name }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IGameDirectoryWorker_NoReply.RemoveGame(System.String name)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.RemoveGame_Invoke { name = name }
+            };
+            SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGamePlayer
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGamePlayer))]
+    public static class IGamePlayer_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+                {typeof(Say_Invoke), null},
+            };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Say_Invoke : IInterfacedPayload, ITagOverridable, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String msg;
+            [ProtoMember(2)] public System.String playerUserId;
+
+            public Type GetInterfaceType() { return typeof(IGamePlayer); }
+
+            public void SetTag(object value) { playerUserId = (System.String)value; }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                await ((IGamePlayer)target).Say(msg, playerUserId);
+                return null;
+            }
+        }
+    }
+
+    public interface IGamePlayer_NoReply
+    {
+        void Say(System.String msg, System.String playerUserId = null);
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GamePlayerRef : InterfacedActorRef, IGamePlayer, IGamePlayer_NoReply
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return (ActorRefBase)Actor; }
+            set { Actor = value; }
+        }
+
+        private GamePlayerRef()
+            : base(null)
+        {
+        }
+
+        public GamePlayerRef(IActorRef actor)
+            : base(actor)
+        {
+        }
+
+        public GamePlayerRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGamePlayer_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GamePlayerRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GamePlayerRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GamePlayerRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GamePlayerRef(Actor, RequestWaiter, timeout);
+        }
+
+        public Task Say(System.String msg, System.String playerUserId = null)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.Say_Invoke { msg = msg, playerUserId = playerUserId }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IGamePlayer_NoReply.Say(System.String msg, System.String playerUserId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.Say_Invoke { msg = msg, playerUserId = playerUserId }
+            };
+            SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
 #region Domain.Interfaced.IUser
 
 namespace Domain.Interfaced
@@ -396,6 +879,90 @@ namespace Domain.Interfaced
                 InvokePayload = new IUserLogin_PayloadTable.Login_Invoke { id = id, password = password, observerId = observerId }
             };
             SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGameObserver
+
+namespace Domain.Interfaced
+{
+    public static class IGameObserver_PayloadTable
+    {
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GameObserver : InterfacedObserver, IGameObserver
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
+            set { Channel = new ActorNotificationChannel(value); }
+        }
+
+        [ProtoMember(2)] private int _observerId
+        {
+            get { return ObserverId; }
+            set { ObserverId = value; }
+        }
+
+        private GameObserver()
+            : base(null, 0)
+        {
+        }
+
+        public GameObserver(IActorRef target, int observerId)
+            : base(new ActorNotificationChannel(target), observerId)
+        {
+        }
+
+        public GameObserver(INotificationChannel channel, int observerId)
+            : base(channel, observerId)
+        {
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IUserEventObserver
+
+namespace Domain.Interfaced
+{
+    public static class IUserEventObserver_PayloadTable
+    {
+    }
+
+    [ProtoContract, TypeAlias]
+    public class UserEventObserver : InterfacedObserver, IUserEventObserver
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
+            set { Channel = new ActorNotificationChannel(value); }
+        }
+
+        [ProtoMember(2)] private int _observerId
+        {
+            get { return ObserverId; }
+            set { ObserverId = value; }
+        }
+
+        private UserEventObserver()
+            : base(null, 0)
+        {
+        }
+
+        public UserEventObserver(IActorRef target, int observerId)
+            : base(new ActorNotificationChannel(target), observerId)
+        {
+        }
+
+        public UserEventObserver(INotificationChannel channel, int observerId)
+            : base(channel, observerId)
+        {
         }
     }
 }

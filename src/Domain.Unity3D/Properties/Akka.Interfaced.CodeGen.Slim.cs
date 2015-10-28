@@ -14,6 +14,132 @@ using ProtoBuf;
 using TypeAlias;
 using System.ComponentModel;
 
+#region Domain.Interfaced.IGame
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGame))]
+    public static class IGame_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+            };
+        }
+    }
+
+    public interface IGame_NoReply
+    {
+    }
+
+    public class GameRef : InterfacedActorRef, IGame, IGame_NoReply
+    {
+        public GameRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGame_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GameRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GameRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GameRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GameRef(Actor, RequestWaiter, timeout);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGamePlayer
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGamePlayer))]
+    public static class IGamePlayer_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+                {typeof(Say_Invoke), null},
+            };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Say_Invoke : IInterfacedPayload, ITagOverridable, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String msg;
+            [ProtoMember(2)] public System.String playerUserId;
+
+            public Type GetInterfaceType() { return typeof(IGamePlayer); }
+
+            public void SetTag(object value) { playerUserId = (System.String)value; }
+
+            public Task<IValueGetable> InvokeAsync(object target)
+            {
+                return null;
+            }
+        }
+    }
+
+    public interface IGamePlayer_NoReply
+    {
+        void Say(System.String msg, System.String playerUserId = null);
+    }
+
+    public class GamePlayerRef : InterfacedActorRef, IGamePlayer, IGamePlayer_NoReply
+    {
+        public GamePlayerRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGamePlayer_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GamePlayerRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GamePlayerRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GamePlayerRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GamePlayerRef(Actor, RequestWaiter, timeout);
+        }
+
+        public Task Say(System.String msg, System.String playerUserId = null)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.Say_Invoke { msg = msg, playerUserId = playerUserId }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IGamePlayer_NoReply.Say(System.String msg, System.String playerUserId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.Say_Invoke { msg = msg, playerUserId = playerUserId }
+            };
+            SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
 #region Domain.Interfaced.IUser
 
 namespace Domain.Interfaced
@@ -185,6 +311,28 @@ namespace Domain.Interfaced
             };
             SendRequest(requestMessage);
         }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGameObserver
+
+namespace Domain.Interfaced
+{
+    public static class IGameObserver_PayloadTable
+    {
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IUserEventObserver
+
+namespace Domain.Interfaced
+{
+    public static class IUserEventObserver_PayloadTable
+    {
     }
 }
 
