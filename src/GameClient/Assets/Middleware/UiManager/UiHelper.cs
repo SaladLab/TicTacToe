@@ -25,7 +25,7 @@ public static class UiHelper
         if (prefab == null)
             throw new ArgumentNullException("prefab");
 
-        var go = GameObject.Instantiate(prefab) as GameObject;
+        var go = GameObject.Instantiate(prefab);
         go.layer = parent.layer;
 
         var tc = go.GetComponent<RectTransform>();

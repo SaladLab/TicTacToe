@@ -4,19 +4,24 @@ using Common.Logging;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class UiManager
 {
     private static readonly ILog _logger = LogManager.GetLogger("UiManager");
 
-    private GameObject _panelRoot;
-    private GameObject _dialogRoot;
+    private RectTransform _canvasRoot;
+    private RectTransform _contentRoot;
+    private RectTransform _dialogRoot;
+
+    private RectTransform _inputBlocker;
+    private int _inputBlockCount;
 
     private class ModalEntity
     {
         public UiDialogHandle Handle;
         public bool IsPrefab;
-        public GameObject Curtain;
+        public RectTransform Curtain;
         public ShowModalOption Option;
     }
 
@@ -32,37 +37,51 @@ public class UiManager
 
     public UiManager()
     {
-        _panelRoot = GameObject.Find("PanelRoot");
-        _dialogRoot = GameObject.Find("DialogRoot");
+        _canvasRoot = GameObject.Find("Canvas").GetComponent<RectTransform>();
+        _contentRoot = GameObject.Find("Canvas/Content").GetComponent<RectTransform>();
+        _dialogRoot = GameObject.Find("Canvas/DialogBox").GetComponent<RectTransform>();
     }
 
-    public GameObject PanelRoot
+    public RectTransform CanvasRoot
     {
-        get { return _panelRoot; }
+        get { return _canvasRoot; }
     }
 
-    public GameObject DialogRoot
+    public RectTransform ContentRoot
+    {
+        get { return _contentRoot; }
+    }
+
+    public RectTransform DialogRoot
     {
         get { return _dialogRoot; }
     }
 
-    public GameObject FindFromDialogRoot(string name)
+    public RectTransform FindFromDialogRoot(string name)
     {
-        var obj = _dialogRoot.transform.Find(name);
-        return obj ? obj.gameObject : null;
+        var transform = _dialogRoot.Find(name);
+        return transform != null ? transform.GetComponent<RectTransform>() : null;
     }
-
-    private GameObject _inputBlocker;
-    private int _inputBlockCount;
 
     public bool InputBlocked
     {
         get { return _inputBlockCount > 0; }
     }
 
+    private RectTransform CreateCurtain(Color color, RectTransform parent)
+    {
+        var go = new GameObject("Curtain");
+        var rt = go.AddComponent<RectTransform>();
+        var image = go.AddComponent<Image>();
+        image.color = color;
+        rt.SetParent(parent, false);
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        return rt;
+    }
+
     public void ShowInputBlocker()
     {
-        /*
         if (_inputBlockCount == 0)
         {
             if (_inputBlocker != null)
@@ -71,19 +90,14 @@ public class UiManager
                 return;
             }
 
-            _inputBlocker = new GameObject("InputBlocker");
-            var image = _inputBlocker.AddComponent<Image>();
-            image.color = new Color(0, 0, 0, 0.5f);
-            UiHelper.AddChild(_inputBlocker,);
+            _inputBlocker = CreateCurtain(new Color(0, 0, 0, 0.5f), _canvasRoot);
         }
 
         _inputBlockCount++;
-        */
     }
 
     public void HideInputBlocker()
     {
-        /*
         if (_inputBlockCount <= 0)
         {
             _logger.WarnFormat("Invalid count on HideInputBlocker count={0}", _inputBlockCount);
@@ -94,10 +108,9 @@ public class UiManager
 
         if (_inputBlockCount == 0)
         {
-            UnityEngine.Object.Destroy(_inputBlocker);
+            UnityEngine.Object.Destroy(_inputBlocker.gameObject);
             _inputBlocker = null;
         }
-        */
     }
 
     public bool BlackCurtainVisible
@@ -110,7 +123,6 @@ public class UiManager
     {
         None,
         BlackCurtain = 1,
-        ClickCurtainToClose = 2,
     }
 
     public UiDialogHandle ShowModalPrefab(GameObject prefab, object param = null,
@@ -118,10 +130,22 @@ public class UiManager
     {
         _logger.InfoFormat("ShowModalPrefab({0})", prefab.name);
 
-        var dialogGo = UiHelper.AddChild(_dialogRoot, prefab);
+        var dialogGo = UiHelper.AddChild(_dialogRoot.gameObject, prefab);
 
         var dialog = dialogGo.GetComponent<UiDialog>();
         return ShowModalInternal(dialog, true, param, option);
+    }
+
+    public UiDialogHandle ShowModalTemplate(GameObject gameObject, object param = null,
+                                            ShowModalOption option = ShowModalOption.BlackCurtain)
+    {
+        _logger.InfoFormat("ShowModalTemplate({0})", gameObject.transform.name);
+
+        var dialogGo = UiHelper.AddChild(_dialogRoot.gameObject, gameObject);
+        dialogGo.SetActive(true);
+
+        var dialog = dialogGo.GetComponent<UiDialog>();
+        return ShowModalInternal(dialog, false, param, option);
     }
 
     public UiDialogHandle ShowModal<T>(T dialog, object param = null,
@@ -159,66 +183,31 @@ public class UiManager
     {
         float z = (_modals.Count + 2) * -10;
 
-        // 커튼 생성
-        
-        GameObject curtain = null;
-        /*
+        // create curtain for blocking input
+
+        var curtain = CreateCurtain(new Color(0, 0, 0, 0), _dialogRoot);
         {
-            var curtainPrefab = Resources.Load("Curtain") as GameObject;
-            curtain = UiHelper.AddChild(_dialogRoot, curtainPrefab);
-            curtain.transform.localPosition = new Vector3(curtain.transform.localPosition.x,
-                                                          curtain.transform.localPosition.y,
-                                                          z + 0.1f);
-            curtain.GetComponent<UIPanel>().depth = (_modals.Count + 2) * 10;
+            curtain.SetSiblingIndex(dialog.GetComponent<RectTransform>().GetSiblingIndex());
 
             if ((option & ShowModalOption.BlackCurtain) != 0)
             {
-                // 블랙 커튼인 경우
-
                 _blackCurtainCount += 1;
-
-                // 커튼 FadeIn
-
-                var sprite = curtain.GetComponentInChildren<UISprite>();
-                sprite.alpha = 0f;
-                sprite.TweenTo("alpha", 0.7f, 0.15f, realTimeUpdate: true);
-            }
-            else
-            {
-                curtain.transform.Find("Black").gameObject.SetActive(false);
-            }
-
-            if ((option & ShowModalOption.ClickCurtainToClose) != 0)
-            {
-                curtain.BindOnClick(delegate { dialog.Hide(); });
+                var image = curtain.GetComponentInChildren<Image>();
+                image.DOColor(new Color(0, 0, 0, 0.7f), 0.15f).SetUpdate(true);
             }
         }
-        */
-        // 대화상자 생성 및 등록
 
-        /*
-        dialog.transform.localPosition =
-            new Vector3(dialog.transform.localPosition.x, dialog.transform.localPosition.y, z);
-        var dialogPanel = dialog.GetComponent<UIPanel>();
-        var depthDiff = ((_modals.Count + 2) * 10) + 1 - dialogPanel.depth;
+        // fade in dialog
 
-        foreach (var panel in dialog.GetComponentsInChildren<UIPanel>())
-            panel.depth += depthDiff;
+        var dialogRt = dialog.GetComponent<RectTransform>();
+        dialogRt.localScale = Vector3.one * 1.1f;
+        dialogRt.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutCubic).SetUpdate(true);
 
-        dialog.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
-        dialog.transform.TweenTo("localScale", new Vector3(1, 1, 1), 0.2f,
-                                 ease: EaseType.EaseOutCubic, realTimeUpdate: true,
-                                 onUpdate: delegate
-                                 {
-                                     // 패널의 worldToLocal 값이 한 프레임 늦게 반영되는 경우가 있어
-                                     // 명시적으로 worldToLocal 재계산을 업데이트 동안에는 매번 요청
-                                     dialogPanel.InvalidateTransformMatrix();
-                                 });
+        var dialogCg = dialog.GetComponent<CanvasGroup>();
+        dialogCg.alpha = 0.2f;
+        dialogCg.DOFade(1f, 0.2f).SetEase(Ease.OutCubic).SetUpdate(true);
 
-        dialogPanel.alpha = 0;
-        dialogPanel.TweenTo("alpha", 1f, 0.2f,
-                            ease: EaseType.EaseOutCubic, realTimeUpdate: true);
-        */
+        // create handle and register to modals
 
         var handle = new UiDialogHandle
         {
@@ -253,47 +242,46 @@ public class UiManager
         var entity = _modals[i];
         _modals.RemoveAt(i);
 
-        // UiDialog.OnHide 이벤트 호출
+        // trigger UiDialog.OnHide
 
         var uiDialog = entity.Handle.Dialog.GetComponent<UiDialog>();
         if (uiDialog != null)
             uiDialog.OnHide();
 
-        // 대화상자 제거
+        // remove dialog
 
-        if (entity.IsPrefab)
+        var dialogCg = dialog.GetComponent<CanvasGroup>();
+        dialogCg.DOFade(0f, 0.2f).SetEase(Ease.OutCubic).SetUpdate(true).OnComplete(() =>
         {
-            UnityEngine.Object.Destroy(entity.Handle.Dialog.gameObject);
-        }
-        else
-        {
-            entity.Handle.Dialog.gameObject.SetActive(false);
-        }
-
-        // 커튼 제거
-
-        if (entity.Curtain != null)
-        {
-            /*
-            if ((entity.Option & ShowModalOption.BlackCurtain) != 0)
+            if (entity.IsPrefab)
             {
-                // 블랙 커튼 FadeOut
-
-                _blackCurtainCount -= 1;
-
-                var sprite = entity.Curtain.GetComponentInChildren<UISprite>();
-                sprite.alpha = 0.7f;
-                sprite.TweenTo("alpha", 0f, 0.1f, realTimeUpdate: true,
-                               onComplete: () => UnityEngine.Object.Destroy(entity.Curtain));
+                UnityEngine.Object.Destroy(entity.Handle.Dialog.gameObject);
             }
             else
             {
-                UnityEngine.Object.Destroy(entity.Curtain);
+                entity.Handle.Dialog.gameObject.SetActive(false);
             }
-            */
+        });
+        
+        // remove curtain
+
+        if (entity.Curtain != null)
+        {
+            if ((entity.Option & ShowModalOption.BlackCurtain) != 0)
+            {
+                _blackCurtainCount -= 1;
+
+                var image = entity.Curtain.GetComponentInChildren<Image>();
+                image.DOColor(new Color(0, 0, 0, 0), 0.1f).SetUpdate(true)
+                     .OnComplete(() => UnityEngine.Object.Destroy(entity.Curtain.gameObject));
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(entity.Curtain.gameObject);
+            }
         }
 
-        // 핸들에 연결된 이벤트 처리
+        // trigger Hidden event
 
         entity.Handle.Visible = false;
         entity.Handle.ReturnValue = returnValue;

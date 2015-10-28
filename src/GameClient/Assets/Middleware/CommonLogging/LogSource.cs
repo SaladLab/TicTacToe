@@ -2,6 +2,7 @@
 using Common.Logging;
 using Common.Logging.Factory;
 
+// LogSource forwards all logs to LogManager
 public class LogSource : AbstractLogger
 {
     private string _name;

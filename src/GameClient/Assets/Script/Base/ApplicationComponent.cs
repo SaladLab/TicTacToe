@@ -29,8 +29,5 @@ public class ApplicationComponent : MonoBehaviour
     {
         if (G.Comm != null)
             G.Comm.Update();
-
-        if (G.UnityLogger != null)
-            G.UnityLogger.Flush();
     }
 }

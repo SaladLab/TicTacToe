@@ -1,11 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net;
-using Common.Logging;
-using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Common.Logging;
 using Domain.Interfaced;
 
 public static class G
@@ -13,8 +6,8 @@ public static class G
     static G()
     {
         _logger = LogManager.GetLogger("G");
-        _unityLogger = new UnityDebugLogger(LogLevel.All);
-        _unityLogger.Attach();
+        _debugLogAdapter = new UnityDebugLogAdapter(LogLevel.All);
+        _debugLogAdapter.Attach();
     }
 
     // Communicator
@@ -32,18 +25,18 @@ public static class G
 
     // Logger
 
-    private static ILog _logger;
+    private static readonly ILog _logger;
 
     public static ILog Logger
     {
         get { return _logger; }
     }
 
-    private static UnityDebugLogger _unityLogger;
+    private static readonly UnityDebugLogAdapter _debugLogAdapter;
 
-    public static UnityDebugLogger UnityLogger
+    public static UnityDebugLogAdapter DebugLogAdapter
     {
-        get { return _unityLogger; }
+        get { return _debugLogAdapter; }
     }
 
     // Chat specific data

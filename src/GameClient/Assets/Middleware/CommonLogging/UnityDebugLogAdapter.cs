@@ -3,29 +3,24 @@ using System.Threading;
 using Common.Logging;
 using System.Collections.Generic;
 
-public sealed class UnityDebugLogger
+public sealed class UnityDebugLogAdapter
 {
-    private static int _mainThreadId;
-
     private LogLevel _logLevel;
     private bool _attached;
     private readonly bool _suppressLevel;
 
-    private class LogEntity
+    /// <summary>
+    /// Construct 
+    /// </summary>
+    /// <param name="logLevel">
+    ///     Logger will write log if level of log greater than or equal to logLevel.
+    /// </param>
+    /// <param name="suppressLevel">
+    ///     If suppressLevel on, log will be written with Debug.Log regardless of level of log.
+    ///     But you can notice level of log by color and prefix of message
+    /// </param>
+    public UnityDebugLogAdapter(LogLevel logLevel, bool suppressLevel = false)
     {
-        public string Name;
-        public LogLevel Level;
-        public object Message;
-        public Exception Exception;
-    }
-
-    private readonly List<LogEntity> _pendingLogs = new List<LogEntity>();
-
-    public UnityDebugLogger(LogLevel logLevel, bool suppressLevel = false)
-    {
-        if (_mainThreadId == 0)
-            _mainThreadId = Thread.CurrentThread.ManagedThreadId;
-
         _logLevel = logLevel;
         _suppressLevel = suppressLevel;
     }
@@ -35,8 +30,6 @@ public sealed class UnityDebugLogger
         get { return _logLevel; }
         set { _logLevel = value; }
     }
-
-    public bool IsInLogging { get; private set; }
 
     public void Attach()
     {
@@ -61,41 +54,7 @@ public sealed class UnityDebugLogger
         if (level < _logLevel)
             return;
 
-        if (Thread.CurrentThread.ManagedThreadId == _mainThreadId)
-        {
-            Flush();
-            WriteLog(source.Name, level, message, exception);
-        }
-        else
-        {
-            PendLog(source.Name, level, message, exception);
-        }
-    }
-
-    private void PendLog(string name, LogLevel level, object message, Exception exception)
-    {
-        lock (_pendingLogs)
-        {
-            _pendingLogs.Add(new LogEntity
-            {
-                Name = name,
-                Level = level,
-                Message = message,
-                Exception = exception
-            });
-        }
-    }
-
-    public void Flush()
-    {
-        lock (_pendingLogs)
-        {
-            foreach (var l in _pendingLogs)
-            {
-                WriteLog(l.Name, l.Level, l.Message, l.Exception);
-            }
-            _pendingLogs.Clear();
-        }
+        WriteLog(source.Name, level, message, exception);
     }
 
     private static readonly string[] LevelStrings =
@@ -118,9 +77,7 @@ public sealed class UnityDebugLogger
             if (exception != null)
                 str += "\n" + exception;
 
-            IsInLogging = true;
             UnityEngine.Debug.Log(str);
-            IsInLogging = false;
         }
         else
         {
@@ -128,14 +85,12 @@ public sealed class UnityDebugLogger
             if (exception != null)
                 str += "\n" + exception;
 
-            IsInLogging = true;
             if (level < LogLevel.Warn)
                 UnityEngine.Debug.Log(str);
             else if (level == LogLevel.Warn)
                 UnityEngine.Debug.LogWarning(str);
             else if (level >= LogLevel.Error)
                 UnityEngine.Debug.LogError(str);
-            IsInLogging = false;
         }
     }
 }

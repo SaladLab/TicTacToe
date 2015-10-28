@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Net;
 using Akka.Interfaced;
@@ -18,12 +19,13 @@ public class MainScene : MonoBehaviour
     void Start()
     {
         ApplicationComponent.TryInit();
+        UiManager.Initialize();
 
-        G.Comm = new Communicator(G.Logger, this);
-        G.Comm.ServerEndPoint = new IPEndPoint(IPAddress.Loopback, 9001);
-        G.Comm.Start();
+        //G.Comm = new Communicator(G.Logger, this);
+        //G.Comm.ServerEndPoint = new IPEndPoint(IPAddress.Loopback, 9001);
+        //G.Comm.Start();
 
-        StartCoroutine(ProcessLoginUser());
+        // StartCoroutine(ProcessLoginUser());
 
         LoginPanel.gameObject.SetActive(true);
         LoadingPanel.gameObject.SetActive(false);
@@ -32,7 +34,11 @@ public class MainScene : MonoBehaviour
 
     public void OnLoginButtonClick()
     {
-        SwitchPanel(LoginPanel, LoadingPanel);
+        // UiMessageBox.ShowMessageBox("All your base are belong to us");
+
+        UiMessageBox.ShowQuestionBox("All your base are belong to us", UiMessageBox.QuestionType.OkCancel,
+            result => G.Logger.Info(result));
+        // SwitchPanel(LoginPanel, LoadingPanel);
     }
 
     public void OnPlayButtonClick()
