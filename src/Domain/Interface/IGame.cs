@@ -9,11 +9,7 @@ namespace Domain.Interfaced
 {
     public interface IGame : IInterfacedActor
     {
-    }
-
-    [ProtoContract]
-    public class GameInfo
-    {
-        [ProtoMember(1)] public string Name;
+        Task<GameInfo> Join(string userId, IGameObserver observer);
+        Task Leave(string userId);
     }
 }

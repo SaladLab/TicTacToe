@@ -12,9 +12,9 @@ namespace Domain.Interfaced
         LoginFailedNoUser = 1,
         LoginFailedIncorrectPassword = 2,
         LoginFailedAlreadyConnected = 3,
-        NeedToBeInRoom = 4,
-        NeedToBeOutOfRoom = 5,
-        RoomRemoved = 6,
+        NeedToBeInGame = 4,
+        NeedToBeOutOfGame = 5,
+        GameNotFound = 6,
         UserNotMyself = 7,
         UserNotOnline = 8,
         UserAlreadyHere = 9

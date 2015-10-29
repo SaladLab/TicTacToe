@@ -142,6 +142,9 @@
     <Compile Include="ClientSession.cs" />
     <Compile Include="ClusterNodeActor.cs" />
     <Compile Include="ClusterNodeContext.cs" />
+    <Compile Include="GameActor.cs" />
+    <Compile Include="GameDirectoryActor.cs" />
+    <Compile Include="GameDirectoryWorkerActor.cs" />
     <Compile Include="LinkDirectives.cs" />
     <Compile Include="LogFilter.cs" />
     <Compile Include="MongoDbStorage.cs" />

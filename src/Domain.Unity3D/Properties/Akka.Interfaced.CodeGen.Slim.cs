@@ -14,51 +14,6 @@ using ProtoBuf;
 using TypeAlias;
 using System.ComponentModel;
 
-#region Domain.Interfaced.IGame
-
-namespace Domain.Interfaced
-{
-    [PayloadTableForInterfacedActor(typeof(IGame))]
-    public static class IGame_PayloadTable
-    {
-        public static Type[,] GetPayloadTypes()
-        {
-            return new Type[,]
-            {
-            };
-        }
-    }
-
-    public interface IGame_NoReply
-    {
-    }
-
-    public class GameRef : InterfacedActorRef, IGame, IGame_NoReply
-    {
-        public GameRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
-            : base(actor, requestWaiter, timeout)
-        {
-        }
-
-        public IGame_NoReply WithNoReply()
-        {
-            return this;
-        }
-
-        public GameRef WithRequestWaiter(IRequestWaiter requestWaiter)
-        {
-            return new GameRef(Actor, requestWaiter, Timeout);
-        }
-
-        public GameRef WithTimeout(TimeSpan? timeout)
-        {
-            return new GameRef(Actor, RequestWaiter, timeout);
-        }
-    }
-}
-
-#endregion
-
 #region Domain.Interfaced.IGamePlayer
 
 namespace Domain.Interfaced
@@ -70,8 +25,25 @@ namespace Domain.Interfaced
         {
             return new Type[,]
             {
+                {typeof(MakeMove_Invoke), null},
                 {typeof(Say_Invoke), null},
             };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class MakeMove_Invoke : IInterfacedPayload, ITagOverridable, IAsyncInvokable
+        {
+            [ProtoMember(1)] public Domain.Interfaced.PlacePosition pos;
+            [ProtoMember(2)] public System.String playerUserId;
+
+            public Type GetInterfaceType() { return typeof(IGamePlayer); }
+
+            public void SetTag(object value) { playerUserId = (System.String)value; }
+
+            public Task<IValueGetable> InvokeAsync(object target)
+            {
+                return null;
+            }
         }
 
         [ProtoContract, TypeAlias]
@@ -93,6 +65,7 @@ namespace Domain.Interfaced
 
     public interface IGamePlayer_NoReply
     {
+        void MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId = null);
         void Say(System.String msg, System.String playerUserId = null);
     }
 
@@ -118,6 +91,15 @@ namespace Domain.Interfaced
             return new GamePlayerRef(Actor, RequestWaiter, timeout);
         }
 
+        public Task MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId = null)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.MakeMove_Invoke { pos = pos, playerUserId = playerUserId }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
         public Task Say(System.String msg, System.String playerUserId = null)
         {
             var requestMessage = new RequestMessage
@@ -125,6 +107,15 @@ namespace Domain.Interfaced
                 InvokePayload = new IGamePlayer_PayloadTable.Say_Invoke { msg = msg, playerUserId = playerUserId }
             };
             return SendRequestAndWait(requestMessage);
+        }
+
+        void IGamePlayer_NoReply.MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePlayer_PayloadTable.MakeMove_Invoke { pos = pos, playerUserId = playerUserId }
+            };
+            SendRequest(requestMessage);
         }
 
         void IGamePlayer_NoReply.Say(System.String msg, System.String playerUserId)
@@ -151,12 +142,52 @@ namespace Domain.Interfaced
         {
             return new Type[,]
             {
-                {typeof(GetId_Invoke), typeof(GetId_Return)},
+                {typeof(JoinGame_Invoke), typeof(JoinGame_Return)},
+                {typeof(LeaveGame_Invoke), null},
+                {typeof(RegisterPairing_Invoke), null},
+                {typeof(UnregisterPairing_Invoke), null},
             };
         }
 
         [ProtoContract, TypeAlias]
-        public class GetId_Invoke : IInterfacedPayload, IAsyncInvokable
+        public class JoinGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.Int64 gameId;
+            [ProtoMember(2)] public System.Int32 observerId;
+
+            public Type GetInterfaceType() { return typeof(IUser); }
+
+            public Task<IValueGetable> InvokeAsync(object target)
+            {
+                return null;
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class JoinGame_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public System.Tuple<System.Int32, Domain.Interfaced.GameInfo> v;
+
+            public Type GetInterfaceType() { return typeof(IUser); }
+
+            public object Value { get { return v; } }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class LeaveGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.Int64 gameId;
+
+            public Type GetInterfaceType() { return typeof(IUser); }
+
+            public Task<IValueGetable> InvokeAsync(object target)
+            {
+                return null;
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
             public Type GetInterfaceType() { return typeof(IUser); }
 
@@ -167,19 +198,23 @@ namespace Domain.Interfaced
         }
 
         [ProtoContract, TypeAlias]
-        public class GetId_Return : IInterfacedPayload, IValueGetable
+        public class UnregisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
-            [ProtoMember(1)] public System.String v;
-
             public Type GetInterfaceType() { return typeof(IUser); }
 
-            public object Value { get { return v; } }
+            public Task<IValueGetable> InvokeAsync(object target)
+            {
+                return null;
+            }
         }
     }
 
     public interface IUser_NoReply
     {
-        void GetId();
+        void JoinGame(System.Int64 gameId, System.Int32 observerId);
+        void LeaveGame(System.Int64 gameId);
+        void RegisterPairing();
+        void UnregisterPairing();
     }
 
     public class UserRef : InterfacedActorRef, IUser, IUser_NoReply
@@ -204,20 +239,74 @@ namespace Domain.Interfaced
             return new UserRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<System.String> GetId()
+        public Task<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>> JoinGame(System.Int64 gameId, System.Int32 observerId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.GetId_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observerId = observerId }
             };
-            return SendRequestAndReceive<System.String>(requestMessage);
+            return SendRequestAndReceive<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>>(requestMessage);
         }
 
-        void IUser_NoReply.GetId()
+        public Task LeaveGame(System.Int64 gameId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.GetId_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.LeaveGame_Invoke { gameId = gameId }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        public Task RegisterPairing()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        public Task UnregisterPairing()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.UnregisterPairing_Invoke {  }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IUser_NoReply.JoinGame(System.Int64 gameId, System.Int32 observerId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observerId = observerId }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IUser_NoReply.LeaveGame(System.Int64 gameId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.LeaveGame_Invoke { gameId = gameId }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IUser_NoReply.RegisterPairing()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IUser_NoReply.UnregisterPairing()
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IUser_PayloadTable.UnregisterPairing_Invoke {  }
             };
             SendRequest(requestMessage);
         }
@@ -322,6 +411,52 @@ namespace Domain.Interfaced
 {
     public static class IGameObserver_PayloadTable
     {
+        [ProtoContract, TypeAlias]
+        public class Join_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 playerId;
+            [ProtoMember(2)] public System.String userId;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).Join(playerId, userId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Leave_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 playerId;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).Leave(playerId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class MakeMove_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 playerId;
+            [ProtoMember(2)] public Domain.Interfaced.PlacePosition pos;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).MakeMove(playerId, pos);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Say_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 playerId;
+            [ProtoMember(2)] public System.String msg;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).Say(playerId, msg);
+            }
+        }
     }
 }
 
@@ -333,6 +468,17 @@ namespace Domain.Interfaced
 {
     public static class IUserEventObserver_PayloadTable
     {
+        [ProtoContract, TypeAlias]
+        public class MakePair_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int64 gameId;
+            [ProtoMember(2)] public System.String opponentName;
+
+            public void Invoke(object target)
+            {
+                ((IUserEventObserver)target).MakePair(gameId, opponentName);
+            }
+        }
     }
 }
 

@@ -6,8 +6,9 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Domain.Interfaced;
 
-public class ApplicationComponent : MonoBehaviour
+public class ApplicationComponent : MonoBehaviour, IUserEventObserver
 {
     public static ApplicationComponent Instance
     {
@@ -29,5 +30,11 @@ public class ApplicationComponent : MonoBehaviour
     {
         if (G.Comm != null)
             G.Comm.Update();
+    }
+
+    public void MakePair(long gameId, string opponentName)
+    {
+        // TODO:
+        throw new NotImplementedException();
     }
 }

@@ -9,6 +9,7 @@ namespace Domain.Interfaced
     [TagOverridable("playerUserId")]
     public interface IGamePlayer : IInterfacedActor
     {
+        Task MakeMove(PlacePosition pos, string playerUserId = null);
         Task Say(string msg, string playerUserId = null);
     }
 }

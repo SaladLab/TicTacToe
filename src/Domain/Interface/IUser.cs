@@ -6,6 +6,9 @@ namespace Domain.Interfaced
 {
     public interface IUser : IInterfacedActor
     {
-        Task<string> GetId();
+        Task RegisterPairing();
+        Task UnregisterPairing();
+        Task<Tuple<int, GameInfo>> JoinGame(long gameId, int observerId);
+        Task LeaveGame(long gameId);
     }
 }

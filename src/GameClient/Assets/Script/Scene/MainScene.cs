@@ -87,7 +87,8 @@ public class MainScene : MonoBehaviour
 
         LoadingText.text = "Login";
         var userLogin = new UserLoginRef(new SlimActorRef { Id = 1 }, new SlimRequestWaiter { Communicator = G.Comm }, null);
-        var t1 = userLogin.Login(id, password, G.Comm.IssueObserverId());
+        var observerId = G.Comm.IssueObserverId();
+        var t1 = userLogin.Login(id, password, observerId);
         yield return t1.WaitHandle;
         ShowResult(t1, "Login");
         if (t1.Exception != null)
@@ -97,6 +98,7 @@ public class MainScene : MonoBehaviour
             yield break;
         }
 
+        G.Comm.AddObserver(observerId, ApplicationComponent.Instance);
         G.User = new UserRef(new SlimActorRef { Id = t1.Result }, new SlimRequestWaiter { Communicator = G.Comm }, null);
         SwitchPanel(LoadingPanel, MainPanel);
     }

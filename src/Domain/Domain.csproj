@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\IUserData.cs" />
+    <Compile Include="Interface\GameTypes.cs" />
     <Compile Include="Interface\IGame.cs" />
     <Compile Include="Interface\IGameDirectory.cs" />
     <Compile Include="Interface\IGameObserver.cs" />
