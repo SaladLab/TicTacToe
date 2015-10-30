@@ -8,7 +8,7 @@ public class GameBoard : MonoBehaviour
 {
     public RectTransform GridTemplate;
 
-    public event Action<int, int> GridClicked;
+    public Action<int, int> GridClicked;
 
     private int[,] _gridMarks = new int[3, 3];
     private RectTransform[,] _gridRects = new RectTransform[3, 3];
@@ -48,6 +48,11 @@ public class GameBoard : MonoBehaviour
             GridClicked(x, y);
     }
 
+    public int[,] Grid
+    {
+        get { return _gridMarks; }
+    }
+
     public int GetMark(int x, int y)
     {
         return _gridMarks[x, y];
@@ -84,7 +89,16 @@ public class GameBoard : MonoBehaviour
 
             var duration = withAnimation ? 0.5f : 0;
             image.DOFade(0.4f, duration);
-            text.GetComponent<Transform>().DOShakePosition(duration, 20, 20);
+
+            // TODO: comment out because it causes exception by setting localPosition as (NaN, NaN, NaN)
+            // text.GetComponent<RectTransform>().DOShakePosition(duration, 20, 20);
         }
+    }
+
+    public void SetHighlight(int x, int y, float delay)
+    {
+        var image = _gridRects[x, y].GetComponent<Image>();
+        image.DOFade(0.8f, 0.5f).SetDelay(delay);
+        image.DOColor(Color.black, 0.5f).SetDelay(delay);
     }
 }

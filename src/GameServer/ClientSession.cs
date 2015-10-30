@@ -116,18 +116,14 @@ namespace GameServer
             var notificationMessage = message as NotificationMessage;
             if (notificationMessage != null)
             {
-                var actorId = GetBoundActorId(Sender);
-                if (actorId != 0)
+                Console.WriteLine(">> " + notificationMessage.InvokePayload.GetType().Name);
+                _connection.Send(new Packet
                 {
-                    // TODO: Sender 에 접근하지 않고 ActorId 를 얻을 수 있도록 하자 (성능 이슈)
-                    _connection.Send(new Packet
-                    {
-                        Type = PacketType.Notification,
-                        ActorId = actorId,
-                        RequestId = notificationMessage.ObserverId,
-                        Message = notificationMessage.InvokePayload,
-                    });
-                }
+                    Type = PacketType.Notification,
+                    ActorId = notificationMessage.ObserverId,
+                    RequestId = notificationMessage.NotificationId,
+                    Message = notificationMessage.InvokePayload,
+                });
                 return;
             }
 

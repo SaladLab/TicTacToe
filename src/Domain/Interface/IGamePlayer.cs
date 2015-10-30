@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Akka.Interfaced;
+using Domain.Game;
 
 namespace Domain.Interfaced
 {

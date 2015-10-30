@@ -60,8 +60,9 @@ public static class LoginProcessor
             yield break;
         }
 
-        G.Comm.AddObserver(observerId, ApplicationComponent.Instance);
+        G.Comm.AddObserver(observerId, new ObserverChannel(ApplicationComponent.Instance));
         G.User = new UserRef(new SlimActorRef { Id = t1.Result }, new SlimRequestWaiter { Communicator = G.Comm }, null);
+        G.UserId = id; // TODO: need to get normalized id for using id as a key
 
         task.Status = TaskStatus.RanToCompletion;
     }

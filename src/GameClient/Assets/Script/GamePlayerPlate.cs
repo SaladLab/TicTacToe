@@ -18,6 +18,12 @@ public class GamePlayerPlate : MonoBehaviour
         image.color = new Color(1, 0, 0, turn ? 0.2f : 0.05f);
     }
 
+    public void SetWin()
+    {
+        var image = GetComponent<Image>();
+        image.color = new Color(1, 1, 0, 0.3f);
+    }
+
     public void SetGrid(int value)
     {
         switch (value)

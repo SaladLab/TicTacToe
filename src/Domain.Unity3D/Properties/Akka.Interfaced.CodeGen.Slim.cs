@@ -33,7 +33,7 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class MakeMove_Invoke : IInterfacedPayload, ITagOverridable, IAsyncInvokable
         {
-            [ProtoMember(1)] public Domain.Interfaced.PlacePosition pos;
+            [ProtoMember(1)] public Domain.Game.PlacePosition pos;
             [ProtoMember(2)] public System.String playerUserId;
 
             public Type GetInterfaceType() { return typeof(IGamePlayer); }
@@ -65,7 +65,7 @@ namespace Domain.Interfaced
 
     public interface IGamePlayer_NoReply
     {
-        void MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId = null);
+        void MakeMove(Domain.Game.PlacePosition pos, System.String playerUserId = null);
         void Say(System.String msg, System.String playerUserId = null);
     }
 
@@ -91,7 +91,7 @@ namespace Domain.Interfaced
             return new GamePlayerRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId = null)
+        public Task MakeMove(Domain.Game.PlacePosition pos, System.String playerUserId = null)
         {
             var requestMessage = new RequestMessage
             {
@@ -109,7 +109,7 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IGamePlayer_NoReply.MakeMove(Domain.Interfaced.PlacePosition pos, System.String playerUserId)
+        void IGamePlayer_NoReply.MakeMove(Domain.Game.PlacePosition pos, System.String playerUserId)
         {
             var requestMessage = new RequestMessage
             {
@@ -435,10 +435,21 @@ namespace Domain.Interfaced
         }
 
         [ProtoContract, TypeAlias]
+        public class Begin_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 playerId;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).Begin(playerId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
         public class MakeMove_Invoke : IInvokable
         {
             [ProtoMember(1)] public System.Int32 playerId;
-            [ProtoMember(2)] public Domain.Interfaced.PlacePosition pos;
+            [ProtoMember(2)] public Domain.Game.PlacePosition pos;
 
             public void Invoke(object target)
             {
@@ -455,6 +466,26 @@ namespace Domain.Interfaced
             public void Invoke(object target)
             {
                 ((IGameObserver)target).Say(playerId, msg);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class End_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 winnerPlayerId;
+
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).End(winnerPlayerId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Abort_Invoke : IInvokable
+        {
+            public void Invoke(object target)
+            {
+                ((IGameObserver)target).Abort();
             }
         }
     }

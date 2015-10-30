@@ -61,8 +61,7 @@ public class Communicator
     private ReconnectActionType _reconnectAction = ReconnectActionType.StopWhenFail;
 
     private readonly List<Packet> _recvSimplePackets = new List<Packet>();
-    private readonly List<Packet> _recvReplyPackets = new List<Packet>();
-    private readonly Dictionary<int, IInterfacedObserver> _observerMap = new Dictionary<int, IInterfacedObserver>();
+    private readonly Dictionary<int, ObserverChannel> _observerMap = new Dictionary<int, ObserverChannel>();
     private int _lastObserverId;
 
     private static readonly TimeSpan kConnectTimeout = new TimeSpan(0, 0, 0, 10);
@@ -110,7 +109,7 @@ public class Communicator
         return ++_lastObserverId;
     }
 
-    public void AddObserver(int observerId, IInterfacedObserver observer)
+    public void AddObserver(int observerId, ObserverChannel observer)
     {
         _observerMap.Add(observerId, observer);
     }
@@ -118,6 +117,14 @@ public class Communicator
     public void RemoveObserver(int observerId)
     {
         _observerMap.Remove(observerId);
+    }
+
+    public ObserverChannel GetObserver(int observerId)
+    {
+        ObserverChannel observer;
+        return _observerMap.TryGetValue(observerId, out observer)
+                   ? observer
+                   : null;
     }
 
     public void Update()
@@ -177,10 +184,6 @@ public class Communicator
         {
             _recvSimplePackets.Clear();
         }
-        lock (_recvReplyPackets)
-        {
-            _recvReplyPackets.Clear();
-        }
 
         CreateNewConnect();
     }
@@ -217,11 +220,12 @@ public class Communicator
                     continue;
                 }
 
-                var observerId = packet.RequestId;
-                IInterfacedObserver observer;
+                var observerId = packet.ActorId;
+                var notificationId = packet.RequestId;
+                ObserverChannel observer;
                 if (_observerMap.TryGetValue(observerId, out observer))
                 {
-                    ((IInvokable)msg).Invoke(observer);
+                    observer.Invoke(notificationId, (IInvokable)msg);
                     continue;
                 }
 
@@ -278,7 +282,7 @@ public class Communicator
                 lock (_recvSimplePackets)
                     _recvSimplePackets.Add(p);
                 break;
-			
+
             case PacketType.Response:
                 Action<ResponseMessage> handler;
                 if (_requestResponseMap.TryGetValue(p.RequestId, out handler))
@@ -291,8 +295,6 @@ public class Communicator
                         Exception = p.Exception
                     });
                 }
-                //lock (_recvReplyPackets)
-                //    _recvReplyPackets.Add(p);
                 break;
         }
     }

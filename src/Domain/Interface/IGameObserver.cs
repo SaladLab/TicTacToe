@@ -1,5 +1,5 @@
-﻿using System;
-using Akka.Interfaced;
+﻿using Akka.Interfaced;
+using Domain.Game;
 
 namespace Domain.Interfaced
 {
@@ -7,7 +7,10 @@ namespace Domain.Interfaced
     {
         void Join(int playerId, string userId);
         void Leave(int playerId);
+        void Begin(int playerId);
         void MakeMove(int playerId, PlacePosition pos);
         void Say(int playerId, string msg);
+        void End(int winnerPlayerId);
+        void Abort();
     }
 }
