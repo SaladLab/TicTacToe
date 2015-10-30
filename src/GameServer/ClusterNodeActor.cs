@@ -205,8 +205,8 @@ namespace GameServer
 
             if (type == typeof(IUserDirectory))
                 _context.UserDirectory = new UserDirectoryRef(actor);
-            //else if (type == typeof(IRoomDirectory))
-            //    _context.RoomDirectory = new RoomDirectoryRef(actor);
+            else if (type == typeof(IGameDirectory))
+                _context.GameDirectory = new GameDirectoryRef(actor);
         }
     }
 }

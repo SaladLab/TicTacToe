@@ -58,7 +58,7 @@ namespace GameServer
                     }
                   }
                   cluster {
-                    seed-nodes = [""akka.tcp://GameCluster@127.0.0.1:3002""]
+                    seed-nodes = [""akka.tcp://GameCluster@127.0.0.1:3001""]
                     auto-down-unreachable-after = 30s
                   }
                 }");
@@ -66,14 +66,14 @@ namespace GameServer
             var standAlone = args.Length > 0 && args[0] == "standalone";
             if (standAlone)
             {
-                LaunchClusterNode(commonConfig, 3001, 9001, "room-directory", "user-directory", "room", "user", "bot");
+                LaunchClusterNode(commonConfig, 3001, 9001, "game-directory", "user-directory", "game", "user", "bot");
             }
             else
             {
-                //LaunchClusterNode(commonConfig, 3001, 0, "room-directory");
+                LaunchClusterNode(commonConfig, 3001, 0, "game-directory");
                 LaunchClusterNode(commonConfig, 3002, 0, "user-directory");
-                //LaunchClusterNode(commonConfig, 3011, 0, "room");
-                //LaunchClusterNode(commonConfig, 3012, 0, "room");
+                LaunchClusterNode(commonConfig, 3011, 0, "game");
+                LaunchClusterNode(commonConfig, 3012, 0, "game");
                 LaunchClusterNode(commonConfig, 3021, 9001, "user");
                 LaunchClusterNode(commonConfig, 3022, 9002, "user");
                 //LaunchClusterNode(commonConfig, 3031, 0, "bot");
@@ -126,17 +126,17 @@ namespace GameServer
                 IActorRef rootActor = null;
                 switch (role)
                 {
-                    //case "room-directory":
-                    //    rootActor = system.ActorOf(Props.Create<RoomDirectoryActor>(context), "room_directory");
-                    //    break;
+                    case "game-directory":
+                        rootActor = system.ActorOf(Props.Create<GameDirectoryActor>(context), "game_directory");
+                        break;
 
                     case "user-directory":
                         rootActor = system.ActorOf(Props.Create<UserDirectoryActor>(context), "user_directory");
                         break;
 
-                    //case "room":
-                    //    rootActor = system.ActorOf(Props.Create<RoomDirectoryWorkerActor>(context), "room_directory_worker");
-                    //    break;
+                    case "game":
+                        rootActor = system.ActorOf(Props.Create<GameDirectoryWorkerActor>(context), "game_directory_worker");
+                        break;
 
                     case "user":
                         rootActor = system.ActorOf(Props.Create<ClientGateway>(context), "client_gateway");

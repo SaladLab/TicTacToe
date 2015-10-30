@@ -10,16 +10,28 @@ using Domain.Interfaced;
 namespace GameServer
 {
     [Log]
-    public class GameActor : InterfacedActor<GameActor>, IGame
+    public class GameActor : InterfacedActor<GameActor>, IExtendedInterface<IGame>
     {
-        Task<GameInfo> IGame.Join(string userId, IGameObserver observer)
+        private ILog _logger;
+        private ClusterNodeContext _clusterContext;
+        private long _id;
+
+        public GameActor(ClusterNodeContext clusterContext, long id)
         {
-            throw new NotImplementedException();
+            _logger = LogManager.GetLogger($"GameActor({id})");
+            _clusterContext = clusterContext;
+            _id = id;
         }
 
-        Task IGame.Leave(string userId)
+        [ExtendedHandler]
+        GameInfo Join(string userId, IGameObserver observer)
         {
-            throw new NotImplementedException();
+            return new GameInfo();
+        }
+
+        [ExtendedHandler]
+        void Leave(string userId)
+        {
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Akka.Interfaced;
+﻿using Akka.Interfaced;
 
-class SlimActorRef : IActorRef
+public class SlimActorRef : IActorRef
 {
     public int Id { get; set; }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Interfaced;
+using Common.Logging;
 using Domain.Interfaced;
 
 namespace GameServer
 {
-    [Log]
     public class GameDirectoryActor : InterfacedActor<GameDirectoryActor>, IGameDirectory
     {
         private ClusterNodeContext _clusterContext;

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Net;
-using System.Threading;
 using Akka.Interfaced;
 using UnityEngine;
 
-class SlimTask : Task
+public class SlimTask : Task
 {
     internal MonoBehaviour Owner { get; set; }
     
@@ -65,6 +63,18 @@ class SlimTask : Task
                    Status == TaskStatus.Faulted;
         }
     }
+
+    public override string ToString()
+    {
+        if (Status == TaskStatus.RanToCompletion)
+            return "Completed";
+        if (Status == TaskStatus.Faulted)
+            return "Faulted: " + Exception;
+        if (Status == TaskStatus.Canceled)
+            return "Canceled";
+
+        return "Status: " + Status;
+    }
 }
 
 class SlimTask<T> : SlimTask, Task<T>
@@ -89,5 +99,13 @@ class SlimTask<T> : SlimTask, Task<T>
             _result = value;
             Status = TaskStatus.RanToCompletion;
         }
+    }
+
+    public override string ToString()
+    {
+        if (Status == TaskStatus.RanToCompletion)
+            return "Completed: " + Result;
+
+        return base.ToString();
     }
 }

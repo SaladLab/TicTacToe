@@ -17,9 +17,6 @@ public class MainScene : MonoBehaviour
     public InputField PasswordInput;
     public Text LoadingText;
 
-    private static readonly IPEndPoint ServerEndPoint =
-        new IPEndPoint(IPAddress.Parse("192.168.100.8"), 9001); // new IPEndPoint(IPAddress.Loopback, 9001);
-
     protected void Start()
     {
         ApplicationComponent.TryInit();
@@ -59,48 +56,24 @@ public class MainScene : MonoBehaviour
         G.Logger.Info("ProcessLoginUser");
         SwitchPanel(LoginPanel, LoadingPanel);
 
-        // Connect
+        var task = LoginProcessor.Login(G.ServerEndPoint, id, password, p => LoadingText.text = p + "...");
+        yield return task.WaitHandle;
 
-        LoadingText.text = "Connecting";
-        if (G.Comm == null || G.Comm.State == Communicator.StateType.Stopped)
+        if (task.Status == TaskStatus.RanToCompletion)
         {
-            G.Comm = new Communicator(G.Logger, ApplicationComponent.Instance);
-            G.Comm.ServerEndPoint = ServerEndPoint;
-            G.Comm.Start();
+            SwitchPanel(LoadingPanel, MainPanel);
+
+            PlayerPrefs.SetString("LoginId", id);
+            PlayerPrefs.SetString("LoginPassword", password);
         }
-        while (true)
+        else
         {
-            if (G.Comm.State == Communicator.StateType.Connected)
-                break;
-
-            if (G.Comm.State == Communicator.StateType.Stopped)
-            {
-                UiMessageBox.ShowMessageBox("Failed to connect");
-                SwitchPanel(LoadingPanel, LoginPanel);
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        // Login
-
-        LoadingText.text = "Login";
-        var userLogin = new UserLoginRef(new SlimActorRef { Id = 1 }, new SlimRequestWaiter { Communicator = G.Comm }, null);
-        var observerId = G.Comm.IssueObserverId();
-        var t1 = userLogin.Login(id, password, observerId);
-        yield return t1.WaitHandle;
-        ShowResult(t1, "Login");
-        if (t1.Exception != null)
-        {
-            UiMessageBox.ShowMessageBox("Login Error\n" + t1.Exception);
+            UiMessageBox.ShowMessageBox(task.Exception.Message);
             SwitchPanel(LoadingPanel, LoginPanel);
-            yield break;
-        }
 
-        G.Comm.AddObserver(observerId, ApplicationComponent.Instance);
-        G.User = new UserRef(new SlimActorRef { Id = t1.Result }, new SlimRequestWaiter { Communicator = G.Comm }, null);
-        SwitchPanel(LoadingPanel, MainPanel);
+            PlayerPrefs.DeleteKey("LoginId");
+            PlayerPrefs.DeleteKey("LoginPassword");
+        }
     }
 
     public void OnLoginButtonClick()
@@ -133,6 +106,21 @@ public class MainScene : MonoBehaviour
         Application.LoadLevel("GameScene");
     }
 
+    public void OnLogoutButtonClick()
+    {
+        if (G.User == null)
+            return;
+
+        PlayerPrefs.DeleteKey("LoginId");
+        PlayerPrefs.DeleteKey("LoginPassword");
+
+        G.Comm.Stop();
+        G.Comm = null;
+        G.User = null;
+
+        SwitchPanel(MainPanel, LoginPanel);
+    }
+
     private void SwitchPanel(RectTransform panelFrom, RectTransform panelTo)
     {
         var y = panelFrom.anchoredPosition.y;
@@ -143,25 +131,5 @@ public class MainScene : MonoBehaviour
         panelTo.gameObject.SetActive(true);
         panelTo.anchoredPosition = new Vector2(700, y);
         panelTo.DOAnchorPos(new Vector2(0, y), 0.25f);
-    }
-
-    void ShowResult(Task task, string name)
-    {
-        if (task.Status == TaskStatus.RanToCompletion)
-            Debug.Log(string.Format("{0}: Done", name));
-        else if (task.Status == TaskStatus.Faulted)
-            Debug.Log(string.Format("{0}: Exception = {1}", name, task.Exception));
-        else if (task.Status == TaskStatus.Canceled)
-            Debug.Log(string.Format("{0}: Canceled", name));
-        else
-            Debug.Log(string.Format("{0}: Illegal Status = {1}", name, task.Status));
-    }
-
-    void ShowResult<TResult>(Task<TResult> task, string name)
-    {
-        if (task.Status == TaskStatus.RanToCompletion)
-            Debug.Log(string.Format("{0}: Result = {1}", name, task.Result));
-        else
-            ShowResult((Task)task, name);
     }
 }

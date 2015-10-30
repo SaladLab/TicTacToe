@@ -1,4 +1,5 @@
-﻿using Common.Logging;
+﻿using System.Net;
+using Common.Logging;
 using Domain.Interfaced;
 
 public static class G
@@ -22,6 +23,9 @@ public static class G
             _comm = value;
         }
     }
+
+    public static readonly IPEndPoint ServerEndPoint =
+        new IPEndPoint(IPAddress.Loopback, 9001); // new IPEndPoint(IPAddress.Parse("192.168.100.8"), 9001);
 
     // Logger
 

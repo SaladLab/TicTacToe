@@ -1,7 +1,7 @@
 ﻿using System;
 using Akka.Interfaced;
 
-class SlimRequestWaiter : IRequestWaiter
+public class SlimRequestWaiter : IRequestWaiter
 {
     public Communicator Communicator { get; internal set; }
 

@@ -5,7 +5,7 @@ using System.Net;
 using Akka.Interfaced;
 using Domain.Interfaced;
 
-public class GameScene : MonoBehaviour
+public class GameScene : MonoBehaviour, IGameObserver
 {
     public RectTransform LoadingPanel;
     public RectTransform GamePanel;
@@ -18,42 +18,72 @@ public class GameScene : MonoBehaviour
         ApplicationComponent.TryInit();
         UiManager.Initialize();
 
-        StartJoin();
+        StartJoinGame();
     }
 
-    private void StartJoin()
+    private void StartJoinGame()
     {
-        LoadingPanel.gameObject.SetActive(false);
+        LoadingPanel.gameObject.SetActive(true);
         GamePanel.gameObject.SetActive(false);
 
+        StartCoroutine(G.User == null 
+            ? ProcessLoginAndJoinGame()
+            : ProcessJoinGame());
+    }
+
+    private IEnumerator ProcessLoginAndJoinGame()
+    {
+        var loginId = PlayerPrefs.GetString("LoginId");
+        var loginPassword = PlayerPrefs.GetString("LoginPassword");
+
+        if (string.IsNullOrEmpty(loginId))
+        {
+            UiMessageBox.ShowMessageBox("Cannot find id");
+            yield break;
+        }
+
+        yield return StartCoroutine(ProcessLoginUser("test", "1234"));
         if (G.User == null)
         {
-            LoadingPanel.gameObject.SetActive(true);
-            StartCoroutine(ProcessJoinGame());
+            UiMessageBox.ShowMessageBox("Failed to login");
+            yield break;
         }
-        else
-        {
-            // For Developer
-            GamePanel.gameObject.SetActive(true);
-        }
+        yield return StartCoroutine(ProcessJoinGame());
+    }
+
+    private IEnumerator ProcessLoginUser(string id, string password)
+    {
+        G.Logger.Info("ProcessLoginUser");
+
+        var task = LoginProcessor.Login(G.ServerEndPoint, id, password, null);
+        yield return task.WaitHandle;
     }
 
     private IEnumerator ProcessJoinGame()
     {
-        G.Logger.Info("ProcessLoginUser");
-        LoadingPanel.gameObject.SetActive(true);
+        G.Logger.Info("ProcessJoinGame");
 
-        // yield return G.User.RegisterPairing().WaitHandle;
-
+        // TODO: pariing
         // TODO: while waiting for 5sec, observe pairing events
+        // yield return G.User.RegisterPairing().WaitHandle;
         // yield return G.User.UnregisterPairing().WaitHandle;
-        // yield return G.User.JoinGame();
 
+        // Join !
 
+        var roomId = 1L;
+        var observerId = G.Comm.IssueObserverId();
+        var joinRet = G.User.JoinGame(roomId, observerId);
+        yield return joinRet.WaitHandle;
 
-        // yield return G.User.JoinGame(gameId, observerId);
+        if (joinRet.Exception != null)
+        {
+            UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
+            yield break;
+        }
 
-        yield return new WaitForSeconds(5);
+        G.Comm.AddObserver(observerId, this);
+
+        // TODO: Joined but wait for the opponent
 
         LoadingPanel.gameObject.SetActive(false);
         GamePanel.gameObject.SetActive(true);
@@ -107,5 +137,25 @@ public class GameScene : MonoBehaviour
     {
         // TODO: Confirmation Dialog
         Application.LoadLevel("MainScene");
+    }
+
+    void IGameObserver.Join(int playerId, string userId)
+    {
+        Debug.Log(string.Format("IGameObserver.Join {0} {1}", playerId, userId));
+    }
+
+    void IGameObserver.Leave(int playerId)
+    {
+        Debug.Log(string.Format("IGameObserver.Leave {0} {1}", playerId, playerId));
+    }
+
+    void IGameObserver.MakeMove(int playerId, PlacePosition pos)
+    {
+        Debug.Log(string.Format("IGameObserver.MakeMove {0} {1}", playerId, pos));
+    }
+
+    void IGameObserver.Say(int playerId, string msg)
+    {
+        Debug.Log(string.Format("IGameObserver.Say {0} {1}", playerId, msg));
     }
 }
