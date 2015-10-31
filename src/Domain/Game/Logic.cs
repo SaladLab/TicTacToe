@@ -1,24 +1,30 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Domain.Game
 {    
     public static class Logic
     {
-        public static readonly PlacePosition[][] RowPositions =
+        static Logic()
         {
-            // Horizontal
-            new[] { new PlacePosition(0, 0), new PlacePosition(1, 0), new PlacePosition(2, 0) },
-            new[] { new PlacePosition(0, 1), new PlacePosition(1, 1), new PlacePosition(2, 1) },
-            new[] { new PlacePosition(0, 2), new PlacePosition(1, 2), new PlacePosition(2, 2) },
-            // Vertical
-            new[] { new PlacePosition(0, 0), new PlacePosition(0, 1), new PlacePosition(0, 2) },
-            new[] { new PlacePosition(1, 0), new PlacePosition(1, 1), new PlacePosition(1, 2) },
-            new[] { new PlacePosition(2, 0), new PlacePosition(2, 1), new PlacePosition(2, 2) },
-            // Diagonal
-            new[] { new PlacePosition(0, 0), new PlacePosition(1, 1), new PlacePosition(2, 2) },
-            new[] { new PlacePosition(0, 2), new PlacePosition(1, 1), new PlacePosition(2, 0) },
-        };
+            var horizontals =
+                Enumerable.Range(0, Rule.BoardSize).Select(
+                    y => Enumerable.Range(0, Rule.BoardSize).Select(
+                        x => new PlacePosition(x, y)).ToArray());
+            var verticals =
+                Enumerable.Range(0, Rule.BoardSize).Select(
+                    x => Enumerable.Range(0, Rule.BoardSize).Select(
+                        y => new PlacePosition(x, y)).ToArray());
+            var diagonals =
+                Enumerable.Range(0, 2).Select(
+                    t => Enumerable.Range(0, Rule.BoardSize).Select(
+                        x => new PlacePosition(x, t == 0 ? x : Rule.BoardSize - 1 - x)).ToArray());
+            RowPositions = horizontals.Concat(verticals).Concat(diagonals).ToArray();
+        }
+
+        // array of positions that make victory
+        public static readonly PlacePosition[][] RowPositions;
 
         // return index of RowPositions, winning playerId.
         public static Tuple<int, int> FindMatchedRow(int[,] board)
@@ -29,11 +35,8 @@ namespace Domain.Game
                 var v = board[rps[0].X, rps[0].Y];
                 if (v != 0)
                 {
-                    if (v == board[rps[1].X, rps[1].Y] &&
-                        v == board[rps[2].X, rps[2].Y])
-                    {
+                    if (Enumerable.Range(1, Rule.BoardSize - 1).All(j => v == board[rps[j].X, rps[j].Y]))
                         return Tuple.Create(i, v);
-                    }
                 }
             }
             return null;
@@ -55,7 +58,7 @@ namespace Domain.Game
                     else if (v == playerId)
                         x += 1;
                 }
-                if (x == 2 && emptyPosition != null)
+                if (x == Rule.BoardSize - 1 && emptyPosition != null)
                     return emptyPosition;
             }
 
@@ -72,15 +75,15 @@ namespace Domain.Game
                     else if (v != playerId)
                         x += 1;
                 }
-                if (x == 2 && emptyPosition != null)
+                if (x == Rule.BoardSize - 1 && emptyPosition != null)
                     return emptyPosition;
             }
 
             // Random pick
             var positions = new List<PlacePosition>();
-            for (int x = 0; x < 3; x++)
+            for (int x = 0; x < Rule.BoardSize; x++)
             {
-                for (int y = 0; y < 3; y++)
+                for (int y = 0; y < Rule.BoardSize; y++)
                 {
                     if (board[x, y] == 0)
                         positions.Add(new PlacePosition(x, y));

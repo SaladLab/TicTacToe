@@ -86,6 +86,7 @@
     <Compile Include="Data\IUserData.cs" />
     <Compile Include="Game\Logic.cs" />
     <Compile Include="Game\PlacePosition.cs" />
+    <Compile Include="Game\Rule.cs" />
     <Compile Include="Interface\GameTypes.cs" />
     <Compile Include="Interface\IGame.cs" />
     <Compile Include="Interface\IGameDirectory.cs" />

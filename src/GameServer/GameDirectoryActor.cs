@@ -112,9 +112,9 @@ namespace GameServer
         [ExtendedHandler]
         void RegisterPairing(string userId, IUserPairingObserver observer)
         {
-            //// TEST
-            //observer.MakePair(IssueNewGameId(), "bot");
-            //return;
+            // TEST
+            observer.MakePair(IssueNewGameId(), "bot");
+            return;
 
             // NOTE: If more perfermance, we can optimize here by using map
 

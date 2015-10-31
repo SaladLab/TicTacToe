@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using Domain.Game;
 
 public class GameBoard : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class GameBoard : MonoBehaviour
 
     public Action<int, int> GridClicked;
 
-    private int[,] _gridMarks = new int[3, 3];
-    private RectTransform[,] _gridRects = new RectTransform[3, 3];
+    private int[,] _gridMarks = new int[Rule.BoardSize, Rule.BoardSize];
+    private RectTransform[,] _gridRects = new RectTransform[Rule.BoardSize, Rule.BoardSize];
 
     void Start()
     {
@@ -20,18 +21,18 @@ public class GameBoard : MonoBehaviour
 
     private void BuildGrids()
     {
-        for (int y = 0; y < 3; y++)
+        for (int y = 0; y < Rule.BoardSize; y++)
         {
-            for (int x = 0; x < 3; x++)
+            for (int x = 0; x < Rule.BoardSize; x++)
             {
                 var grid = UiHelper.AddChild(gameObject, GridTemplate.gameObject);
                 grid.transform.SetParent(transform, false);
                 grid.transform.localPosition = new Vector3(x * 210 - 210, y * -210 + 210, 0);
 
                 var et = new EventTrigger.TriggerEvent();
-                var px = x;
-                var py = y;
-                et.AddListener(_ => OnGridClick(px, py));
+                var localX = x;
+                var localY = y;
+                et.AddListener(_ => OnGridClick(localX, localY));
                 grid.GetComponent<EventTrigger>().triggers[0].callback = et;
 
                 _gridRects[x, y] = grid.GetComponent<RectTransform>();

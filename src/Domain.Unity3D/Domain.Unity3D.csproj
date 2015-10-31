@@ -89,6 +89,9 @@
     <Compile Include="..\Domain\Game\PlacePosition.cs">
       <Link>Game\PlacePosition.cs</Link>
     </Compile>
+    <Compile Include="..\Domain\Game\Rule.cs">
+      <Link>Game\Rule.cs</Link>
+    </Compile>
     <Compile Include="..\Domain\Interface\GameTypes.cs">
       <Link>Interface\GameTypes.cs</Link>
     </Compile>

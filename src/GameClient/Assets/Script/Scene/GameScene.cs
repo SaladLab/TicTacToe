@@ -201,14 +201,14 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             PlayerPlate[0].SetTimerOn(false);
             PlayerPlate[0].SetTurn(false);
 
-            PlayerPlate[1].SetTimerOn(true, 30);
+            PlayerPlate[1].SetTimerOn(true, (int)Rule.TurnTimeout.TotalSeconds);
             PlayerPlate[1].SetTurn(true);
         }
         else
         {
             Board.GridClicked = null;
 
-            PlayerPlate[0].SetTimerOn(true, 30);
+            PlayerPlate[0].SetTimerOn(true, (int)Rule.TurnTimeout.TotalSeconds);
             PlayerPlate[0].SetTurn(true);
 
             PlayerPlate[1].SetTimerOn(false);

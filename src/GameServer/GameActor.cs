@@ -19,8 +19,9 @@ namespace GameServer
         private GameState _state;
         private List<Tuple<string, GameObserver>> _players = new List<Tuple<string, GameObserver>>();
         private int _currentPlayerId;
-        private int[,] _boardGridMarks = new int[3, 3];
+        private int[,] _boardGridMarks = new int[Rule.BoardSize, Rule.BoardSize];
         private List<PlacePosition> _movePositions = new List<PlacePosition>();
+        private ICancelable _turnTimeout;
 
         public GameActor(ClusterNodeContext clusterContext, long id)
         {
@@ -66,7 +67,34 @@ namespace GameServer
             _state = GameState.Playing;
             _currentPlayerId = 1;
 
+            ScheduleTurnTimeout(_movePositions.Count);
+
             NotifyToAllObservers(o => o.Begin(_currentPlayerId));
+        }
+
+        private class TurnTimeout
+        {
+            public int Turn;
+        }
+
+        private void ScheduleTurnTimeout(int turn)
+        {
+            if (_turnTimeout != null)
+                _turnTimeout.Cancel();
+
+            _turnTimeout = Context.System.Scheduler.ScheduleTellOnceCancelable(
+                (int)Rule.TurnTimeout.TotalMilliseconds, Self, new TurnTimeout { Turn = turn }, null);
+        }
+
+        [MessageHandler]
+        private void OnTurnTimeout(TurnTimeout message)
+        {
+            if (_movePositions.Count > message.Turn)
+                return;
+
+            var newPos = Logic.DetermineMove(_boardGridMarks, _currentPlayerId);
+            if (newPos != null)
+                MakeMove(newPos);
         }
 
         private void EndGame(int winnerPlayerId)
@@ -78,6 +106,12 @@ namespace GameServer
             _currentPlayerId = 0;
 
             NotifyToAllObservers(o => o.End(winnerPlayerId));
+
+            if (_turnTimeout != null)
+            {
+                _turnTimeout.Cancel();
+                _turnTimeout = null;
+            }
         }
 
         [ExtendedHandler]
@@ -94,8 +128,10 @@ namespace GameServer
 
             _players.Add(Tuple.Create(userId, (GameObserver)observer));
 
-            //if (_players.Count == 1)
-            //    RunTask(() => Join("bot", null));
+            // TEST
+            if (_players.Count == 1)
+                RunTask(() => Join("bot", null));
+            // TEST
 
             if (_players.Count == 2)
                 RunTask(() => BeginGame());
@@ -134,9 +170,18 @@ namespace GameServer
             if (playerId != _currentPlayerId)
                 throw new ResultException(ResultCodeType.NotYourTurn);
 
-            if (pos.X < 0 || pos.X >= 3 || pos.Y < 0 || pos.Y >= 3 || _boardGridMarks[pos.X, pos.Y] != 0)
+            if (pos.X < 0 || pos.X >= Rule.BoardSize ||
+                pos.Y < 0 || pos.Y >= Rule.BoardSize ||
+                _boardGridMarks[pos.X, pos.Y] != 0)
+            {
                 throw new ResultException(ResultCodeType.BadPosition);
+            }
 
+            MakeMove(pos);
+        }
+
+        void MakeMove(PlacePosition pos)
+        {
             _boardGridMarks[pos.X, pos.Y] = _currentPlayerId;
             _movePositions.Add(pos);
 
@@ -149,13 +194,14 @@ namespace GameServer
                 return;
             }
 
-            if (_movePositions.Count < 9)
+            if (_movePositions.Count < Rule.BoardSize * Rule.BoardSize)
             {
+                ScheduleTurnTimeout(_movePositions.Count);
+
                 // give a turn to another player
                 _currentPlayerId = 3 - _currentPlayerId;
 
                 // bot move
-                /*
                 if (_currentPlayerId == 2)
                 {
                     var newPos = Logic.DetermineMove(_boardGridMarks, 2);
@@ -164,10 +210,10 @@ namespace GameServer
                         RunTask(async () =>
                         {
                             await Task.Delay(1000);
-                            MakeMove(newPos, "bot");
+                            MakeMove(newPos);
                         });
                     }
-                }*/
+                }
             }
             else
             {
