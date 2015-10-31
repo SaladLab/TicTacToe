@@ -65,11 +65,15 @@ namespace GameServer
                 return;
 
             _state = GameState.Playing;
-            _currentPlayerId = 1;
+            _currentPlayerId = new Random().Next(1, 3);
 
             ScheduleTurnTimeout(_movePositions.Count);
 
             NotifyToAllObservers(o => o.Begin(_currentPlayerId));
+
+            // bot move
+            if (_currentPlayerId == 2)
+                MakeBotMove();
         }
 
         private class TurnTimeout
@@ -203,22 +207,25 @@ namespace GameServer
 
                 // bot move
                 if (_currentPlayerId == 2)
-                {
-                    var newPos = Logic.DetermineMove(_boardGridMarks, 2);
-                    if (newPos != null)
-                    {
-                        RunTask(async () =>
-                        {
-                            await Task.Delay(1000);
-                            MakeMove(newPos);
-                        });
-                    }
-                }
+                    MakeBotMove();
             }
             else
             {
                 // end of game. draw ?
                 EndGame(0);
+            }
+        }
+
+        void MakeBotMove()
+        {
+            var newPos = Logic.DetermineMove(_boardGridMarks, 2);
+            if (newPos != null)
+            {
+                RunTask(async () =>
+                {
+                    await Task.Delay(1000);
+                    MakeMove(newPos);
+                });
             }
         }
 

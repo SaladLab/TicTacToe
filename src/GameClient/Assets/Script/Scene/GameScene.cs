@@ -137,10 +137,10 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
     {
         var opponentName = _gameInfo.PlayerNames[2 - _myPlayerId];
 
-        PlayerPlate[0].SetGrid(1);
+        PlayerPlate[0].SetGrid(2);
         PlayerPlate[0].SetName(opponentName);
 
-        PlayerPlate[1].SetGrid(2);
+        PlayerPlate[1].SetGrid(1);
         PlayerPlate[1].SetName(G.UserId);
 
         LoadingPanel.gameObject.SetActive(false);
