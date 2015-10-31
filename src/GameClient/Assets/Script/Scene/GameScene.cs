@@ -5,6 +5,7 @@ using System.Net;
 using Akka.Interfaced;
 using Domain.Game;
 using Domain.Interfaced;
+using DG.Tweening;
 
 public class GameScene : MonoBehaviour, IGameObserver
 {
@@ -14,6 +15,7 @@ public class GameScene : MonoBehaviour, IGameObserver
     public Text LoadingText;
     public GameBoard Board;
     public GamePlayerPlate[] PlayerPlate;
+    public RectTransform ResultBox;
     public Text ResultText;
 
     private int _myPlayerId;
@@ -27,6 +29,7 @@ public class GameScene : MonoBehaviour, IGameObserver
         UiManager.Initialize();
 
         StartJoinGame();
+        // EndGame(0);
     }
 
     private void StartJoinGame()
@@ -120,7 +123,7 @@ public class GameScene : MonoBehaviour, IGameObserver
 
         SetPlayerTurn(playerId);
 
-        ResultText.text = "";
+        ResultBox.gameObject.SetActive(false);
     }
 
     private void EndGame(int playerId)
@@ -135,6 +138,7 @@ public class GameScene : MonoBehaviour, IGameObserver
         {
             PlayerPlate[0].SetGrid(1);
             ResultText.text = "DRAW";
+            ResultText.color = Color.black;
         }
         else
         {
@@ -154,7 +158,13 @@ public class GameScene : MonoBehaviour, IGameObserver
             PlayerPlate[myWinning ? 1 : 0].SetWin();
 
             ResultText.text = myWinning ? "WIN" : "LOSE";
+            ResultText.color = myWinning ? Color.white : Color.black;
         }
+
+        ResultBox.gameObject.SetActive(true);
+        var ap = ResultBox.anchoredPosition;
+        ResultBox.anchoredPosition = new Vector2(ap.x, ap.y - 500);
+        ResultBox.DOAnchorPosY(-550, 0.5f).SetEase(Ease.OutBounce).SetDelay(1);
     }
 
     private void SetPlayerTurn(int playerId)
