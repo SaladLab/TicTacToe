@@ -225,12 +225,13 @@ namespace Domain.Interfaced
         public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.String userId;
+            [ProtoMember(2)] public Domain.Interfaced.UserPairingObserver observer;
 
             public Type GetInterfaceType() { return typeof(IGameDirectory); }
 
             public async Task<IValueGetable> InvokeAsync(object target)
             {
-                await ((IGameDirectory)target).RegisterPairing(userId);
+                await ((IGameDirectory)target).RegisterPairing(userId, observer);
                 return null;
             }
         }
@@ -252,11 +253,13 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class UnregisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
+            [ProtoMember(1)] public System.String userId;
+
             public Type GetInterfaceType() { return typeof(IGameDirectory); }
 
             public async Task<IValueGetable> InvokeAsync(object target)
             {
-                await ((IGameDirectory)target).UnregisterPairing();
+                await ((IGameDirectory)target).UnregisterPairing(userId);
                 return null;
             }
         }
@@ -266,9 +269,9 @@ namespace Domain.Interfaced
     {
         void GetGameList();
         void GetOrCreateGame(System.Int64 id);
-        void RegisterPairing(System.String userId);
+        void RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer);
         void RemoveGame(System.Int64 id);
-        void UnregisterPairing();
+        void UnregisterPairing(System.String userId);
     }
 
     [ProtoContract, TypeAlias]
@@ -328,11 +331,11 @@ namespace Domain.Interfaced
             return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
         }
 
-        public Task RegisterPairing(System.String userId)
+        public Task RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId }
+                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -346,11 +349,11 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        public Task UnregisterPairing()
+        public Task UnregisterPairing(System.String userId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke {  }
+                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke { userId = userId }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -373,11 +376,11 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IGameDirectory_NoReply.RegisterPairing(System.String userId)
+        void IGameDirectory_NoReply.RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId }
+                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
             };
             SendRequest(requestMessage);
         }
@@ -391,11 +394,11 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IGameDirectory_NoReply.UnregisterPairing()
+        void IGameDirectory_NoReply.UnregisterPairing(System.String userId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke {  }
+                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke { userId = userId }
             };
             SendRequest(requestMessage);
         }
@@ -740,11 +743,13 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
+            [ProtoMember(1)] public System.Int32 observerId;
+
             public Type GetInterfaceType() { return typeof(IUser); }
 
             public async Task<IValueGetable> InvokeAsync(object target)
             {
-                await ((IUser)target).RegisterPairing();
+                await ((IUser)target).RegisterPairing(observerId);
                 return null;
             }
         }
@@ -766,7 +771,7 @@ namespace Domain.Interfaced
     {
         void JoinGame(System.Int64 gameId, System.Int32 observerId);
         void LeaveGame(System.Int64 gameId);
-        void RegisterPairing();
+        void RegisterPairing(System.Int32 observerId);
         void UnregisterPairing();
     }
 
@@ -827,11 +832,11 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        public Task RegisterPairing()
+        public Task RegisterPairing(System.Int32 observerId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -863,11 +868,11 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IUser_NoReply.RegisterPairing()
+        void IUser_NoReply.RegisterPairing(System.Int32 observerId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
             };
             SendRequest(requestMessage);
         }
@@ -1329,11 +1334,11 @@ namespace Domain.Interfaced
 
 #endregion
 
-#region Domain.Interfaced.IUserEventObserver
+#region Domain.Interfaced.IUserPairingObserver
 
 namespace Domain.Interfaced
 {
-    public static class IUserEventObserver_PayloadTable
+    public static class IUserPairingObserver_PayloadTable
     {
         [ProtoContract, TypeAlias]
         public class MakePair_Invoke : IInvokable
@@ -1343,13 +1348,13 @@ namespace Domain.Interfaced
 
             public void Invoke(object target)
             {
-                ((IUserEventObserver)target).MakePair(gameId, opponentName);
+                ((IUserPairingObserver)target).MakePair(gameId, opponentName);
             }
         }
     }
 
     [ProtoContract, TypeAlias]
-    public class UserEventObserver : InterfacedObserver, IUserEventObserver
+    public class UserPairingObserver : InterfacedObserver, IUserPairingObserver
     {
         [ProtoMember(1)] private ActorRefBase _actor
         {
@@ -1363,24 +1368,24 @@ namespace Domain.Interfaced
             set { ObserverId = value; }
         }
 
-        private UserEventObserver()
+        private UserPairingObserver()
             : base(null, 0)
         {
         }
 
-        public UserEventObserver(IActorRef target, int observerId)
+        public UserPairingObserver(IActorRef target, int observerId)
             : base(new ActorNotificationChannel(target), observerId)
         {
         }
 
-        public UserEventObserver(INotificationChannel channel, int observerId)
+        public UserPairingObserver(INotificationChannel channel, int observerId)
             : base(channel, observerId)
         {
         }
 
         public void MakePair(System.Int64 gameId, System.String opponentName)
         {
-            var payload = new IUserEventObserver_PayloadTable.MakePair_Invoke { gameId = gameId, opponentName = opponentName };
+            var payload = new IUserPairingObserver_PayloadTable.MakePair_Invoke { gameId = gameId, opponentName = opponentName };
             Notify(payload);
         }
     }

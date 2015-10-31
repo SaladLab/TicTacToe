@@ -101,11 +101,11 @@
     <Compile Include="..\Domain\Interface\IUser.cs">
       <Link>Interface\IUser.cs</Link>
     </Compile>
-    <Compile Include="..\Domain\Interface\IUserEventObserver.cs">
-      <Link>Interface\IUserEventObserver.cs</Link>
-    </Compile>
     <Compile Include="..\Domain\Interface\IUserLogin.cs">
       <Link>Interface\IUserLogin.cs</Link>
+    </Compile>
+    <Compile Include="..\Domain\Interface\IUserPairingObserver.cs">
+      <Link>Interface\IUserPairingObserver.cs</Link>
     </Compile>
     <Compile Include="..\Domain\Interface\ResultException.cs">
       <Link>Interface\ResultException.cs</Link>

@@ -6,8 +6,9 @@ using Akka.Interfaced;
 using Domain.Game;
 using Domain.Interfaced;
 using DG.Tweening;
+using System;
 
-public class GameScene : MonoBehaviour, IGameObserver
+public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 {
     public RectTransform LoadingPanel;
     public RectTransform GamePanel;
@@ -18,6 +19,7 @@ public class GameScene : MonoBehaviour, IGameObserver
     public RectTransform ResultBox;
     public Text ResultText;
 
+    private Tuple<long, string> _pairedGame;
     private int _myPlayerId;
     private int _gameObserverId;
     private GameInfo _gameInfo;
@@ -29,7 +31,6 @@ public class GameScene : MonoBehaviour, IGameObserver
         UiManager.Initialize();
 
         StartJoinGame();
-        // EndGame(0);
     }
 
     private void StartJoinGame()
@@ -46,6 +47,10 @@ public class GameScene : MonoBehaviour, IGameObserver
     {
         var loginId = PlayerPrefs.GetString("LoginId");
         var loginPassword = PlayerPrefs.GetString("LoginPassword");
+
+        // TEST
+        loginId = "editor";
+        loginPassword = "1234";
 
         if (string.IsNullOrEmpty(loginId))
         {
@@ -74,30 +79,50 @@ public class GameScene : MonoBehaviour, IGameObserver
     {
         G.Logger.Info("ProcessJoinGame");
 
+        // Finding Game
+        // Register user to pairing queue and waiting for 5 secs.
+
         LoadingText.text = "Finding Game...";
 
-        // TODO: pariing
-        // TODO: while waiting for 5sec, observe pairing events
-        // yield return G.User.RegisterPairing().WaitHandle;
-        // yield return G.User.UnregisterPairing().WaitHandle;
+        _pairedGame = null;
 
-        // Join !
-
-        var roomId = 1L;
         var observerId = G.Comm.IssueObserverId();
+        G.Comm.AddObserver(observerId, new ObserverChannel(this));
+        yield return G.User.RegisterPairing(observerId).WaitHandle;
+
+        var startTime = DateTime.Now;
+        while ((DateTime.Now - startTime).TotalSeconds < 5 && _pairedGame == null)
+        {
+            yield return null;
+        }
+
+        G.Comm.RemoveObserver(observerId);
+        if (_pairedGame == null)
+        {
+            yield return G.User.UnregisterPairing().WaitHandle;
+            var box = UiMessageBox.ShowMessageBox("Cannot find game");
+            yield return StartCoroutine(box.WaitForHide());
+            Application.LoadLevel("MainScene");
+            yield break;
+        }
+
+        // Join Game
+
+        var roomId = _pairedGame.Item1;
+        var observerId2 = G.Comm.IssueObserverId();
         var observer = new ObserverChannel(this, startPending: true, keepOrder: true);
-        G.Comm.AddObserver(observerId, observer);
-        var joinRet = G.User.JoinGame(roomId, observerId);
+        G.Comm.AddObserver(observerId2, observer);
+        var joinRet = G.User.JoinGame(roomId, observerId2);
         yield return joinRet.WaitHandle;
 
         if (joinRet.Exception != null)
         {
             UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
-            G.Comm.RemoveObserver(observerId);
+            G.Comm.RemoveObserver(observerId2);
             yield break;
         }
 
-        _gameObserverId = observerId;
+        _gameObserverId = observerId2;
         _gameInfo = joinRet.Result.Item2;
         _myPlayerId = (_gameInfo.PlayerNames[0] == G.UserId) ? 1 : 2;
         _myPlayer = new GamePlayerRef(
@@ -105,7 +130,7 @@ public class GameScene : MonoBehaviour, IGameObserver
             new SlimRequestWaiter { Communicator = G.Comm }, null);
 
         observer.Pending = false;
-        LoadingText.text = "Waiting for opponents...";
+        LoadingText.text = "Waiting for " + _pairedGame.Item2 + "...";
     }
 
     private void BeginGame(int playerId)
@@ -164,7 +189,7 @@ public class GameScene : MonoBehaviour, IGameObserver
         ResultBox.gameObject.SetActive(true);
         var ap = ResultBox.anchoredPosition;
         ResultBox.anchoredPosition = new Vector2(ap.x, ap.y - 500);
-        ResultBox.DOAnchorPosY(-550, 0.5f).SetEase(Ease.OutBounce).SetDelay(1);
+        ResultBox.DOAnchorPosY(-550, 0.5f).SetEase(Ease.OutBounce).SetDelay(playerId != 0 ? 1 : 0);
     }
 
     private void SetPlayerTurn(int playerId)
@@ -209,6 +234,12 @@ public class GameScene : MonoBehaviour, IGameObserver
         }
 
         Application.LoadLevel("MainScene");
+    }
+
+    void IUserPairingObserver.MakePair(long gameId, string opponentName)
+    {
+        Debug.Log(string.Format("IUserPairingObserver.MakePair {0} {1}", gameId, opponentName));
+        _pairedGame = Tuple.Create(gameId, opponentName);
     }
 
     void IGameObserver.Join(int playerId, string userId)

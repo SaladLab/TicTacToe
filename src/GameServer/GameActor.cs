@@ -43,7 +43,6 @@ namespace GameServer
 
         private void NotifyToAllObservers(Action<GameObserver> notifyAction)
         {
-            // _logger.TraceFormat("Notify {0}", notifyAction.Method.Name);
             foreach (var player in _players)
             {
                 if (player.Item2 != null)
@@ -95,8 +94,8 @@ namespace GameServer
 
             _players.Add(Tuple.Create(userId, (GameObserver)observer));
 
-            if (_players.Count == 1)
-                RunTask(() => Join("bot", null));
+            //if (_players.Count == 1)
+            //    RunTask(() => Join("bot", null));
 
             if (_players.Count == 2)
                 RunTask(() => BeginGame());
@@ -156,6 +155,7 @@ namespace GameServer
                 _currentPlayerId = 3 - _currentPlayerId;
 
                 // bot move
+                /*
                 if (_currentPlayerId == 2)
                 {
                     var newPos = Logic.DetermineMove(_boardGridMarks, 2);
@@ -167,7 +167,7 @@ namespace GameServer
                             MakeMove(newPos, "bot");
                         });
                     }
-                }
+                }*/
             }
             else
             {

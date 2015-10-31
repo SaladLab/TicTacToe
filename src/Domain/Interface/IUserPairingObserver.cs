@@ -3,7 +3,7 @@ using Akka.Interfaced;
 
 namespace Domain.Interfaced
 {
-    public interface IUserEventObserver : IInterfacedObserver
+    public interface IUserPairingObserver : IInterfacedObserver
     {
         void MakePair(long gameId, string opponentName);
     }

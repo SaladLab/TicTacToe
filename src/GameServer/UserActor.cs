@@ -16,7 +16,6 @@ namespace GameServer
         private ClusterNodeContext _clusterContext;
         private IActorRef _clientSession;
         private string _id;
-        private UserEventObserver _eventObserver;
         private Dictionary<long, GameRef> _joinedGameMap;
 
         public UserActor(ClusterNodeContext clusterContext, IActorRef clientSession, string id, int observerId)
@@ -25,7 +24,6 @@ namespace GameServer
             _clusterContext = clusterContext;
             _clientSession = clientSession;
             _id = id;
-            _eventObserver = new UserEventObserver(_clientSession, observerId);
             _joinedGameMap = new Dictionary<long, GameRef>();
         }
 
@@ -45,14 +43,15 @@ namespace GameServer
             Context.Stop(Self);
         }
 
-        Task IUser.RegisterPairing()
+        Task IUser.RegisterPairing(int observerId)
         {
-            throw new NotImplementedException();
+            var observer = new UserPairingObserver(_clientSession, observerId);
+            return _clusterContext.GameDirectory.RegisterPairing(_id, observer);
         }
 
         Task IUser.UnregisterPairing()
         {
-            throw new NotImplementedException();
+            return _clusterContext.GameDirectory.UnregisterPairing(_id);
         }
 
         async Task<Tuple<int, GameInfo>> IUser.JoinGame(long gameId, int observerId)

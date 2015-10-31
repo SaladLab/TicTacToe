@@ -189,6 +189,8 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
         {
+            [ProtoMember(1)] public System.Int32 observerId;
+
             public Type GetInterfaceType() { return typeof(IUser); }
 
             public Task<IValueGetable> InvokeAsync(object target)
@@ -213,7 +215,7 @@ namespace Domain.Interfaced
     {
         void JoinGame(System.Int64 gameId, System.Int32 observerId);
         void LeaveGame(System.Int64 gameId);
-        void RegisterPairing();
+        void RegisterPairing(System.Int32 observerId);
         void UnregisterPairing();
     }
 
@@ -257,11 +259,11 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        public Task RegisterPairing()
+        public Task RegisterPairing(System.Int32 observerId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -293,11 +295,11 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IUser_NoReply.RegisterPairing()
+        void IUser_NoReply.RegisterPairing(System.Int32 observerId)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke {  }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
             };
             SendRequest(requestMessage);
         }
@@ -493,11 +495,11 @@ namespace Domain.Interfaced
 
 #endregion
 
-#region Domain.Interfaced.IUserEventObserver
+#region Domain.Interfaced.IUserPairingObserver
 
 namespace Domain.Interfaced
 {
-    public static class IUserEventObserver_PayloadTable
+    public static class IUserPairingObserver_PayloadTable
     {
         [ProtoContract, TypeAlias]
         public class MakePair_Invoke : IInvokable
@@ -507,7 +509,7 @@ namespace Domain.Interfaced
 
             public void Invoke(object target)
             {
-                ((IUserEventObserver)target).MakePair(gameId, opponentName);
+                ((IUserPairingObserver)target).MakePair(gameId, opponentName);
             }
         }
     }

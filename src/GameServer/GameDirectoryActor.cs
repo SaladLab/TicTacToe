@@ -8,12 +8,15 @@ using Domain.Interfaced;
 
 namespace GameServer
 {
-    public class GameDirectoryActor : InterfacedActor<GameDirectoryActor>, IGameDirectory
+    public class GameDirectoryActor : InterfacedActor<GameDirectoryActor>, IExtendedInterface<IGameDirectory>
     {
+        private ILog _logger = LogManager.GetLogger("GameDirectory");
         private ClusterNodeContext _clusterContext;
         private List<GameDirectoryWorkerRef> _workers;
         private int _lastWorkIndex = -1;
+        private long _lastGameId;
         private Dictionary<long, Tuple<GameDirectoryWorkerRef, IGame>> _gameTable;
+        private List<Tuple<string, IUserPairingObserver>> _pairingQueue;
 
         public GameDirectoryActor(ClusterNodeContext clusterContext)
         {
@@ -28,20 +31,21 @@ namespace GameServer
 
             _workers = new List<GameDirectoryWorkerRef>();
             _gameTable = new Dictionary<long, Tuple<GameDirectoryWorkerRef, IGame>>();
+            _pairingQueue = new List<Tuple<string, IUserPairingObserver>>();
         }
 
         [MessageHandler]
         private void OnMessage(ActorDiscoveryMessage.ActorUp message)
         {
             _workers.Add(new GameDirectoryWorkerRef(message.Actor, this, null));
-            Console.WriteLine("<><> GameDirectoryActor GOT Worker {0} <><>", message.Actor.Path);
+            _logger.InfoFormat("Registered Actor({0})", message.Actor.Path);
         }
 
         [MessageHandler]
         private void OnMessage(ActorDiscoveryMessage.ActorDown message)
         {
             _workers.RemoveAll(w => w.Actor == message.Actor);
-            Console.WriteLine("<><> GameDirectoryWorkerActor LOST GameDirectory {0} <><>", message.Actor.Path);
+            _logger.InfoFormat("Unregistered Actor({0})", message.Actor.Path);
         }
 
         [MessageHandler]
@@ -50,17 +54,14 @@ namespace GameServer
             Context.Stop(Self);
         }
 
-        Task IGameDirectory.RegisterPairing(string userId)
+        private long IssueNewGameId()
         {
-            throw new NotImplementedException();
+            _lastGameId += 1;
+            return _lastGameId;
         }
 
-        Task IGameDirectory.UnregisterPairing()
-        {
-            throw new NotImplementedException();
-        }
-
-        async Task<IGame> IGameDirectory.GetOrCreateGame(long id)
+        [ExtendedHandler]
+        private async Task<IGame> GetOrCreateGame(long id)
         {
             Tuple<GameDirectoryWorkerRef, IGame> game = null;
             if (_gameTable.TryGetValue(id, out game))
@@ -80,8 +81,8 @@ namespace GameServer
             }
             catch (Exception e)
             {
-                // TODO: Write down exception log
-                Console.WriteLine(e);
+                _logger.ErrorFormat("Worker({0} is failed to create game({1})",
+                                    e, worker.Actor.Path, id);
             }
 
             if (game == null)
@@ -91,21 +92,57 @@ namespace GameServer
             return game.Item2;
         }
 
-        Task IGameDirectory.RemoveGame(long id)
+        [ExtendedHandler]
+        private void RemoveGame(long id)
         {
             Tuple<GameDirectoryWorkerRef, IGame> game = null;
             if (_gameTable.TryGetValue(id, out game) == false)
-                return Task.FromResult(0);
+                return;
 
             _gameTable.Remove(id);
             game.Item1.WithNoReply().RemoveGame(id);
-
-            return Task.FromResult(true);
         }
 
-        Task<List<long>> IGameDirectory.GetGameList()
+        [ExtendedHandler]
+        List<long> GetGameList()
         {
-            return Task.FromResult(_gameTable.Keys.ToList());
+            return _gameTable.Keys.ToList();
+        }
+
+        [ExtendedHandler]
+        void RegisterPairing(string userId, IUserPairingObserver observer)
+        {
+            //// TEST
+            //observer.MakePair(IssueNewGameId(), "bot");
+            //return;
+
+            // NOTE: If more perfermance, we can optimize here by using map
+
+            if (_pairingQueue.Any(i => i.Item1 == userId))
+                throw new ResultException(ResultCodeType.AlreadyPairingRegistered);
+
+            // If there is an opponent, both are paired to match.
+            // Otherwise enqueue an user to waiting list.
+
+            if (_pairingQueue.Any())
+            {
+                var opponent = _pairingQueue[0];
+                _pairingQueue.RemoveAt(0);
+
+                var gameId = IssueNewGameId();
+                observer.MakePair(gameId, opponent.Item1);
+                opponent.Item2.MakePair(gameId, userId);
+            }
+            else
+            {
+                _pairingQueue.Add(Tuple.Create(userId, observer));
+            }
+        }
+
+        [ExtendedHandler]
+        void UnregisterPairing(string userId)
+        {
+            _pairingQueue.RemoveAll(i => i.Item1 == userId);
         }
     }
 }

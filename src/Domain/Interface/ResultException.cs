@@ -17,6 +17,7 @@ namespace Domain.Interfaced
         GameStarted,
         GamePlayerFull,
         GameNotFound,
+        AlreadyPairingRegistered,
     }
 
     [ProtoContract, TypeAlias]

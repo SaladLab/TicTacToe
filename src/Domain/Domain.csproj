@@ -93,7 +93,7 @@
     <Compile Include="Interface\IGamePlayer.cs" />
     <Compile Include="Interface\IUser.cs" />
     <Compile Include="Interface\IUserDirectory.cs" />
-    <Compile Include="Interface\IUserEventObserver.cs" />
+    <Compile Include="Interface\IUserPairingObserver.cs" />
     <Compile Include="Interface\IUserLogin.cs" />
     <Compile Include="Interface\ResultException.cs" />
     <Compile Include="Properties\Akka.Interfaced.CodeGen.cs" />

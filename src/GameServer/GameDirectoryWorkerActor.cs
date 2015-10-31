@@ -35,7 +35,7 @@ namespace GameServer
         private void OnMessage(ActorDiscoveryMessage.ActorUp message)
         {
             _gameDirectory = new GameDirectoryRef(message.Actor, this, null);
-            Console.WriteLine("<><> GameDirectoryWorkerActor GOT GameDirectory {0} <><>", message.Actor.Path);
+            _logger.InfoFormat("Actor({0}) Known to cluster", message.Actor.Path);
 
         }
 
@@ -45,7 +45,7 @@ namespace GameServer
             if (_gameDirectory != null && _gameDirectory.Actor.Equals(message.Actor))
             {
                 _gameDirectory = null;
-                Console.WriteLine("<><> GameDirectoryWorkerActor LOST GameDirectory {0} <><>", message.Actor.Path);
+                _logger.InfoFormat("Lost from GameDirectory({0})", message.Actor.Path);
             }
         }
 

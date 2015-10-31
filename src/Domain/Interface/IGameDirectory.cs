@@ -7,11 +7,11 @@ namespace Domain.Interfaced
 {
     public interface IGameDirectory : IInterfacedActor
     {
-        Task RegisterPairing(string userId);
-        Task UnregisterPairing();
         Task<IGame> GetOrCreateGame(long id);
         Task RemoveGame(long id);
         Task<List<long>> GetGameList();
+        Task RegisterPairing(string userId, IUserPairingObserver observer);
+        Task UnregisterPairing(string userId);
     }
 
     public interface IGameDirectoryWorker : IInterfacedActor
