@@ -78,7 +78,7 @@ namespace GameServer
                 Context.Stop(Self);
         }
 
-        Task<IGame> IGameDirectoryWorker.CreateGame(long id)
+        Task<IGame> IGameDirectoryWorker.CreateGame(long id, CreateGameParam param)
         {
             // create game actor
 
@@ -92,6 +92,13 @@ namespace GameServer
             catch (Exception)
             {
                 return Task.FromResult((IGame)null);
+            }
+
+            // create bot if required
+
+            if (param.WithBot)
+            {
+                Context.ActorOf(Props.Create<GameBotActor>(_context, new GameRef(gameActor), "bot"));
             }
 
             // register it at local directory and return

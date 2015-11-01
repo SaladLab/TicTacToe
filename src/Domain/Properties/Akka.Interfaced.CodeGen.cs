@@ -167,12 +167,59 @@ namespace Domain.Interfaced
         {
             return new Type[,]
             {
+                {typeof(CreateGame_Invoke), typeof(CreateGame_Return)},
+                {typeof(GetGame_Invoke), typeof(GetGame_Return)},
                 {typeof(GetGameList_Invoke), typeof(GetGameList_Return)},
-                {typeof(GetOrCreateGame_Invoke), typeof(GetOrCreateGame_Return)},
-                {typeof(RegisterPairing_Invoke), null},
                 {typeof(RemoveGame_Invoke), null},
-                {typeof(UnregisterPairing_Invoke), null},
             };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class CreateGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public Domain.Interfaced.CreateGameParam param;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                var __v = await((IGameDirectory)target).CreateGame(param);
+                return (IValueGetable)(new CreateGame_Return { v = (System.Tuple<System.Int64, Domain.Interfaced.IGame>)__v });
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class CreateGame_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public System.Tuple<System.Int64, Domain.Interfaced.IGame> v;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public object Value { get { return v; } }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetGame_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.Int64 id;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                var __v = await((IGameDirectory)target).GetGame(id);
+                return (IValueGetable)(new GetGame_Return { v = (Domain.Interfaced.GameRef)__v });
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class GetGame_Return : IInterfacedPayload, IValueGetable
+        {
+            [ProtoMember(1)] public Domain.Interfaced.GameRef v;
+
+            public Type GetInterfaceType() { return typeof(IGameDirectory); }
+
+            public object Value { get { return v; } }
         }
 
         [ProtoContract, TypeAlias]
@@ -198,45 +245,6 @@ namespace Domain.Interfaced
         }
 
         [ProtoContract, TypeAlias]
-        public class GetOrCreateGame_Invoke : IInterfacedPayload, IAsyncInvokable
-        {
-            [ProtoMember(1)] public System.Int64 id;
-
-            public Type GetInterfaceType() { return typeof(IGameDirectory); }
-
-            public async Task<IValueGetable> InvokeAsync(object target)
-            {
-                var __v = await((IGameDirectory)target).GetOrCreateGame(id);
-                return (IValueGetable)(new GetOrCreateGame_Return { v = (Domain.Interfaced.GameRef)__v });
-            }
-        }
-
-        [ProtoContract, TypeAlias]
-        public class GetOrCreateGame_Return : IInterfacedPayload, IValueGetable
-        {
-            [ProtoMember(1)] public Domain.Interfaced.GameRef v;
-
-            public Type GetInterfaceType() { return typeof(IGameDirectory); }
-
-            public object Value { get { return v; } }
-        }
-
-        [ProtoContract, TypeAlias]
-        public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
-        {
-            [ProtoMember(1)] public System.String userId;
-            [ProtoMember(2)] public Domain.Interfaced.UserPairingObserver observer;
-
-            public Type GetInterfaceType() { return typeof(IGameDirectory); }
-
-            public async Task<IValueGetable> InvokeAsync(object target)
-            {
-                await ((IGameDirectory)target).RegisterPairing(userId, observer);
-                return null;
-            }
-        }
-
-        [ProtoContract, TypeAlias]
         public class RemoveGame_Invoke : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.Int64 id;
@@ -249,29 +257,14 @@ namespace Domain.Interfaced
                 return null;
             }
         }
-
-        [ProtoContract, TypeAlias]
-        public class UnregisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
-        {
-            [ProtoMember(1)] public System.String userId;
-
-            public Type GetInterfaceType() { return typeof(IGameDirectory); }
-
-            public async Task<IValueGetable> InvokeAsync(object target)
-            {
-                await ((IGameDirectory)target).UnregisterPairing(userId);
-                return null;
-            }
-        }
     }
 
     public interface IGameDirectory_NoReply
     {
+        void CreateGame(Domain.Interfaced.CreateGameParam param);
+        void GetGame(System.Int64 id);
         void GetGameList();
-        void GetOrCreateGame(System.Int64 id);
-        void RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer);
         void RemoveGame(System.Int64 id);
-        void UnregisterPairing(System.String userId);
     }
 
     [ProtoContract, TypeAlias]
@@ -313,6 +306,24 @@ namespace Domain.Interfaced
             return new GameDirectoryRef(Actor, RequestWaiter, timeout);
         }
 
+        public Task<System.Tuple<System.Int64, Domain.Interfaced.IGame>> CreateGame(Domain.Interfaced.CreateGameParam param)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.CreateGame_Invoke { param = param }
+            };
+            return SendRequestAndReceive<System.Tuple<System.Int64, Domain.Interfaced.IGame>>(requestMessage);
+        }
+
+        public Task<Domain.Interfaced.IGame> GetGame(System.Int64 id)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetGame_Invoke { id = id }
+            };
+            return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
+        }
+
         public Task<System.Collections.Generic.List<System.Int64>> GetGameList()
         {
             var requestMessage = new RequestMessage
@@ -320,24 +331,6 @@ namespace Domain.Interfaced
                 InvokePayload = new IGameDirectory_PayloadTable.GetGameList_Invoke {  }
             };
             return SendRequestAndReceive<System.Collections.Generic.List<System.Int64>>(requestMessage);
-        }
-
-        public Task<Domain.Interfaced.IGame> GetOrCreateGame(System.Int64 id)
-        {
-            var requestMessage = new RequestMessage
-            {
-                InvokePayload = new IGameDirectory_PayloadTable.GetOrCreateGame_Invoke { id = id }
-            };
-            return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
-        }
-
-        public Task RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
-        {
-            var requestMessage = new RequestMessage
-            {
-                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
-            };
-            return SendRequestAndWait(requestMessage);
         }
 
         public Task RemoveGame(System.Int64 id)
@@ -349,13 +342,22 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        public Task UnregisterPairing(System.String userId)
+        void IGameDirectory_NoReply.CreateGame(Domain.Interfaced.CreateGameParam param)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke { userId = userId }
+                InvokePayload = new IGameDirectory_PayloadTable.CreateGame_Invoke { param = param }
             };
-            return SendRequestAndWait(requestMessage);
+            SendRequest(requestMessage);
+        }
+
+        void IGameDirectory_NoReply.GetGame(System.Int64 id)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGameDirectory_PayloadTable.GetGame_Invoke { id = id }
+            };
+            SendRequest(requestMessage);
         }
 
         void IGameDirectory_NoReply.GetGameList()
@@ -367,38 +369,11 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IGameDirectory_NoReply.GetOrCreateGame(System.Int64 id)
-        {
-            var requestMessage = new RequestMessage
-            {
-                InvokePayload = new IGameDirectory_PayloadTable.GetOrCreateGame_Invoke { id = id }
-            };
-            SendRequest(requestMessage);
-        }
-
-        void IGameDirectory_NoReply.RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
-        {
-            var requestMessage = new RequestMessage
-            {
-                InvokePayload = new IGameDirectory_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
-            };
-            SendRequest(requestMessage);
-        }
-
         void IGameDirectory_NoReply.RemoveGame(System.Int64 id)
         {
             var requestMessage = new RequestMessage
             {
                 InvokePayload = new IGameDirectory_PayloadTable.RemoveGame_Invoke { id = id }
-            };
-            SendRequest(requestMessage);
-        }
-
-        void IGameDirectory_NoReply.UnregisterPairing(System.String userId)
-        {
-            var requestMessage = new RequestMessage
-            {
-                InvokePayload = new IGameDirectory_PayloadTable.UnregisterPairing_Invoke { userId = userId }
             };
             SendRequest(requestMessage);
         }
@@ -427,12 +402,13 @@ namespace Domain.Interfaced
         public class CreateGame_Invoke : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.Int64 id;
+            [ProtoMember(2)] public Domain.Interfaced.CreateGameParam param;
 
             public Type GetInterfaceType() { return typeof(IGameDirectoryWorker); }
 
             public async Task<IValueGetable> InvokeAsync(object target)
             {
-                var __v = await((IGameDirectoryWorker)target).CreateGame(id);
+                var __v = await((IGameDirectoryWorker)target).CreateGame(id, param);
                 return (IValueGetable)(new CreateGame_Return { v = (Domain.Interfaced.GameRef)__v });
             }
         }
@@ -464,7 +440,7 @@ namespace Domain.Interfaced
 
     public interface IGameDirectoryWorker_NoReply
     {
-        void CreateGame(System.Int64 id);
+        void CreateGame(System.Int64 id, Domain.Interfaced.CreateGameParam param);
         void RemoveGame(System.Int64 id);
     }
 
@@ -507,11 +483,11 @@ namespace Domain.Interfaced
             return new GameDirectoryWorkerRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<Domain.Interfaced.IGame> CreateGame(System.Int64 id)
+        public Task<Domain.Interfaced.IGame> CreateGame(System.Int64 id, Domain.Interfaced.CreateGameParam param)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { id = id }
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { id = id, param = param }
             };
             return SendRequestAndReceive<Domain.Interfaced.IGame>(requestMessage);
         }
@@ -525,11 +501,11 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IGameDirectoryWorker_NoReply.CreateGame(System.Int64 id)
+        void IGameDirectoryWorker_NoReply.CreateGame(System.Int64 id, Domain.Interfaced.CreateGameParam param)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { id = id }
+                InvokePayload = new IGameDirectoryWorker_PayloadTable.CreateGame_Invoke { id = id, param = param }
             };
             SendRequest(requestMessage);
         }
@@ -539,6 +515,137 @@ namespace Domain.Interfaced
             var requestMessage = new RequestMessage
             {
                 InvokePayload = new IGameDirectoryWorker_PayloadTable.RemoveGame_Invoke { id = id }
+            };
+            SendRequest(requestMessage);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGamePairMaker
+
+namespace Domain.Interfaced
+{
+    [PayloadTableForInterfacedActor(typeof(IGamePairMaker))]
+    public static class IGamePairMaker_PayloadTable
+    {
+        public static Type[,] GetPayloadTypes()
+        {
+            return new Type[,]
+            {
+                {typeof(RegisterPairing_Invoke), null},
+                {typeof(UnregisterPairing_Invoke), null},
+            };
+        }
+
+        [ProtoContract, TypeAlias]
+        public class RegisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String userId;
+            [ProtoMember(2)] public Domain.Interfaced.UserPairingObserver observer;
+
+            public Type GetInterfaceType() { return typeof(IGamePairMaker); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                await ((IGamePairMaker)target).RegisterPairing(userId, observer);
+                return null;
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class UnregisterPairing_Invoke : IInterfacedPayload, IAsyncInvokable
+        {
+            [ProtoMember(1)] public System.String userId;
+
+            public Type GetInterfaceType() { return typeof(IGamePairMaker); }
+
+            public async Task<IValueGetable> InvokeAsync(object target)
+            {
+                await ((IGamePairMaker)target).UnregisterPairing(userId);
+                return null;
+            }
+        }
+    }
+
+    public interface IGamePairMaker_NoReply
+    {
+        void RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer);
+        void UnregisterPairing(System.String userId);
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GamePairMakerRef : InterfacedActorRef, IGamePairMaker, IGamePairMaker_NoReply
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return (ActorRefBase)Actor; }
+            set { Actor = value; }
+        }
+
+        private GamePairMakerRef()
+            : base(null)
+        {
+        }
+
+        public GamePairMakerRef(IActorRef actor)
+            : base(actor)
+        {
+        }
+
+        public GamePairMakerRef(IActorRef actor, IRequestWaiter requestWaiter, TimeSpan? timeout)
+            : base(actor, requestWaiter, timeout)
+        {
+        }
+
+        public IGamePairMaker_NoReply WithNoReply()
+        {
+            return this;
+        }
+
+        public GamePairMakerRef WithRequestWaiter(IRequestWaiter requestWaiter)
+        {
+            return new GamePairMakerRef(Actor, requestWaiter, Timeout);
+        }
+
+        public GamePairMakerRef WithTimeout(TimeSpan? timeout)
+        {
+            return new GamePairMakerRef(Actor, RequestWaiter, timeout);
+        }
+
+        public Task RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        public Task UnregisterPairing(System.String userId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePairMaker_PayloadTable.UnregisterPairing_Invoke { userId = userId }
+            };
+            return SendRequestAndWait(requestMessage);
+        }
+
+        void IGamePairMaker_NoReply.RegisterPairing(System.String userId, Domain.Interfaced.IUserPairingObserver observer)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, observer = (Domain.Interfaced.UserPairingObserver)observer }
+            };
+            SendRequest(requestMessage);
+        }
+
+        void IGamePairMaker_NoReply.UnregisterPairing(System.String userId)
+        {
+            var requestMessage = new RequestMessage
+            {
+                InvokePayload = new IGamePairMaker_PayloadTable.UnregisterPairing_Invoke { userId = userId }
             };
             SendRequest(requestMessage);
         }

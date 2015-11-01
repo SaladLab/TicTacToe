@@ -207,6 +207,8 @@ namespace GameServer
                 _context.UserDirectory = new UserDirectoryRef(actor);
             else if (type == typeof(IGameDirectory))
                 _context.GameDirectory = new GameDirectoryRef(actor);
+            else if (type == typeof(IGamePairMaker))
+                _context.GamePairMaker = new GamePairMakerRef(actor);
         }
     }
 }

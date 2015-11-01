@@ -13,5 +13,6 @@ namespace GameServer
         // if there is a neat way to avoid this dirty hack, please improve it.
         public UserDirectoryRef UserDirectory;
         public GameDirectoryRef GameDirectory;
+        public GamePairMakerRef GamePairMaker;
     }
 }

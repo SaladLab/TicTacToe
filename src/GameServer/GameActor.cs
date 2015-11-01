@@ -70,10 +70,6 @@ namespace GameServer
             ScheduleTurnTimeout(_movePositions.Count);
 
             NotifyToAllObservers(o => o.Begin(_currentPlayerId));
-
-            // bot move
-            if (_currentPlayerId == 2)
-                MakeBotMove();
         }
 
         private class TurnTimeout
@@ -131,11 +127,6 @@ namespace GameServer
             NotifyToAllObservers(o => o.Join(playerId, userId));
 
             _players.Add(Tuple.Create(userId, (GameObserver)observer));
-
-            // TEST
-            if (_players.Count == 1)
-                RunTask(() => Join("bot", null));
-            // TEST
 
             if (_players.Count == 2)
                 RunTask(() => BeginGame());
@@ -204,28 +195,11 @@ namespace GameServer
 
                 // give a turn to another player
                 _currentPlayerId = 3 - _currentPlayerId;
-
-                // bot move
-                if (_currentPlayerId == 2)
-                    MakeBotMove();
             }
             else
             {
                 // end of game. draw ?
                 EndGame(0);
-            }
-        }
-
-        void MakeBotMove()
-        {
-            var newPos = Logic.DetermineMove(_boardGridMarks, 2);
-            if (newPos != null)
-            {
-                RunTask(async () =>
-                {
-                    await Task.Delay(1000);
-                    MakeMove(newPos);
-                });
             }
         }
 

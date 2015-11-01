@@ -46,12 +46,12 @@ namespace GameServer
         Task IUser.RegisterPairing(int observerId)
         {
             var observer = new UserPairingObserver(_clientSession, observerId);
-            return _clusterContext.GameDirectory.RegisterPairing(_id, observer);
+            return _clusterContext.GamePairMaker.RegisterPairing(_id, observer);
         }
 
         Task IUser.UnregisterPairing()
         {
-            return _clusterContext.GameDirectory.UnregisterPairing(_id);
+            return _clusterContext.GamePairMaker.UnregisterPairing(_id);
         }
 
         async Task<Tuple<int, GameInfo>> IUser.JoinGame(long gameId, int observerId)
@@ -61,7 +61,7 @@ namespace GameServer
 
             // Try to get game ref
 
-            var gameRaw = await _clusterContext.GameDirectory.GetOrCreateGame(gameId);
+            var gameRaw = await _clusterContext.GameDirectory.GetGame(gameId);
             if (gameRaw == null)
                 throw new ResultException(ResultCodeType.GameNotFound);
 

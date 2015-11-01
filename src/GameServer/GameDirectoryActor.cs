@@ -61,35 +61,36 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        private async Task<IGame> GetOrCreateGame(long id)
+        private IGame GetGame(long id)
         {
-            Tuple<GameDirectoryWorkerRef, IGame> game = null;
-            if (_gameTable.TryGetValue(id, out game))
-                return game.Item2;
+            Tuple<GameDirectoryWorkerRef, IGame> game;
+            return _gameTable.TryGetValue(id, out game) ? game.Item2 : null;
+        }
 
-            if (_workers.Count == 0)
-                return null;
-
+        [ExtendedHandler]
+        private async Task<Tuple<long, IGame>> CreateGame(CreateGameParam param)
+        {
             // pick a worker for creating GameActor by round-robin fashion.
 
             _lastWorkIndex = (_lastWorkIndex + 1) % _workers.Count;
             var worker = _workers[_lastWorkIndex];
 
+            var gameId = IssueNewGameId();
+            Tuple<GameDirectoryWorkerRef, IGame> gameValue;
+
             try
             {
-                game = Tuple.Create(worker, await worker.CreateGame(id));
+                gameValue = Tuple.Create(worker, await worker.CreateGame(gameId, param));
             }
             catch (Exception e)
             {
                 _logger.ErrorFormat("Worker({0} is failed to create game({1})",
-                                    e, worker.Actor.Path, id);
+                                    e, worker.Actor.Path, gameId);
+                return null;
             }
 
-            if (game == null)
-                return null;
-
-            _gameTable.Add(id, game);
-            return game.Item2;
+            _gameTable.Add(gameId, gameValue);
+            return Tuple.Create(gameId, gameValue.Item2);
         }
 
         [ExtendedHandler]
@@ -107,42 +108,6 @@ namespace GameServer
         List<long> GetGameList()
         {
             return _gameTable.Keys.ToList();
-        }
-
-        [ExtendedHandler]
-        void RegisterPairing(string userId, IUserPairingObserver observer)
-        {
-            // TEST
-            observer.MakePair(IssueNewGameId(), "bot");
-            return;
-
-            // NOTE: If more perfermance, we can optimize here by using map
-
-            if (_pairingQueue.Any(i => i.Item1 == userId))
-                throw new ResultException(ResultCodeType.AlreadyPairingRegistered);
-
-            // If there is an opponent, both are paired to match.
-            // Otherwise enqueue an user to waiting list.
-
-            if (_pairingQueue.Any())
-            {
-                var opponent = _pairingQueue[0];
-                _pairingQueue.RemoveAt(0);
-
-                var gameId = IssueNewGameId();
-                observer.MakePair(gameId, opponent.Item1);
-                opponent.Item2.MakePair(gameId, userId);
-            }
-            else
-            {
-                _pairingQueue.Add(Tuple.Create(userId, observer));
-            }
-        }
-
-        [ExtendedHandler]
-        void UnregisterPairing(string userId)
-        {
-            _pairingQueue.RemoveAll(i => i.Item1 == userId);
         }
     }
 }

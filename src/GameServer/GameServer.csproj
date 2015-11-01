@@ -143,8 +143,10 @@
     <Compile Include="ClusterNodeActor.cs" />
     <Compile Include="ClusterNodeContext.cs" />
     <Compile Include="GameActor.cs" />
+    <Compile Include="GameBotActor.cs" />
     <Compile Include="GameDirectoryActor.cs" />
     <Compile Include="GameDirectoryWorkerActor.cs" />
+    <Compile Include="GamePairMakerActor.cs" />
     <Compile Include="LinkDirectives.cs" />
     <Compile Include="LogFilter.cs" />
     <Compile Include="MongoDbStorage.cs" />

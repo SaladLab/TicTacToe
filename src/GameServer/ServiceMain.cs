@@ -66,17 +66,17 @@ namespace GameServer
             var standAlone = args.Length > 0 && args[0] == "standalone";
             if (standAlone)
             {
-                LaunchClusterNode(commonConfig, 3001, 9001, "game-directory", "user-directory", "game", "user", "bot");
+                LaunchClusterNode(commonConfig, 3001, 9001, "game-directory", "game-pair-maker",
+                                                            "user-directory", "game", "user");
             }
             else
             {
-                LaunchClusterNode(commonConfig, 3001, 0, "game-directory");
+                LaunchClusterNode(commonConfig, 3001, 0, "game-directory", "game-pair-maker");
                 LaunchClusterNode(commonConfig, 3002, 0, "user-directory");
                 LaunchClusterNode(commonConfig, 3011, 0, "game");
                 LaunchClusterNode(commonConfig, 3012, 0, "game");
                 LaunchClusterNode(commonConfig, 3021, 9001, "user");
                 LaunchClusterNode(commonConfig, 3022, 9002, "user");
-                //LaunchClusterNode(commonConfig, 3031, 0, "bot");
             }
 
             // wait for stop signal
@@ -130,6 +130,10 @@ namespace GameServer
                         rootActor = system.ActorOf(Props.Create<GameDirectoryActor>(context), "game_directory");
                         break;
 
+                    case "game-pair-maker":
+                        rootActor = system.ActorOf(Props.Create<GamePairMakerActor>(context), "game_pair_maker");
+                        break;
+
                     case "user-directory":
                         rootActor = system.ActorOf(Props.Create<UserDirectoryActor>(context), "user_directory");
                         break;
@@ -142,11 +146,6 @@ namespace GameServer
                         rootActor = system.ActorOf(Props.Create<ClientGateway>(context), "client_gateway");
                         rootActor.Tell(new ClientGatewayMessage.Start { ServiceEndPoint = new IPEndPoint(IPAddress.Any, clientPort) });
                         break;
-
-                    //case "bot":
-                    //    rootActor = system.ActorOf(Props.Create<ChatBotCommanderActor>(context), "chatbot_commander");
-                    //    rootActor.Tell(new ChatBotCommanderMessage.Start());
-                    //    break;
 
                     default:
                         throw new InvalidOperationException("Invalid role: " + role);

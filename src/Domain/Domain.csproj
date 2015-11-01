@@ -91,6 +91,7 @@
     <Compile Include="Interface\IGame.cs" />
     <Compile Include="Interface\IGameDirectory.cs" />
     <Compile Include="Interface\IGameObserver.cs" />
+    <Compile Include="Interface\IGamePairMaker.cs" />
     <Compile Include="Interface\IGamePlayer.cs" />
     <Compile Include="Interface\IUser.cs" />
     <Compile Include="Interface\IUserDirectory.cs" />
