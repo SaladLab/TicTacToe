@@ -123,8 +123,8 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         }
 
         _gameObserverId = observerId2;
-        _gameInfo = joinRet.Result.Item2;
-        _myPlayerId = (_gameInfo.PlayerNames[0] == G.UserId) ? 1 : 2;
+        _gameInfo = joinRet.Result.Item3;
+        _myPlayerId = joinRet.Result.Item2;
         _myPlayer = new GamePlayerRef(
             new SlimActorRef { Id = joinRet.Result.Item1 }, 
             new SlimRequestWaiter { Communicator = G.Comm }, null);
@@ -141,7 +141,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         PlayerPlate[0].SetName(opponentName);
 
         PlayerPlate[1].SetGrid(1);
-        PlayerPlate[1].SetName(G.UserId);
+        PlayerPlate[1].SetName(G.UserContext.Data.Name);
 
         LoadingPanel.gameObject.SetActive(false);
         GamePanel.gameObject.SetActive(true);
@@ -242,10 +242,10 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         _pairedGame = Tuple.Create(gameId, opponentName);
     }
 
-    void IGameObserver.Join(int playerId, string userId)
+    void IGameObserver.Join(int playerId, long userId, string userName)
     {
-        Debug.Log(string.Format("IGameObserver.Join {0} {1}", playerId, userId));
-        _gameInfo.PlayerNames.Add(userId);
+        Debug.Log(string.Format("IGameObserver.Join {0} {1} {2}", playerId, userId, userName));
+        _gameInfo.PlayerNames.Add(userName);
     }
 
     void IGameObserver.Leave(int playerId)

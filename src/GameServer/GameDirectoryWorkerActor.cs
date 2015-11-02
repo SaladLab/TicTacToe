@@ -82,7 +82,7 @@ namespace GameServer
         {
             // create game actor
 
-            IActorRef gameActor = null;
+            IActorRef gameActor;
             try
             {
                 gameActor = Context.ActorOf(Props.Create<GameActor>(_context, id, param));
@@ -98,7 +98,7 @@ namespace GameServer
 
             if (param.WithBot)
             {
-                Context.ActorOf(Props.Create<GameBotActor>(_context, new GameRef(gameActor), "bot"));
+                Context.ActorOf(Props.Create<GameBotActor>(_context, new GameRef(gameActor), 0, "bot"));
             }
 
             // register it at local directory and return

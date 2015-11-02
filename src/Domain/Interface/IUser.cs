@@ -8,7 +8,7 @@ namespace Domain.Interfaced
     {
         Task RegisterPairing(int observerId);
         Task UnregisterPairing();
-        Task<Tuple<int, GameInfo>> JoinGame(long gameId, int observerId);
+        Task<Tuple<int, int, GameInfo>> JoinGame(long gameId, int observerId);
         Task LeaveGame(long gameId);
     }
 }

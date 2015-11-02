@@ -6,8 +6,8 @@ namespace Domain.Interfaced
 {
     public interface IUserDirectory : IInterfacedActor
     {
-        Task RegisterUser(string userId, IUser user);
-        Task UnregisterUser(string userId);
-        Task<IUser> GetUser(string userId);
+        Task RegisterUser(long userId, IUser user);
+        Task UnregisterUser(long userId);
+        Task<IUser> GetUser(long userId);
     }
 }

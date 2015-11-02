@@ -17,7 +17,16 @@ namespace GameServer
         private ClusterNodeContext _clusterContext;
         private long _id;
         private GameState _state;
-        private List<Tuple<string, GameObserver>> _players = new List<Tuple<string, GameObserver>>();
+
+        private class Player
+        {
+            public long UserId;
+            public string UserName;
+            public GameObserver Observer;
+        }
+
+        private List<Player> _players = new List<Player>();
+
         private int _currentPlayerId;
         private int[,] _boardGridMarks = new int[Rule.BoardSize, Rule.BoardSize];
         private List<PlacePosition> _movePositions = new List<PlacePosition>();
@@ -36,7 +45,7 @@ namespace GameServer
             {
                 Id = _id,
                 State = _state,
-                PlayerNames = _players.Select(p => p.Item1).ToList(),
+                PlayerNames = _players.Select(p => p.UserName).ToList(),
                 FirstMovePlayerId = 1,
                 Positions = _movePositions
             };
@@ -46,14 +55,14 @@ namespace GameServer
         {
             foreach (var player in _players)
             {
-                if (player.Item2 != null)
-                    notifyAction(player.Item2);
+                if (player.Observer != null)
+                    notifyAction(player.Observer);
             }
         }
 
-        private int GetPlayerId(string userId)
+        private int GetPlayerId(long userId)
         {
-            var index = _players.FindIndex(p => p.Item1 == userId);
+            var index = _players.FindIndex(p => p.UserId == userId);
             if (index == -1)
                 throw new ResultException(ResultCodeType.NeedToBeInGame);
             return index + 1;
@@ -80,7 +89,10 @@ namespace GameServer
         private void ScheduleTurnTimeout(int turn)
         {
             if (_turnTimeout != null)
+            {
                 _turnTimeout.Cancel();
+                _turnTimeout = null;
+            }
 
             _turnTimeout = Context.System.Scheduler.ScheduleTellOnceCancelable(
                 (int)Rule.TurnTimeout.TotalMilliseconds, Self, new TurnTimeout { Turn = turn }, null);
@@ -115,7 +127,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        GameInfo Join(string userId, IGameObserver observer)
+        GameInfo Join(long userId, string userName, IGameObserver observer)
         {
             if (_state != GameState.WaitingForPlayers)
                 throw new ResultException(ResultCodeType.GameStarted);
@@ -124,9 +136,9 @@ namespace GameServer
                 throw new ResultException(ResultCodeType.GamePlayerFull);
 
             var playerId = _players.Count + 1;
-            NotifyToAllObservers(o => o.Join(playerId, userId));
+            NotifyToAllObservers(o => o.Join(playerId, userId, userName));
 
-            _players.Add(Tuple.Create(userId, (GameObserver)observer));
+            _players.Add(new Player { UserId = userId, UserName = userName, Observer = (GameObserver)observer });
 
             if (_players.Count == 2)
                 RunTask(() => BeginGame());
@@ -135,12 +147,12 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void Leave(string userId)
+        void Leave(long userId)
         {
             var playerId = GetPlayerId(userId);
 
             var player = _players[playerId - 1];
-            _players[playerId - 1] = Tuple.Create(player.Item1, (GameObserver)null);
+            _players[playerId - 1].Observer = null;
 
             NotifyToAllObservers(o => o.Leave(playerId));
 
@@ -151,7 +163,7 @@ namespace GameServer
                 NotifyToAllObservers(o => o.Abort());
             }
 
-            if (_players.Count(p => p.Item2 != null) == 0)
+            if (_players.Count(p => p.Observer != null) == 0)
             {
                 _clusterContext.GameDirectory.WithNoReply().RemoveGame(_id);
                 Self.Tell(InterfacedPoisonPill.Instance);
@@ -159,7 +171,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void MakeMove(PlacePosition pos, string playerUserId)
+        void MakeMove(PlacePosition pos, long playerUserId)
         {
             var playerId = GetPlayerId(playerUserId);
             if (playerId != _currentPlayerId)
@@ -202,7 +214,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void Say(string msg, string playerUserId)
+        void Say(string msg, long playerUserId)
         {
             // TODO:
         }

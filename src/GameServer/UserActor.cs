@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Interfaced;
 using Common.Logging;
+using Domain.Data;
 using Domain.Interfaced;
 
 namespace GameServer
@@ -15,15 +16,18 @@ namespace GameServer
         private ILog _logger;
         private ClusterNodeContext _clusterContext;
         private IActorRef _clientSession;
-        private string _id;
+        private long _id;
+        private TrackableUserContext _userContext;
         private Dictionary<long, GameRef> _joinedGameMap;
 
-        public UserActor(ClusterNodeContext clusterContext, IActorRef clientSession, string id, int observerId)
+        public UserActor(ClusterNodeContext clusterContext, IActorRef clientSession,
+                         long id, TrackableUserContext userContext, int observerId)
         {
             _logger = LogManager.GetLogger($"UserActor({id})");
             _clusterContext = clusterContext;
             _clientSession = clientSession;
             _id = id;
+            _userContext = userContext;
             _joinedGameMap = new Dictionary<long, GameRef>();
         }
 
@@ -46,7 +50,7 @@ namespace GameServer
         Task IUser.RegisterPairing(int observerId)
         {
             var observer = new UserPairingObserver(_clientSession, observerId);
-            return _clusterContext.GamePairMaker.RegisterPairing(_id, observer);
+            return _clusterContext.GamePairMaker.RegisterPairing(_id, _userContext.Data.Name, observer);
         }
 
         Task IUser.UnregisterPairing()
@@ -54,7 +58,7 @@ namespace GameServer
             return _clusterContext.GamePairMaker.UnregisterPairing(_id);
         }
 
-        async Task<Tuple<int, GameInfo>> IUser.JoinGame(long gameId, int observerId)
+        async Task<Tuple<int, int, GameInfo>> IUser.JoinGame(long gameId, int observerId)
         {
             if (_joinedGameMap.ContainsKey(gameId))
                 throw new ResultException(ResultCodeType.NeedToBeOutOfGame);
@@ -70,7 +74,7 @@ namespace GameServer
             // Let's enter the game !
 
             var observer = new GameObserver(_clientSession, observerId);
-            var info = await game.Join(_id, observer);
+            var joinRet = await game.Join(_id, _userContext.Data.Name, observer);
 
             // Bind an player actor with client session
 
@@ -83,7 +87,7 @@ namespace GameServer
                 });
 
             _joinedGameMap[gameId] = game;
-            return Tuple.Create(reply.ActorId, info);
+            return Tuple.Create(reply.ActorId, joinRet.Item1, joinRet.Item2);
         }
 
         async Task IUser.LeaveGame(long gameId)

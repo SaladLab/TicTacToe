@@ -13,18 +13,20 @@ namespace GameServer
     {
         private ILog _logger;
         private GameRef _game;
-        private string _userId;
+        private long _userId;
+        private string _userName;
         private GamePlayerRef _gamePlayer;
         private int _playerId;
         private int[,] _boardGridMarks = new int[Rule.BoardSize, Rule.BoardSize];
         private bool _isPlaying;
 
         public GameBotActor(ClusterNodeContext clusterContext,
-                            GameRef game, string userId)
+                            GameRef game, long userId, string userName)
         {
-            _logger = LogManager.GetLogger($"GameBotActor({userId})");
+            _logger = LogManager.GetLogger($"GameBotActor({userId}, {userName})");
             _game = game;
             _userId = userId;
+            _userName = userName;
         }
 
         protected override async Task OnPreStart()
@@ -33,9 +35,9 @@ namespace GameServer
             {
                 var observerId = IssueObserverId();
                 AddObserver(observerId, this);
-                var info = await _game.Join(_userId, new GameObserver(Self, observerId));
+                var ret = await _game.Join(_userId, _userName, new GameObserver(Self, observerId));
                 _gamePlayer = new GamePlayerRef(_game.Actor, this, null);
-                _playerId = info.PlayerNames.IndexOf(_userId) + 1;
+                _playerId = ret.Item1;
             }
             catch (Exception e)
             {
@@ -70,7 +72,7 @@ namespace GameServer
             _gamePlayer.WithNoReply().MakeMove(newPos, _userId);
         }
 
-        void IGameObserver.Join(int playerId, string userId)
+        void IGameObserver.Join(int playerId, long userId, string userName)
         {
         }
 

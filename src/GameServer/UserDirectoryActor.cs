@@ -7,8 +7,8 @@ namespace GameServer
 {
     public class UserDirectoryActor : InterfacedActor<UserDirectoryActor>, IUserDirectory
     {
-        private ClusterNodeContext _clusterContext;
-        private Dictionary<string, IUser> _userTable;
+        private readonly ClusterNodeContext _clusterContext;
+        private readonly Dictionary<long, IUser> _userTable;
 
         public UserDirectoryActor(ClusterNodeContext clusterContext)
         {
@@ -18,7 +18,7 @@ namespace GameServer
                 new ActorDiscoveryMessage.ActorUp { Actor = Self, Type = typeof(IUserDirectory) },
                 Self);
 
-            _userTable = new Dictionary<string, IUser>();
+            _userTable = new Dictionary<long, IUser>();
         }
 
         protected override void OnReceiveUnhandled(object message)
@@ -33,19 +33,19 @@ namespace GameServer
             base.OnReceiveUnhandled(message);
         }
 
-        Task IUserDirectory.RegisterUser(string userId, IUser user)
+        Task IUserDirectory.RegisterUser(long userId, IUser user)
         {
             _userTable.Add(userId, user);
             return Task.FromResult(true);
         }
 
-        Task IUserDirectory.UnregisterUser(string userId)
+        Task IUserDirectory.UnregisterUser(long userId)
         {
             _userTable.Remove(userId);
             return Task.FromResult(true);
         }
 
-        Task<IUser> IUserDirectory.GetUser(string userId)
+        Task<IUser> IUserDirectory.GetUser(long userId)
         {
             IUser user;
             return Task.FromResult(_userTable.TryGetValue(userId, out user) ? user : null);

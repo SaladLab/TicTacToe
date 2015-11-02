@@ -7,7 +7,7 @@ namespace Domain.Interfaced
 {
     public interface IGamePairMaker : IInterfacedActor
     {
-        Task RegisterPairing(string userId, IUserPairingObserver observer);
-        Task UnregisterPairing(string userId);
+        Task RegisterPairing(long userId, string userName, IUserPairingObserver observer);
+        Task UnregisterPairing(long userId);
     }
 }

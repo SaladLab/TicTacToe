@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Interfaced;
 using Common.Logging;
 using System.Net;
+using Domain.Data;
 using Domain.Interfaced;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using TrackableData;
+using TrackableData.MongoDB;
 
 namespace GameServer
 {
     [Log]
     public class UserLoginActor : InterfacedActor<UserLoginActor>, IUserLogin
     {
-        private ILog _logger;
-        private ClusterNodeContext _clusterContext;
-        private IActorRef _clientSession;
+        private readonly ILog _logger;
+        private readonly ClusterNodeContext _clusterContext;
+        private readonly IActorRef _clientSession;
 
         public UserLoginActor(ClusterNodeContext clusterContext, IActorRef clientSession, EndPoint clientRemoteEndPoint)
         {
-            _logger = LogManager.GetLogger(string.Format("UserLoginActor({0})", clientRemoteEndPoint));
+            _logger = LogManager.GetLogger($"UserLoginActor({clientRemoteEndPoint})");
             _clusterContext = clusterContext;
             _clientSession = clientSession;
         }
@@ -34,24 +40,58 @@ namespace GameServer
             }
         }
 
-        async Task<int> IUserLogin.Login(string id, string password, int observerId)
+        private class AccountUserMapInfo
         {
-            //Contract.Requires<ArgumentNullException>(id != null);
-            //Contract.Requires<ArgumentNullException>(password != null);
+            public string Id;
+            public long UserId;
+        }
 
-            // Check password
+        async Task<LoginResult> IUserLogin.Login(string id, string password, int observerId)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
 
-            if (await Authenticator.AuthenticateAsync(id, password) == false)
+            // Check account
+
+            var accountId = await Authenticator.AuthenticateAsync(id, password);
+            if (string.IsNullOrEmpty(accountId))
                 throw new ResultException(ResultCodeType.LoginFailedIncorrectPassword);
+
+            // Load user context from DB.
+            // If no context, create new one.
+
+            long userId;
+            TrackableUserContext userContext;
+
+            var accountUserMap = MongoDbStorage.Instance.Database.GetCollection<AccountUserMapInfo>("AccountUserMap");
+            var userMap = await accountUserMap.Find(a => a.Id == accountId).FirstOrDefaultAsync();
+            if (userMap != null)
+            {
+                userId = userMap.UserId;
+                userContext = (TrackableUserContext)await MongoDbStorage.UserContextMapper.LoadAsync(
+                    MongoDbStorage.Instance.Database.GetCollection<BsonDocument>("User"), 
+                    userId);
+            }
+            else
+            {
+                var created = CreateUser(accountId);
+                userId = created.Item1;
+                userContext = created.Item2;
+                await MongoDbStorage.UserContextMapper.CreateAsync(
+                    MongoDbStorage.Instance.Database.GetCollection<BsonDocument>("User"),
+                    userContext, userId);
+            }
 
             // Make UserActor
 
-            IActorRef user = null;
+            IActorRef user;
             try
             {
                 user = Context.System.ActorOf(
-                    Props.Create<UserActor>(_clusterContext, _clientSession, id, observerId),
-                    "user_" + id);
+                    Props.Create<UserActor>(_clusterContext, _clientSession, userId, userContext, observerId),
+                    "user_" + userId);
             }
             catch (Exception)
             {
@@ -66,7 +106,7 @@ namespace GameServer
             {
                 try
                 {
-                    await _clusterContext.UserDirectory.RegisterUser(id, (IUser)userRef);
+                    await _clusterContext.UserDirectory.RegisterUser(userId, (IUser)userRef);
                     registered = true;
                     break;
                 }
@@ -88,7 +128,24 @@ namespace GameServer
             var reply = await _clientSession.Ask<ClientSession.BindActorResponseMessage>(
                 new ClientSession.BindActorRequestMessage { Actor = user, InterfaceType = typeof(IUser) });
 
-            return reply.ActorId;
+            return new LoginResult { UserId = userId, UserContext = userContext, UserActorBindId = reply.ActorId };
+        }
+
+        private Tuple<long, TrackableUserContext> CreateUser(string accountId)
+        {
+            var userId = UniqueInt64Id.GenerateNewId();
+            var userContext = new TrackableUserContext
+            {
+                Data = new TrackableUserData
+                {
+                    Name = accountId.ToUpper(),
+                    RegisterTime = DateTime.UtcNow,
+                    LastLoginTime = DateTime.UtcNow,
+                    LoginCount = 1,
+                },
+                Achivements = new TrackableDictionary<int, UserAchievement>()
+            };
+            return Tuple.Create(userId, userContext);
         }
     }
 }

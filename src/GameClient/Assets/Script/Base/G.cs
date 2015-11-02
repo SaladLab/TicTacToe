@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Common.Logging;
+using Domain.Data;
 using Domain.Interfaced;
 
 public static class G
@@ -50,7 +51,12 @@ public static class G
         get; set;
     }
 
-    public static string UserId
+    public static long UserId
+    {
+        get; set;
+    }
+
+    public static TrackableUserContext UserContext
     {
         get; set;
     }

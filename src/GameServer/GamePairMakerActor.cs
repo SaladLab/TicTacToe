@@ -16,7 +16,8 @@ namespace GameServer
 
         private class QueueEntity
         {
-            public string UserId;
+            public long UserId;
+            public string UserName;
             public IUserPairingObserver Observer;
             public DateTime EnqueueTime;
         }
@@ -80,8 +81,8 @@ namespace GameServer
                     return;
                 }
 
-                entry0.Observer.MakePair(gameId, entry1.UserId);
-                entry1.Observer.MakePair(gameId, entry0.UserId);
+                entry0.Observer.MakePair(gameId, entry1.UserName);
+                entry1.Observer.MakePair(gameId, entry0.UserName);
             }
 
             // Pairing an user with a bot
@@ -111,7 +112,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void RegisterPairing(string userId, IUserPairingObserver observer)
+        void RegisterPairing(long userId, string userName, IUserPairingObserver observer)
         {
             if (_pairingQueue.Any(i => i.UserId == userId))
                 throw new ResultException(ResultCodeType.AlreadyPairingRegistered);
@@ -125,7 +126,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void UnregisterPairing(string userId)
+        void UnregisterPairing(long userId)
         {
             _pairingQueue.RemoveAll(i => i.UserId == userId);
         }

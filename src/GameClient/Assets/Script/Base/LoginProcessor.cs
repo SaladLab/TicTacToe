@@ -51,18 +51,24 @@ public static class LoginProcessor
 
         var userLogin = new UserLoginRef(new SlimActorRef { Id = 1 }, new SlimRequestWaiter { Communicator = G.Comm }, null);
         var observerId = G.Comm.IssueObserverId();
+        var observer = new ObserverChannel(ApplicationComponent.Instance, true, true);
+        G.Comm.AddObserver(observerId, observer);
         var t1 = userLogin.Login(id, password, observerId);
         yield return t1.WaitHandle;
 
         if (t1.Status != TaskStatus.RanToCompletion)
         {
             task.Exception = new Exception("Login Error\n" + t1.Exception, t1.Exception);
+            G.Comm.RemoveObserver(observerId);
             yield break;
         }
 
-        G.User = new UserRef(new SlimActorRef { Id = t1.Result }, new SlimRequestWaiter { Communicator = G.Comm }, null);
-        G.UserId = id; // TODO: need to get normalized id for using id as a key
+        G.User = new UserRef(new SlimActorRef { Id = t1.Result.UserActorBindId }, new SlimRequestWaiter { Communicator = G.Comm }, null);
+        G.UserId = t1.Result.UserId;
+        G.UserContext = t1.Result.UserContext;
 
         task.Status = TaskStatus.RanToCompletion;
+
+        observer.Pending = false;
     }
 }
