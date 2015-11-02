@@ -60,6 +60,12 @@ namespace GameServer
         {
             await Task.Delay(1000);
 
+            // It's required to check isPlaying. Because this function could be called by IGameObserver.MakeMove.
+            // But when game is finished, IGameObserver.End will be called after MakeMove notification.
+            // To prevent call MakeMove after game ended, this check should be done.
+            if (_isPlaying == false)
+                return;
+
             var newPos = Logic.DetermineMove(_boardGridMarks, _playerId);
             _gamePlayer.WithNoReply().MakeMove(newPos, _userId);
         }
@@ -72,20 +78,20 @@ namespace GameServer
         {
         }
 
-        void IGameObserver.Begin(int playerId)
+        void IGameObserver.Begin(int currentPlayerId)
         {
             _logger.TraceFormat("Game begun");
 
             _isPlaying = true;
 
-            if (playerId == _playerId)
+            if (currentPlayerId == _playerId)
                 RunTask(() => ThinkAndMakeMoveAsync());
         }
 
-        void IGameObserver.MakeMove(int playerId, PlacePosition pos)
+        void IGameObserver.MakeMove(int playerId, PlacePosition pos, int nextTurnPlayerId)
         {
             _boardGridMarks[pos.X, pos.Y] = playerId;
-            if (_isPlaying && playerId != _playerId)
+            if (_isPlaying && nextTurnPlayerId == _playerId)
                 RunTask(() => ThinkAndMakeMoveAsync());
         }
 

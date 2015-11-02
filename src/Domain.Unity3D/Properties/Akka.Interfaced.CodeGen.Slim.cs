@@ -439,11 +439,11 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class Begin_Invoke : IInvokable
         {
-            [ProtoMember(1)] public System.Int32 playerId;
+            [ProtoMember(1)] public System.Int32 currentPlayerId;
 
             public void Invoke(object target)
             {
-                ((IGameObserver)target).Begin(playerId);
+                ((IGameObserver)target).Begin(currentPlayerId);
             }
         }
 
@@ -452,10 +452,11 @@ namespace Domain.Interfaced
         {
             [ProtoMember(1)] public System.Int32 playerId;
             [ProtoMember(2)] public Domain.Game.PlacePosition pos;
+            [ProtoMember(3)] public System.Int32 nextTurnPlayerId;
 
             public void Invoke(object target)
             {
-                ((IGameObserver)target).MakeMove(playerId, pos);
+                ((IGameObserver)target).MakeMove(playerId, pos, nextTurnPlayerId);
             }
         }
 

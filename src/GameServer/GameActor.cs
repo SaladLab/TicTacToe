@@ -23,7 +23,7 @@ namespace GameServer
         private List<PlacePosition> _movePositions = new List<PlacePosition>();
         private ICancelable _turnTimeout;
 
-        public GameActor(ClusterNodeContext clusterContext, long id)
+        public GameActor(ClusterNodeContext clusterContext, long id, CreateGameParam param)
         {
             _logger = LogManager.GetLogger($"GameActor({id})");
             _clusterContext = clusterContext;
@@ -180,26 +180,24 @@ namespace GameServer
             _boardGridMarks[pos.X, pos.Y] = _currentPlayerId;
             _movePositions.Add(pos);
 
-            NotifyToAllObservers(o => o.MakeMove(_currentPlayerId, pos));
+            var matchedRow = Logic.FindMatchedRow(_boardGridMarks);
+            var drawed = _movePositions.Count >= Rule.BoardSize * Rule.BoardSize;
+            var nextTurnPlayerId = (matchedRow == null && drawed == false) ? 3 - _currentPlayerId : 0;
 
-            var matched = Logic.FindMatchedRow(_boardGridMarks);
-            if (matched != null)
+            NotifyToAllObservers(o => o.MakeMove(_currentPlayerId, pos, nextTurnPlayerId));
+
+            if (matchedRow != null)
             {
                 EndGame(_currentPlayerId);
-                return;
             }
-
-            if (_movePositions.Count < Rule.BoardSize * Rule.BoardSize)
+            else if (drawed)
             {
-                ScheduleTurnTimeout(_movePositions.Count);
-
-                // give a turn to another player
-                _currentPlayerId = 3 - _currentPlayerId;
+                EndGame(0);
             }
             else
             {
-                // end of game. draw ?
-                EndGame(0);
+                ScheduleTurnTimeout(_movePositions.Count);
+                _currentPlayerId = nextTurnPlayerId;
             }
         }
 

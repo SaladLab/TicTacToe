@@ -1312,11 +1312,11 @@ namespace Domain.Interfaced
         [ProtoContract, TypeAlias]
         public class Begin_Invoke : IInvokable
         {
-            [ProtoMember(1)] public System.Int32 playerId;
+            [ProtoMember(1)] public System.Int32 currentPlayerId;
 
             public void Invoke(object target)
             {
-                ((IGameObserver)target).Begin(playerId);
+                ((IGameObserver)target).Begin(currentPlayerId);
             }
         }
 
@@ -1325,10 +1325,11 @@ namespace Domain.Interfaced
         {
             [ProtoMember(1)] public System.Int32 playerId;
             [ProtoMember(2)] public Domain.Game.PlacePosition pos;
+            [ProtoMember(3)] public System.Int32 nextTurnPlayerId;
 
             public void Invoke(object target)
             {
-                ((IGameObserver)target).MakeMove(playerId, pos);
+                ((IGameObserver)target).MakeMove(playerId, pos, nextTurnPlayerId);
             }
         }
 
@@ -1407,15 +1408,15 @@ namespace Domain.Interfaced
             Notify(payload);
         }
 
-        public void Begin(System.Int32 playerId)
+        public void Begin(System.Int32 currentPlayerId)
         {
-            var payload = new IGameObserver_PayloadTable.Begin_Invoke { playerId = playerId };
+            var payload = new IGameObserver_PayloadTable.Begin_Invoke { currentPlayerId = currentPlayerId };
             Notify(payload);
         }
 
-        public void MakeMove(System.Int32 playerId, Domain.Game.PlacePosition pos)
+        public void MakeMove(System.Int32 playerId, Domain.Game.PlacePosition pos, System.Int32 nextTurnPlayerId)
         {
-            var payload = new IGameObserver_PayloadTable.MakeMove_Invoke { playerId = playerId, pos = pos };
+            var payload = new IGameObserver_PayloadTable.MakeMove_Invoke { playerId = playerId, pos = pos, nextTurnPlayerId = nextTurnPlayerId };
             Notify(payload);
         }
 

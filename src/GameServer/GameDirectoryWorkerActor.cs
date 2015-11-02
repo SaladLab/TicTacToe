@@ -85,7 +85,7 @@ namespace GameServer
             IActorRef gameActor = null;
             try
             {
-                gameActor = Context.ActorOf(Props.Create<GameActor>(_context, id));
+                gameActor = Context.ActorOf(Props.Create<GameActor>(_context, id, param));
                 Context.Watch(gameActor);
                 _gameActorCount += 1;
             }

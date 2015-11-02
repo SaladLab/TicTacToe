@@ -253,10 +253,10 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         Debug.Log(string.Format("IGameObserver.Leave {0} {1}", playerId, playerId));
     }
 
-    void IGameObserver.Begin(int playerId)
+    void IGameObserver.Begin(int currentPlayerId)
     {
-        Debug.Log(string.Format("IGameObserver.Begin {0}", playerId));
-        BeginGame(playerId);
+        Debug.Log(string.Format("IGameObserver.Begin {0}", currentPlayerId));
+        BeginGame(currentPlayerId);
     }
 
     void IGameObserver.End(int winnerPlayerId)
@@ -270,11 +270,11 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         Debug.Log("IGameObserver.Abort");
     }
 
-    void IGameObserver.MakeMove(int playerId, PlacePosition pos)
+    void IGameObserver.MakeMove(int playerId, PlacePosition pos, int nextTurnPlayerId)
     {
-        Debug.Log(string.Format("IGameObserver.MakeMove {0} {1}", playerId, pos));
+        Debug.Log(string.Format("IGameObserver.MakeMove {0} {1} {2}", playerId, pos, nextTurnPlayerId));
         Board.SetMark(pos.X, pos.Y, _myPlayerId == playerId ? 1 : 2);
-        SetPlayerTurn(3 - playerId);
+        SetPlayerTurn(nextTurnPlayerId);
     }
 
     void IGameObserver.Say(int playerId, string msg)
