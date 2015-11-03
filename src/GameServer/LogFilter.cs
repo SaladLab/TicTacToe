@@ -64,7 +64,7 @@ namespace GameServer
                 _logger.TraceFormat("#{0} <- {1} Exception: {2}",
                                     context.Request.RequestId, _methodShortName, context.Response.Exception);
             }
-            else if (context.Response.ReturnPayload == null)
+            else if (context.Response.ReturnPayload != null)
             {
                 var returnJson = JsonConvert.SerializeObject(context.Response.ReturnPayload, _settings);
                 _logger.TraceFormat("#{0} <- {1} {2}",
