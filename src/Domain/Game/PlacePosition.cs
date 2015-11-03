@@ -18,6 +18,31 @@ namespace Domain.Game
             Y = y;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            var p = obj as PlacePosition;
+            if (p == null)
+                return false;
+
+            return (X == p.X) && (Y == p.Y);
+        }
+
+        public bool Equals(PlacePosition p)
+        {
+            if (p == null)
+                return false;
+
+            return (X == p.X) && (Y == p.Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return X ^ Y;
+        }
+
         public override string ToString()
         {
             return string.Format("X={0} Y={1}", X, Y);
