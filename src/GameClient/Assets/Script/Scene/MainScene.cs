@@ -93,17 +93,24 @@ public class MainScene : MonoBehaviour
     public void OnPlayButtonClick()
     {
         if (G.User == null)
+        {
+            UiMessageBox.ShowMessageBox("Login reqruied.");
             return;
+        }
 
         Application.LoadLevel("GameScene");
     }
 
-    public void OnSpectateButtonClick()
+    public void OnInfoButtonClick()
     {
         if (G.User == null)
+        {
+            UiMessageBox.ShowMessageBox("Login reqruied.");
             return;
+        }
 
-        Application.LoadLevel("GameScene");
+        UiManager.Instance.ShowModalRoot<UserInfoDialogBox>(
+            new UserInfoDialogBox.Argument { UserContext = G.UserContext });
     }
 
     public void OnLogoutButtonClick()

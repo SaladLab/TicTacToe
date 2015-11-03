@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Linq;
+using System.Text;
 
 #region IUserData
 
@@ -377,7 +378,7 @@ namespace Domain.Data
                 yield return new KeyValuePair<object, ITrackable>("Achivements", trackableAchivements);
         }
 
-        private TrackableUserData _Data;
+        private TrackableUserData _Data = new TrackableUserData();
 
         [ProtoMember(1)] public TrackableUserData Data
         {
@@ -401,7 +402,7 @@ namespace Domain.Data
             set { _Data = (TrackableUserData)value; }
         }
 
-        private TrackableDictionary<int, UserAchievement> _Achivements;
+        private TrackableDictionary<int, UserAchievement> _Achivements = new TrackableDictionary<int, UserAchievement>();
 
         [ProtoMember(2)] public TrackableDictionary<int, UserAchievement> Achivements
         {
@@ -432,21 +433,50 @@ namespace Domain.Data
         [ProtoMember(1)] public TrackablePocoTracker<IUserData> DataTracker { get; set; } = new TrackablePocoTracker<IUserData>();
         [ProtoMember(2)] public TrackableDictionaryTracker<int, UserAchievement> AchivementsTracker { get; set; } = new TrackableDictionaryTracker<int, UserAchievement>();
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("{ ");
+            var first = true;
+            if (DataTracker != null && DataTracker.HasChange)
+            {
+                if (first)
+                    first = false;
+                else
+                    sb.Append(", ");
+                sb.Append("Data:");
+                sb.Append(DataTracker);
+            }
+            if (AchivementsTracker != null && AchivementsTracker.HasChange)
+            {
+                if (first)
+                    first = false;
+                else
+                    sb.Append(", ");
+                sb.Append("Achivements:");
+                sb.Append(AchivementsTracker);
+            }
+            sb.Append(" }");
+            return sb.ToString();
+        }
+
         public bool HasChange
         {
             get
             {
                 return
-                    DataTracker.HasChange ||
-                    AchivementsTracker.HasChange ||
+                    (DataTracker != null && DataTracker.HasChange) ||
+                    (AchivementsTracker != null && AchivementsTracker.HasChange) ||
                     false;
             }
         }
 
         public void Clear()
         {
-            DataTracker.Clear();
-            AchivementsTracker.Clear();
+            if (DataTracker != null)
+                DataTracker.Clear();
+            if (AchivementsTracker != null)
+                AchivementsTracker.Clear();
         }
 
         public void ApplyTo(object trackable)
@@ -456,8 +486,10 @@ namespace Domain.Data
 
         public void ApplyTo(IUserContext trackable)
         {
-            DataTracker.ApplyTo(trackable.Data);
-            AchivementsTracker.ApplyTo(trackable.Achivements);
+            if (DataTracker != null)
+                DataTracker.ApplyTo(trackable.Data);
+            if (AchivementsTracker != null)
+                AchivementsTracker.ApplyTo(trackable.Achivements);
         }
 
         public void ApplyTo(ITracker tracker)
@@ -472,8 +504,10 @@ namespace Domain.Data
 
         public void ApplyTo(TrackableUserContextTracker tracker)
         {
-            DataTracker.ApplyTo(tracker.DataTracker);
-            AchivementsTracker.ApplyTo(tracker.AchivementsTracker);
+            if (DataTracker != null)
+                DataTracker.ApplyTo(tracker.DataTracker);
+            if (AchivementsTracker != null)
+                AchivementsTracker.ApplyTo(tracker.AchivementsTracker);
         }
 
         public void RollbackTo(object trackable)
@@ -483,8 +517,10 @@ namespace Domain.Data
 
         public void RollbackTo(IUserContext trackable)
         {
-            DataTracker.RollbackTo(trackable.Data);
-            AchivementsTracker.RollbackTo(trackable.Achivements);
+            if (DataTracker != null)
+                DataTracker.RollbackTo(trackable.Data);
+            if (AchivementsTracker != null)
+                AchivementsTracker.RollbackTo(trackable.Achivements);
         }
 
         public void RollbackTo(ITracker tracker)
@@ -499,8 +535,10 @@ namespace Domain.Data
 
         public void RollbackTo(TrackableUserContextTracker tracker)
         {
-            DataTracker.RollbackTo(tracker.DataTracker);
-            AchivementsTracker.RollbackTo(tracker.AchivementsTracker);
+            if (DataTracker != null)
+                DataTracker.RollbackTo(tracker.DataTracker);
+            if (AchivementsTracker != null)
+                AchivementsTracker.RollbackTo(tracker.AchivementsTracker);
         }
     }
 }

@@ -131,7 +131,6 @@ namespace GameServer
             var notificationMessage = message as NotificationMessage;
             if (notificationMessage != null)
             {
-                Console.WriteLine(">> " + notificationMessage.InvokePayload.GetType().Name);
                 _connection.Send(new Packet
                 {
                     Type = PacketType.Notification,

@@ -35,7 +35,7 @@ public class ApplicationComponent : MonoBehaviour, IUserEventObserver
 
     public void UserContextChange(TrackableUserContextTracker userContextTracker)
     {
-        G.Logger.InfoFormat("UserContext {0}", userContextTracker);
+        G.Logger.InfoFormat("UserContext: {0}", userContextTracker);
         userContextTracker.ApplyTo(G.UserContext);
     }
 }

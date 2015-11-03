@@ -132,11 +132,11 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TrackableData, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.0.1.0.0-dev20151026-2\lib\net45\TrackableData.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.0.1.0.0-dev20151103\lib\net45\TrackableData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TrackableData-MongoDB, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData-MongoDB.0.1.0.0-dev20151026-2\lib\net45\TrackableData-MongoDB.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData-MongoDB.0.1.0.0-dev20151103\lib\net45\TrackableData-MongoDB.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">

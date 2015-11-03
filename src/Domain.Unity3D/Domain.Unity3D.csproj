@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.props')" />
-  <Import Project="..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.props')" />
-  <Import Project="..\..\packages\Akka.Interfaced.Templates.0.1.0.0-dev20151026-2\build\Akka.Interfaced.Templates.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.0.1.0.0-dev20151026-2\build\Akka.Interfaced.Templates.props')" />
+  <Import Project="..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.props')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.props')" />
   <PropertyGroup>
     <AkkaInterfacedProtobuf>1</AkkaInterfacedProtobuf>
     <NuGetPackageImportStamp>
@@ -40,11 +39,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Akka.Interfaced-Base.Net35, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.1.0.0-dev20151102\lib\net35\Akka.Interfaced-Base.Net35.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.1.0.0-dev20151103\lib\net35\Akka.Interfaced-Base.Net35.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-SlimClient.Net35, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-SlimClient.0.1.0.0-dev20151102\lib\net35\Akka.Interfaced-SlimClient.Net35.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-SlimClient.0.1.0.0-dev20151103\lib\net35\Akka.Interfaced-SlimClient.Net35.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NetLegacySupport.Action, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -67,11 +66,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="TrackableData, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.0.1.0.0-dev20151026-2\lib\net35\TrackableData.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.0.1.0.0-dev20151103\lib\net35\TrackableData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TrackableData-Protobuf, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData-Protobuf.0.1.0.0-dev20151026-2\lib\net35\TrackableData-Protobuf.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData-Protobuf.0.1.0.0-dev20151103\lib\net35\TrackableData-Protobuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -141,10 +140,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.props'))" />
-    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.props'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.targets'))" />
+    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.props'))" />
+    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.props'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.targets'))" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>"$(SolutionDir)tools\protobuf-net\precompile.exe" "$(TargetPath)" -o:DomainProtobufSerializer.dll -t:DomainProtobufSerializer "-f:.NETFramework\v3.5\Profile\Unity Subset v3.5" -autosurrogate
@@ -152,8 +151,8 @@ COPY /Y "$(TargetDir)DomainProtobufSerializer.dll" "$(SolutionDir)src\GameClient
 COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Script\Domain"
 </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151026-2\build\TrackableData.Templates.targets')" />
-  <Import Project="..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151102\build\Akka.Interfaced.Templates.SlimClient.targets')" />
+  <Import Project="..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.1.0.0-dev20151103\build\TrackableData.Templates.targets')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.SlimClient.0.1.0.0-dev20151103\build\Akka.Interfaced.Templates.SlimClient.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Domain.targets.
   <Target Name="BeforeBuild">

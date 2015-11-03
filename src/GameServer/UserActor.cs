@@ -7,6 +7,7 @@ using Akka.Interfaced;
 using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;
+using NLog.Targets.Wrappers;
 
 namespace GameServer
 {
@@ -106,6 +107,7 @@ namespace GameServer
             // Let's exit from the game !
 
             await game.Leave(_id);
+            // TODO: Remove observer when leave
 
             // Unbind an player actor with client session
 
@@ -118,11 +120,53 @@ namespace GameServer
         void IGameUserObserver.Begin(long gameId)
         {
             _logger.TraceFormat("IGameUserObserver.Begin {0}", gameId);
+
+            _userContext.Data.PlayCount += 1;
+            _userContext.Achivements.TryAchieved(AchievementKey.FirstPlay);
+            _userContext.Achivements.TryProgress(AchievementKey.Play10Times, 1, 10);
+
+            FlushUserContext();
         }
 
         void IGameUserObserver.End(long gameId, GameResult result)
         {
             _logger.TraceFormat("IGameUserObserver.End {0} {1}", gameId, result);
+
+            switch (result)
+            {
+                case GameResult.Win:
+                    _userContext.Data.WinCount += 1;
+                    _userContext.Achivements.TryAchieved(AchievementKey.FirstWin);
+                    _userContext.Achivements.TryProgress(AchievementKey.Win10Times, 1, 10);
+                    break;
+
+                case GameResult.Lose:
+                    _userContext.Data.LoseCount += 1;
+                    _userContext.Achivements.TryAchieved(AchievementKey.FirstLose);
+                    _userContext.Achivements.TryProgress(AchievementKey.Lose10Times, 1, 10);
+                    break;
+
+                case GameResult.Draw:
+                    _userContext.Data.DrawCount += 1;
+                    _userContext.Achivements.TryAchieved(AchievementKey.FirstDraw);
+                    _userContext.Achivements.TryProgress(AchievementKey.Draw10Times, 1, 10);
+                    break;
+            }
+
+            FlushUserContext();
+        }
+
+        private void FlushUserContext()
+        {
+            // Notify changes to Client
+            _userEventObserver.UserContextChange(_userContext.Tracker);
+
+            // Notify change to MongoDB
+            MongoDbStorage.UserContextMapper.SaveAsync(MongoDbStorage.Instance.UserCollection,
+                                                       _userContext.Tracker, _id);
+
+            // Clear changes
+            _userContext.Tracker = new TrackableUserContextTracker();
         }
     }
 }

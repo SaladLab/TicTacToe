@@ -49,7 +49,6 @@ namespace GameServer
 
         int IFilter.Order => 0;
 
-
         void IPreHandleFilter.OnPreHandle(PreHandleFilterContext context)
         {
             var invokeJson = JsonConvert.SerializeObject(context.Request.InvokePayload, _settings);
