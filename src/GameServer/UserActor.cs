@@ -18,6 +18,7 @@ namespace GameServer
         private IActorRef _clientSession;
         private long _id;
         private TrackableUserContext _userContext;
+        private UserEventObserver _userEventObserver;
         private Dictionary<long, GameRef> _joinedGameMap;
 
         public UserActor(ClusterNodeContext clusterContext, IActorRef clientSession,
@@ -28,6 +29,7 @@ namespace GameServer
             _clientSession = clientSession;
             _id = id;
             _userContext = userContext;
+            _userEventObserver = new UserEventObserver(clientSession, observerId);
             _joinedGameMap = new Dictionary<long, GameRef>();
         }
 

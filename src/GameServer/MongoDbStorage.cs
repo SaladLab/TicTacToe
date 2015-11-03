@@ -1,4 +1,5 @@
 ﻿using Domain.Data;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using TrackableData.MongoDB;
 
@@ -16,6 +17,8 @@ namespace GameServer
         public MongoClient Client { get; }
 
         public IMongoDatabase Database => Client.GetDatabase("TicTacToe");
+
+        public IMongoCollection<BsonDocument> UserCollection => Database.GetCollection<BsonDocument>("User");
 
         public readonly static TrackableContainerMongoDbMapper<IUserContext> UserContextMapper =
             new TrackableContainerMongoDbMapper<IUserContext>();

@@ -71,8 +71,16 @@ namespace GameServer
             {
                 userId = userMap.UserId;
                 userContext = (TrackableUserContext)await MongoDbStorage.UserContextMapper.LoadAsync(
-                    MongoDbStorage.Instance.Database.GetCollection<BsonDocument>("User"), 
+                    MongoDbStorage.Instance.UserCollection, 
                     userId);
+
+                userContext.SetDefaultTracker();
+                userContext.Data.LoginCount += 1;
+                userContext.Data.LastLoginTime = DateTime.UtcNow;
+
+                await MongoDbStorage.UserContextMapper.SaveAsync(MongoDbStorage.Instance.UserCollection,
+                                                                 userContext.Tracker, userId);
+                userContext.Tracker.Clear();
             }
             else
             {
@@ -80,8 +88,10 @@ namespace GameServer
                 userId = created.Item1;
                 userContext = created.Item2;
                 await MongoDbStorage.UserContextMapper.CreateAsync(
-                    MongoDbStorage.Instance.Database.GetCollection<BsonDocument>("User"),
+                    MongoDbStorage.Instance.UserCollection,
                     userContext, userId);
+                await accountUserMap.InsertOneAsync(new AccountUserMapInfo { Id = accountId, UserId = userId });
+                userContext.SetDefaultTracker();
             }
 
             // Make UserActor
