@@ -15,6 +15,14 @@ namespace Domain.Interfaced
         Aborted,
     }
 
+    public enum GameResult
+    {
+        None,
+        Win,
+        Lose,
+        Draw,
+    }
+
     [ProtoContract]
     public class GameInfo
     {

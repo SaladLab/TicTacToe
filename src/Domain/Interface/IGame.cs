@@ -6,7 +6,8 @@ namespace Domain.Interfaced
 {
     public interface IGame : IInterfacedActor
     {
-        Task<Tuple<int, GameInfo>> Join(long userId, string userName, IGameObserver observer);
+        Task<Tuple<int, GameInfo>> Join(long userId, string userName,
+                                        IGameObserver observer, IGameUserObserver observerForUserActor);
         Task Leave(long userId);
     }
 }

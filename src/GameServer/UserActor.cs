@@ -11,7 +11,7 @@ using Domain.Interfaced;
 namespace GameServer
 {
     [Log]
-    public class UserActor : InterfacedActor<UserActor>, IUser
+    public class UserActor : InterfacedActor<UserActor>, IUser, IGameUserObserver
     {
         private ILog _logger;
         private ClusterNodeContext _clusterContext;
@@ -76,7 +76,12 @@ namespace GameServer
             // Let's enter the game !
 
             var observer = new GameObserver(_clientSession, observerId);
-            var joinRet = await game.Join(_id, _userContext.Data.Name, observer);
+
+            var observerIdForMe = IssueObserverId();
+            var observerForMe  = new GameUserObserver(Self, observerIdForMe);
+            AddObserver(observerIdForMe, this);
+
+            var joinRet = await game.Join(_id, _userContext.Data.Name, observer, observerForMe);
 
             // Bind an player actor with client session
 
@@ -108,6 +113,16 @@ namespace GameServer
                 new ClientSession.UnbindActorRequestMessage { Actor = game.Actor });
 
             _joinedGameMap.Remove(gameId);
+        }
+
+        void IGameUserObserver.Begin(long gameId)
+        {
+            _logger.TraceFormat("IGameUserObserver.Begin {0}", gameId);
+        }
+
+        void IGameUserObserver.End(long gameId, GameResult result)
+        {
+            _logger.TraceFormat("IGameUserObserver.End {0} {1}", gameId, result);
         }
     }
 }

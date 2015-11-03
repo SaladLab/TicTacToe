@@ -35,7 +35,7 @@ namespace GameServer
             {
                 var observerId = IssueObserverId();
                 AddObserver(observerId, this);
-                var ret = await _game.Join(_userId, _userName, new GameObserver(Self, observerId));
+                var ret = await _game.Join(_userId, _userName, new GameObserver(Self, observerId), null);
                 _gamePlayer = new GamePlayerRef(_game.Actor, this, null);
                 _playerId = ret.Item1;
             }

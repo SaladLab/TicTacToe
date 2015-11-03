@@ -37,12 +37,13 @@ namespace Domain.Interfaced
             [ProtoMember(1)] public System.Int64 userId;
             [ProtoMember(2)] public System.String userName;
             [ProtoMember(3)] public Domain.Interfaced.GameObserver observer;
+            [ProtoMember(4)] public Domain.Interfaced.GameUserObserver observerForUserActor;
 
             public Type GetInterfaceType() { return typeof(IGame); }
 
             public async Task<IValueGetable> InvokeAsync(object target)
             {
-                var __v = await((IGame)target).Join(userId, userName, observer);
+                var __v = await((IGame)target).Join(userId, userName, observer, observerForUserActor);
                 return (IValueGetable)(new Join_Return { v = (System.Tuple<System.Int32, Domain.Interfaced.GameInfo>)__v });
             }
         }
@@ -74,7 +75,7 @@ namespace Domain.Interfaced
 
     public interface IGame_NoReply
     {
-        void Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer);
+        void Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor);
         void Leave(System.Int64 userId);
     }
 
@@ -117,11 +118,11 @@ namespace Domain.Interfaced
             return new GameRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>> Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer)
+        public Task<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>> Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer }
+                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer, observerForUserActor = (Domain.Interfaced.GameUserObserver)observerForUserActor }
             };
             return SendRequestAndReceive<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>>(requestMessage);
         }
@@ -135,11 +136,11 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IGame_NoReply.Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer)
+        void IGame_NoReply.Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor)
         {
             var requestMessage = new RequestMessage
             {
-                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer }
+                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer, observerForUserActor = (Domain.Interfaced.GameUserObserver)observerForUserActor }
             };
             SendRequest(requestMessage);
         }
@@ -1438,6 +1439,82 @@ namespace Domain.Interfaced
         public void Abort()
         {
             var payload = new IGameObserver_PayloadTable.Abort_Invoke {  };
+            Notify(payload);
+        }
+    }
+}
+
+#endregion
+
+#region Domain.Interfaced.IGameUserObserver
+
+namespace Domain.Interfaced
+{
+    public static class IGameUserObserver_PayloadTable
+    {
+        [ProtoContract, TypeAlias]
+        public class Begin_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int64 gameId;
+
+            public void Invoke(object target)
+            {
+                ((IGameUserObserver)target).Begin(gameId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class End_Invoke : IInvokable
+        {
+            [ProtoMember(1)] public System.Int64 gameId;
+            [ProtoMember(2)] public Domain.Interfaced.GameResult result;
+
+            public void Invoke(object target)
+            {
+                ((IGameUserObserver)target).End(gameId, result);
+            }
+        }
+    }
+
+    [ProtoContract, TypeAlias]
+    public class GameUserObserver : InterfacedObserver, IGameUserObserver
+    {
+        [ProtoMember(1)] private ActorRefBase _actor
+        {
+            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
+            set { Channel = new ActorNotificationChannel(value); }
+        }
+
+        [ProtoMember(2)] private int _observerId
+        {
+            get { return ObserverId; }
+            set { ObserverId = value; }
+        }
+
+        private GameUserObserver()
+            : base(null, 0)
+        {
+        }
+
+        public GameUserObserver(IActorRef target, int observerId)
+            : base(new ActorNotificationChannel(target), observerId)
+        {
+        }
+
+        public GameUserObserver(INotificationChannel channel, int observerId)
+            : base(channel, observerId)
+        {
+        }
+
+        public void Begin(System.Int64 gameId)
+        {
+            var payload = new IGameUserObserver_PayloadTable.Begin_Invoke { gameId = gameId };
+            Notify(payload);
+        }
+
+        public void End(System.Int64 gameId, Domain.Interfaced.GameResult result)
+        {
+            var payload = new IGameUserObserver_PayloadTable.End_Invoke { gameId = gameId, result = result };
             Notify(payload);
         }
     }

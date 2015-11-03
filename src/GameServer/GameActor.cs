@@ -23,6 +23,7 @@ namespace GameServer
             public long UserId;
             public string UserName;
             public GameObserver Observer;
+            public GameUserObserver ObserverForUserActor;
         }
 
         private List<Player> _players = new List<Player>();
@@ -51,12 +52,21 @@ namespace GameServer
             };
         }
 
-        private void NotifyToAllObservers(Action<GameObserver> notifyAction)
+        private void NotifyToAllObservers(Action<int, GameObserver> notifyAction)
         {
-            foreach (var player in _players)
+            for (var i = 0; i < _players.Count; i++)
             {
-                if (player.Observer != null)
-                    notifyAction(player.Observer);
+                if (_players[i].Observer != null)
+                    notifyAction(i + 1, _players[i].Observer);
+            }
+        }
+
+        private void NotifyToAllObserversForUserActor(Action<int, GameUserObserver> notifyAction)
+        {
+            for (var i = 0; i < _players.Count; i++)
+            {
+                if (_players[i].ObserverForUserActor != null)
+                    notifyAction(i + 1, _players[i].ObserverForUserActor);
             }
         }
 
@@ -78,7 +88,8 @@ namespace GameServer
 
             ScheduleTurnTimeout(_movePositions.Count);
 
-            NotifyToAllObservers(o => o.Begin(_currentPlayerId));
+            NotifyToAllObservers((id, o) => o.Begin(_currentPlayerId));
+            NotifyToAllObserversForUserActor((id, o) => o.Begin(_id));
         }
 
         private class TurnTimeout
@@ -117,7 +128,18 @@ namespace GameServer
             _state = GameState.Ended;
             _currentPlayerId = 0;
 
-            NotifyToAllObservers(o => o.End(winnerPlayerId));
+            NotifyToAllObservers((id, o) => o.End(winnerPlayerId));
+
+            if (winnerPlayerId == 0)
+            {
+                NotifyToAllObserversForUserActor(
+                    (id, o) => o.End(_id, GameResult.Draw));
+            }
+            else
+            {
+                NotifyToAllObserversForUserActor(
+                    (id, o) => o.End(_id, id == winnerPlayerId ? GameResult.Win : GameResult.Lose));
+            }
 
             if (_turnTimeout != null)
             {
@@ -127,7 +149,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        GameInfo Join(long userId, string userName, IGameObserver observer)
+        Tuple<int, GameInfo> Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
         {
             if (_state != GameState.WaitingForPlayers)
                 throw new ResultException(ResultCodeType.GameStarted);
@@ -136,14 +158,20 @@ namespace GameServer
                 throw new ResultException(ResultCodeType.GamePlayerFull);
 
             var playerId = _players.Count + 1;
-            NotifyToAllObservers(o => o.Join(playerId, userId, userName));
+            NotifyToAllObservers((id, o) => o.Join(playerId, userId, userName));
 
-            _players.Add(new Player { UserId = userId, UserName = userName, Observer = (GameObserver)observer });
+            _players.Add(new Player
+            {
+                UserId = userId,
+                UserName = userName,
+                Observer = (GameObserver)observer,
+                ObserverForUserActor = (GameUserObserver)observerForUserActor,
+            });
 
             if (_players.Count == 2)
                 RunTask(() => BeginGame());
 
-            return GetGameInfo();
+            return Tuple.Create(playerId, GetGameInfo());
         }
 
         [ExtendedHandler]
@@ -154,13 +182,14 @@ namespace GameServer
             var player = _players[playerId - 1];
             _players[playerId - 1].Observer = null;
 
-            NotifyToAllObservers(o => o.Leave(playerId));
+            NotifyToAllObservers((id, o) => o.Leave(playerId));
 
             if (_state != GameState.Ended)
             {
                 // TODO: STATE
                 _state = GameState.Aborted;
-                NotifyToAllObservers(o => o.Abort());
+                NotifyToAllObservers((id, o) => o.Abort());
+                NotifyToAllObserversForUserActor((id, o) => o.End(_id, GameResult.None));
             }
 
             if (_players.Count(p => p.Observer != null) == 0)
@@ -196,7 +225,7 @@ namespace GameServer
             var drawed = _movePositions.Count >= Rule.BoardSize * Rule.BoardSize;
             var nextTurnPlayerId = (matchedRow == null && drawed == false) ? 3 - _currentPlayerId : 0;
 
-            NotifyToAllObservers(o => o.MakeMove(_currentPlayerId, pos, nextTurnPlayerId));
+            NotifyToAllObservers((id, o) => o.MakeMove(_currentPlayerId, pos, nextTurnPlayerId));
 
             if (matchedRow != null)
             {
