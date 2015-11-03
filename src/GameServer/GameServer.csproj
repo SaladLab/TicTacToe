@@ -39,23 +39,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.0.1.0.0-dev20151102\lib\net45\Akka.Interfaced.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-Base, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.1.0.0-dev20151102\lib\net45\Akka.Interfaced-Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced-Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-ProtobufSerializer, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-ProtobufSerializer.0.1.0.0-dev20151102\lib\net45\Akka.Interfaced-ProtobufSerializer.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-ProtobufSerializer.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced-ProtobufSerializer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-SlimSocketBase, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-SlimSocketBase.0.1.0.0-dev20151102\lib\net45\Akka.Interfaced-SlimSocketBase.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-SlimSocketBase.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced-SlimSocketBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-SlimSocketServer, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-SlimSocketServer.0.1.0.0-dev20151102\lib\net45\Akka.Interfaced-SlimSocketServer.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-SlimSocketServer.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced-SlimSocketServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.0.4.12, Culture=neutral, processorArchitecture=MSIL">

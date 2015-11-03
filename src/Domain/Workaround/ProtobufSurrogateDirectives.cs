@@ -4,8 +4,8 @@ using TrackableData.Protobuf;
 
 namespace Domain.Workaround
 {
-    [ProtoContract(ImplicitFields = ImplicitFields.AllFields)]
-    public class ProtobufPrecompileDirectives
+    [ProtoContract]
+    public class ProtobufSurrogateDirectives
     {
         public TrackableDictionaryTrackerSurrogate<int, UserAchievement> T1;
     }

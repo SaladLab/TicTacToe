@@ -12,6 +12,7 @@ using Akka.Interfaced.SlimSocketBase;
 using Akka.Interfaced.SlimSocketServer;
 using TypeAlias;
 using System.Reflection;
+using Akka.Interfaced.ProtobufSerializer;
 using Akka.Remote.Serialization;
 using Common.Logging;
 using Domain.Interfaced;
@@ -75,6 +76,23 @@ namespace GameServer
             _boundActorInverseMap = new Dictionary<IActorRef, int>();
         }
 
+        private static PacketSerializer s_packetSerializer;
+
+        static PacketSerializer GetPacketSerializer()
+        {
+            if (s_packetSerializer == null)
+            {
+                var typeModel = TypeModel.Create();
+                AutoSurrogate.Register(typeModel);
+
+                s_packetSerializer = new PacketSerializer(
+                    new PacketSerializerBase.Data(
+                        new ProtoBufMessageSerializer(typeModel),
+                        new TypeAliasTable()));
+            }
+            return s_packetSerializer;
+        }
+
         protected override void PreStart()
         {
             _self = Self;
@@ -89,10 +107,7 @@ namespace GameServer
             _connection.Received += OnConnectionReceive;
             _connection.Settings = new TcpConnectionSettings
             {
-                PacketSerializer = new PacketSerializer(
-                    new PacketSerializerBase.Data(
-                        new ProtoBufMessageSerializer(RuntimeTypeModel.Default), // TODO: FIXIT
-                        new TypeAliasTable()))
+                PacketSerializer = GetPacketSerializer()
             };
 
             _connection.Open(_socket);
