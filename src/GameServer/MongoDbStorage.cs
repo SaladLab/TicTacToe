@@ -9,15 +9,16 @@ namespace GameServer
     {
         public static MongoDbStorage Instance { get; set; }
 
-        public MongoDbStorage(string connectionString)
+        public MongoDbStorage(string connectionString, string databaseName = "TicTacToe")
         {
             Client = new MongoClient(connectionString);
+            DatabaseName = databaseName;
         }
 
         public MongoClient Client { get; }
+        public string DatabaseName { get; }
 
-        public IMongoDatabase Database => Client.GetDatabase("TicTacToe");
-
+        public IMongoDatabase Database => Client.GetDatabase(DatabaseName);
         public IMongoCollection<BsonDocument> UserCollection => Database.GetCollection<BsonDocument>("User");
 
         public readonly static TrackableContainerMongoDbMapper<IUserContext> UserContextMapper =

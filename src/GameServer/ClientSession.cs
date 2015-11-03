@@ -98,7 +98,7 @@ namespace GameServer
             _self = Self;
             BindActor(
                 Context.System.ActorOf(Props.Create<UserLoginActor>(
-                    _systemContext, Self, _socket.RemoteEndPoint)),
+                    _systemContext, Self, _socket?.RemoteEndPoint)),
                 typeof(IUserLogin));
 
             // _systemContext.ClientGateway.OnSessionCreated(this);
@@ -110,7 +110,8 @@ namespace GameServer
                 PacketSerializer = GetPacketSerializer()
             };
 
-            _connection.Open(_socket);
+            if (_socket != null)
+                _connection.Open(_socket);
         }
 
         protected override void PostStop()
