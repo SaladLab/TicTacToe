@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Akka.Cluster.Utility;
 using Xunit;
 
 namespace GameServer.Tests
@@ -27,13 +28,11 @@ namespace GameServer.Tests
 
             var context = new ClusterNodeContext { System = system };
 
-            //var clusterNode = system.ActorOf(Props.Create(() => new ClusterNodeActor(context)));
-            var gameDirectory = system.ActorOf(Props.Create<GameDirectoryActor>(context), "game_directory");
-            var gamePairMaker = system.ActorOf(Props.Create<GamePairMakerActor>(context), "game_pair_maker");
-            var userDirectory = system.ActorOf(Props.Create<UserDirectoryActor>(context), "user_directory");
-            var gameDirectoryWworker = system.ActorOf(Props.Create<GameDirectoryWorkerActor>(context), "game_directory_worker");
+            var gameDirectory = system.ActorOf(Props.Create<GameDirectoryActor>(context));
+            var gamePairMaker = system.ActorOf(Props.Create<GamePairMakerActor>(context));
+            var userDirectory = system.ActorOf(Props.Create<UserDirectoryActor>(context));
 
-            context.ClusterNodeActor = system.DeadLetters;
+            context.ClusterActorDiscovery = system.ActorOf(Props.Create(() => new ClusterActorDiscovery(null)));
             context.GameDirectory = new GameDirectoryRef(gameDirectory);
             context.GamePairMaker = new GamePairMakerRef(gamePairMaker);
             context.UserDirectory = new UserDirectoryRef(userDirectory);

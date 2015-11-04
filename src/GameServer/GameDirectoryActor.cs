@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Common.Logging;
 using Domain.Interfaced;
@@ -16,35 +17,33 @@ namespace GameServer
         private int _lastWorkIndex = -1;
         private long _lastGameId;
         private Dictionary<long, Tuple<GameDirectoryWorkerRef, IGame>> _gameTable;
-        private List<Tuple<string, IUserPairingObserver>> _pairingQueue;
 
         public GameDirectoryActor(ClusterNodeContext clusterContext)
         {
             _clusterContext = clusterContext;
 
-            _clusterContext.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.ActorUp { Actor = Self, Type = typeof(IGameDirectory) },
+            _clusterContext.ClusterActorDiscovery.Tell(
+                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGameDirectory)),
                 Self);
-            _clusterContext.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.WatchActor { Type = typeof(IGameDirectoryWorker) },
+            _clusterContext.ClusterActorDiscovery.Tell(
+                new ClusterActorDiscoveryMessages.MonitorActor(nameof(IGameDirectoryWorker)),
                 Self);
 
             _workers = new List<GameDirectoryWorkerRef>();
             _gameTable = new Dictionary<long, Tuple<GameDirectoryWorkerRef, IGame>>();
-            _pairingQueue = new List<Tuple<string, IUserPairingObserver>>();
         }
 
         [MessageHandler]
-        private void OnMessage(ActorDiscoveryMessage.ActorUp message)
+        private void OnMessage(ClusterActorDiscoveryMessages.ActorUp message)
         {
             _workers.Add(new GameDirectoryWorkerRef(message.Actor, this, null));
             _logger.InfoFormat("Registered Actor({0})", message.Actor.Path);
         }
 
         [MessageHandler]
-        private void OnMessage(ActorDiscoveryMessage.ActorDown message)
+        private void OnMessage(ClusterActorDiscoveryMessages.ActorDown message)
         {
-            _workers.RemoveAll(w => w.Actor == message.Actor);
+            _workers.RemoveAll(w => w.Actor.Equals(message.Actor));
             _logger.InfoFormat("Unregistered Actor({0})", message.Actor.Path);
         }
 

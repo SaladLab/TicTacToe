@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Common.Logging;
 using Domain.Interfaced;
@@ -29,8 +30,8 @@ namespace GameServer
         {
             _clusterContext = clusterContext;
 
-            _clusterContext.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.ActorUp { Actor = Self, Type = typeof(IGamePairMaker) },
+            _clusterContext.ClusterActorDiscovery.Tell(
+                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGamePairMaker)),
                 Self);
 
             _pairingQueue = new List<QueueEntity>();

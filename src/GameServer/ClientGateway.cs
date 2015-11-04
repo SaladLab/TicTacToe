@@ -36,10 +36,6 @@ namespace GameServer
         {
             _context = context;
 
-            _context.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.WatchActor { Type = typeof(IUserDirectory) },
-                Self);
-
             Receive<ClientGatewayMessage.Start>(m => Handle(m));
             Receive<ClientGatewayMessage.Accept>(m => Handle(m));
             Receive<ShutdownMessage>(m => Handle(m));

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Domain.Interfaced;
 
@@ -14,8 +15,8 @@ namespace GameServer
         {
             _clusterContext = clusterContext;
 
-            _clusterContext.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.ActorUp { Actor = Self, Type = typeof(IUserDirectory) },
+            _clusterContext.ClusterActorDiscovery.Tell(
+                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IUserDirectory)),
                 Self);
 
             _userTable = new Dictionary<long, IUser>();

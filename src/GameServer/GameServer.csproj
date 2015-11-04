@@ -38,6 +38,10 @@
       <HintPath>..\..\packages\Akka.Cluster.1.0.4.12-beta\lib\net45\Akka.Cluster.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Akka.Cluster.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Cluster.Utility.0.1.0-dev20151104\lib\net45\Akka.Cluster.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Akka.Interfaced, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Akka.Interfaced.0.1.0.0-dev20151103\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
@@ -148,7 +152,7 @@
     <Compile Include="Authenticator.cs" />
     <Compile Include="ClientGateway.cs" />
     <Compile Include="ClientSession.cs" />
-    <Compile Include="ClusterNodeActor.cs" />
+    <Compile Include="ClusterNodeContextUpdater.cs" />
     <Compile Include="ClusterNodeContext.cs" />
     <Compile Include="GameActor.cs" />
     <Compile Include="GameBotActor.cs" />

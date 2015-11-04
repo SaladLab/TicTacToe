@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Interfaced;
 using Akka.Actor;
 using System.Collections.Generic;
+using Akka.Cluster.Utility;
 using Common.Logging;
 using Domain.Interfaced;
 
@@ -11,42 +12,20 @@ namespace GameServer
     public class GameDirectoryWorkerActor : InterfacedActor<GameDirectoryWorkerActor>, IGameDirectoryWorker
     {
         private ILog _logger = LogManager.GetLogger("GameDirectoryWorker");
-        private readonly ClusterNodeContext _context;
-        private GameDirectoryRef _gameDirectory;
+        private readonly ClusterNodeContext _clusterContext;
         private readonly Dictionary<long, IGame> _gameTable;
         private int _gameActorCount;
         private bool _isStopped;
 
-        public GameDirectoryWorkerActor(ClusterNodeContext context)
+        public GameDirectoryWorkerActor(ClusterNodeContext clusterContext)
         {
-            _context = context;
+            _clusterContext = clusterContext;
 
-            _context.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.ActorUp { Actor = Self, Type = typeof(IGameDirectoryWorker) },
-                Self);
-            _context.ClusterNodeActor.Tell(
-                new ActorDiscoveryMessage.WatchActor { Type = typeof(IGameDirectory) },
+            _clusterContext.ClusterActorDiscovery.Tell(
+                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGameDirectoryWorker)),
                 Self);
 
             _gameTable = new Dictionary<long, IGame>();
-        }
-
-        [MessageHandler]
-        private void OnMessage(ActorDiscoveryMessage.ActorUp message)
-        {
-            _gameDirectory = new GameDirectoryRef(message.Actor, this, null);
-            _logger.InfoFormat("Actor({0}) Known to cluster", message.Actor.Path);
-
-        }
-
-        [MessageHandler]
-        private void OnMessage(ActorDiscoveryMessage.ActorDown message)
-        {
-            if (_gameDirectory != null && _gameDirectory.Actor.Equals(message.Actor))
-            {
-                _gameDirectory = null;
-                _logger.InfoFormat("Lost from GameDirectory({0})", message.Actor.Path);
-            }
         }
 
         [MessageHandler]
@@ -62,6 +41,7 @@ namespace GameServer
 
             if (_gameActorCount > 0)
             {
+                // TODO: specific target only
                 Context.ActorSelection("*").Tell(InterfacedPoisonPill.Instance);
             }
             else
@@ -85,7 +65,7 @@ namespace GameServer
             IActorRef gameActor;
             try
             {
-                gameActor = Context.ActorOf(Props.Create(() => new GameActor(_context, id, param)));
+                gameActor = Context.ActorOf(Props.Create(() => new GameActor(_clusterContext, id, param)));
                 Context.Watch(gameActor);
                 _gameActorCount += 1;
             }
@@ -98,7 +78,7 @@ namespace GameServer
 
             if (param.WithBot)
             {
-                Context.ActorOf(Props.Create<GameBotActor>(_context, new GameRef(gameActor), 0, "bot"));
+                Context.ActorOf(Props.Create<GameBotActor>(_clusterContext, new GameRef(gameActor), 0, "bot"));
             }
 
             // register it at local directory and return

@@ -5,6 +5,8 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Cluster;
+using Akka.Cluster.Utility;
 using Akka.Configuration;
 using Akka.Interfaced;
 using Common.Logging;
@@ -114,11 +116,15 @@ namespace GameServer
 
         private static List<IActorRef> InitClusterNode(ActorSystem system, int clientPort, params string[] roles)
         {
-            var context = new ClusterNodeContext { System = system };
             DeadRequestProcessingActor.Install(system);
-            context.ClusterNodeActor = system.ActorOf(
-                Props.Create<ClusterNodeActor>(context),
-                "cluster");
+
+            var cluster = Cluster.Get(system);
+            var context = new ClusterNodeContext { System = system };
+
+            context.ClusterActorDiscovery = 
+                system.ActorOf(Props.Create(() => new ClusterActorDiscovery(cluster)), "ClusterActorDiscovery");
+            context.ClusterNodeContextUpdater =
+                system.ActorOf(Props.Create(() => new ClusterNodeContextUpdater(context)), "ClusterNodeContextUpdater");
 
             var rootActors = new List<IActorRef>();
             foreach (var role in roles)
