@@ -13,7 +13,6 @@ using Akka.Interfaced.SlimSocketServer;
 using TypeAlias;
 using System.Reflection;
 using Akka.Interfaced.ProtobufSerializer;
-using Akka.Remote.Serialization;
 using Common.Logging;
 using Domain.Interfaced;
 using ProtoBuf.Meta;
@@ -116,7 +115,8 @@ namespace GameServer
 
         protected override void PostStop()
         {
-            _connection.Close();
+            if (_socket != null)
+                _connection.Close();
 
             lock (_boundActorLock)
             {

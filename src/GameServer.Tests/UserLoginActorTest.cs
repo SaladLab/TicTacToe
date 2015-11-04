@@ -10,47 +10,48 @@ using Xunit;
 
 namespace GameServer.Tests
 {
-    public class UserLoginActorTest : IClassFixture<MongoDbStorageFixture>
+    public class UserLoginActorTest : IClassFixture<MongoDbStorageFixture>, IClassFixture<ClusterContextFixture>
     {
-        private ClusterNodeContext PrepareTest()
+        private ClusterNodeContext _clusterContext;
+
+        public UserLoginActorTest(ClusterContextFixture clusterContext)
         {
-            // force interface assembly to be loaded before creating ProtobufSerializer
+            _clusterContext = clusterContext.Context;
+        }
 
-            var type = typeof(IUser);
-            if (type == null)
-                throw new InvalidProgramException("!");
+        private IActorRef _clientSession;
+        private IActorRef _userLoginActor;
 
-            // create system
-
-            var system = ActorSystem.Create("Test");
-
-            // context 
-
-            var context = new ClusterNodeContext { System = system };
-
-            var gameDirectory = system.ActorOf(Props.Create<GameDirectoryActor>(context));
-            var gamePairMaker = system.ActorOf(Props.Create<GamePairMakerActor>(context));
-            var userDirectory = system.ActorOf(Props.Create<UserDirectoryActor>(context));
-
-            context.ClusterActorDiscovery = system.ActorOf(Props.Create(() => new ClusterActorDiscovery(null)));
-            context.GameDirectory = new GameDirectoryRef(gameDirectory);
-            context.GamePairMaker = new GamePairMakerRef(gamePairMaker);
-            context.UserDirectory = new UserDirectoryRef(userDirectory);
-
-            return context;
+        private UserLoginRef CreateUserLogin()
+        {
+            var system = _clusterContext.System;
+            _clientSession = system.ActorOf(
+                Props.Create(() => new ClientSession(_clusterContext, null)));
+            _userLoginActor = system.ActorOf(
+                Props.Create(() => new UserLoginActor(_clusterContext, _clientSession, new IPEndPoint(0, 0))));
+            return new UserLoginRef(_userLoginActor);
         }
 
         [Fact]
-        public async Task Test_Work()
+        public async Task Test_UserLogin_NewUser_Succeed()
         {
-            var context = PrepareTest();
-            var clientSession = context.System.ActorOf(Props.Create(() => new ClientSession(context, null)));
-            var userLoginActor = context.System.ActorOf(Props.Create(() => new UserLoginActor(context, clientSession, new IPEndPoint(0, 0))));
-            var userLogin = new UserLoginRef(userLoginActor);
+            var userLogin = CreateUserLogin();
             var ret = await userLogin.Login("test", "1234", 0);
             Assert.Equal("TEST", ret.UserContext.Data.Name);
-            // TODO: CHECK UserContext DATA
-            // TODO: Check UserDirectoryActor
+        }
+
+        [Fact]
+        public async Task Test_UserLogin_ExistingUser_Succeed()
+        {
+            var userLogin = CreateUserLogin();
+            var ret = await userLogin.Login("test", "1234", 0);
+            Assert.Equal("TEST", ret.UserContext.Data.Name);
+
+            _clientSession.Tell(PoisonPill.Instance);
+
+            var userLogin2 = CreateUserLogin();
+            var ret2 = await userLogin.Login("test", "1234", 0);
+            Assert.Equal("TEST", ret2.UserContext.Data.Name);
         }
     }
 }
