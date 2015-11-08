@@ -38,8 +38,8 @@
       <HintPath>..\..\packages\Akka.Cluster.1.0.4.12-beta\lib\net45\Akka.Cluster.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Cluster.Utility.0.1.0-dev20151104\lib\net45\Akka.Cluster.Utility.dll</HintPath>
+    <Reference Include="Akka.Cluster.Utility, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Cluster.Utility.0.1.0-dev20151105\lib\net45\Akka.Cluster.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
