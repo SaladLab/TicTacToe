@@ -13,12 +13,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Tests", "src\Gam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer-Console", "src\GameServer-Console\GameServer-Console.csproj", "{B83E0DE7-F181-40B7-A3BC-1D0E77D78969}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B813E725-826D-4C7A-9A8A-44D220B74C38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Unity3D", "src\Domain.Unity3D\Domain.Unity3D.csproj", "{B1C2A438-600C-43F7-BB86-4BC39B9AA187}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{34745474-A74D-4A9D-B263-CB0E4DF98535}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Unity3D", "src\Domain.Unity3D\Domain.Unity3D.csproj", "{B1C2A438-600C-43F7-BB86-4BC39B9AA187}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{D777212B-A370-441B-9C20-3781FE093881}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameServer", "GameServer", "{EA0E752A-50C5-4E4C-BE04-519C8D869C26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,5 +57,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C1828E1-AF5D-4E0C-A439-AA31AC14C6D9} = {D777212B-A370-441B-9C20-3781FE093881}
+		{2E3DF5C2-8A38-4A03-86D7-8D463C917E47} = {D777212B-A370-441B-9C20-3781FE093881}
+		{FDEEB206-226B-4D6D-AB19-D36F8511880C} = {EA0E752A-50C5-4E4C-BE04-519C8D869C26}
+		{5C366FF2-5BE1-468A-81E8-ADE37B2FC6E9} = {EA0E752A-50C5-4E4C-BE04-519C8D869C26}
+		{B83E0DE7-F181-40B7-A3BC-1D0E77D78969} = {EA0E752A-50C5-4E4C-BE04-519C8D869C26}
+		{B1C2A438-600C-43F7-BB86-4BC39B9AA187} = {D777212B-A370-441B-9C20-3781FE093881}
 	EndGlobalSection
 EndGlobal

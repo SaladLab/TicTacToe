@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Common.Logging;
 using Akka.Actor;
-using Akka.Interfaced.SlimSocketServer;
+using Akka.Interfaced.SlimSocket.Server;
 using Akka.Interfaced;
 using System.Threading.Tasks;
 using System.Collections.Generic;
