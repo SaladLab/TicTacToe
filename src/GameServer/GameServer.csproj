@@ -150,8 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />
-    <Compile Include="ClientGateway.cs" />
-    <Compile Include="ClientSession.cs" />
     <Compile Include="ClusterNodeContextUpdater.cs" />
     <Compile Include="ClusterNodeContext.cs" />
     <Compile Include="GameActor.cs" />

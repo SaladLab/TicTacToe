@@ -2,6 +2,7 @@
 using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;
+using Akka.Interfaced.SlimSocket.Client;
 
 public static class G
 {
@@ -22,7 +23,17 @@ public static class G
         set
         {
             _comm = value;
+            _comm.ObserverEventPoster = c => ApplicationComponent.Post(c, null);
+
+            _slimRequestWaiter = new SlimRequestWaiter(_comm, ApplicationComponent.Instance);
         }
+    }
+
+    private static SlimRequestWaiter _slimRequestWaiter;
+
+    public static SlimRequestWaiter SlimRequestWaiter
+    {
+        get { return _slimRequestWaiter; }
     }
 
     public static readonly IPEndPoint ServerEndPoint =
@@ -44,7 +55,7 @@ public static class G
         get { return _debugLogAdapter; }
     }
 
-    // Chat specific data
+    // User specific data
 
     public static UserRef User
     {

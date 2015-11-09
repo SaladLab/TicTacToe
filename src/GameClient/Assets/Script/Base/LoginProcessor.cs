@@ -3,12 +3,16 @@ using System.Collections;
 using System.Net;
 using Akka.Interfaced;
 using Domain.Interfaced;
+using Akka.Interfaced.SlimSocket.Client;
+using Akka.Interfaced.SlimSocket.Base;
+using ProtoBuf.Meta;
+using TypeAlias;
 
 public static class LoginProcessor 
 {
-    public static SlimTask Login(IPEndPoint endPoint, string id, string password, Action<string> progressReport)
+    public static Task Login(IPEndPoint endPoint, string id, string password, Action<string> progressReport)
     {
-        var task = new SlimTask();
+        var task = new SlimTask<bool>();
         task.Owner = ApplicationComponent.Instance;
         ApplicationComponent.Instance.StartCoroutine(
             LoginCoroutine(endPoint, id, password, task, progressReport));
@@ -16,7 +20,7 @@ public static class LoginProcessor
     }
 
     private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password, 
-                                              SlimTask task, Action<string> progressReport)
+                                              SlimTask<bool> task, Action<string> progressReport)
     {
         // Connect
 
@@ -25,8 +29,14 @@ public static class LoginProcessor
 
         if (G.Comm == null || G.Comm.State == Communicator.StateType.Stopped)
         {
-            G.Comm = new Communicator(G.Logger, ApplicationComponent.Instance);
-            G.Comm.ServerEndPoint = endPoint;
+            var serializer = new PacketSerializer(
+                new PacketSerializerBase.Data(
+                    new ProtoBufMessageSerializer(TypeModel.Create()),
+                    new TypeAliasTable()));
+
+            G.Comm = new Communicator(LogManager.GetLogger("Communicator"),
+                                      endPoint,
+                                      _ => new TcpConnection(serializer, LogManager.GetLogger("Connection")));
             G.Comm.Start();
         }
 
@@ -49,9 +59,9 @@ public static class LoginProcessor
         if (progressReport != null)
             progressReport("Login");
 
-        var userLogin = new UserLoginRef(new SlimActorRef { Id = 1 }, new SlimRequestWaiter { Communicator = G.Comm }, null);
+        var userLogin = new UserLoginRef(new SlimActorRef(1), G.SlimRequestWaiter, null);
         var observerId = G.Comm.IssueObserverId();
-        var observer = new ObserverChannel(ApplicationComponent.Instance, true, true);
+        var observer = new ObserverEventDispatcher(ApplicationComponent.Instance, true, true);
         G.Comm.AddObserver(observerId, observer);
         var t1 = userLogin.Login(id, password, observerId);
         yield return t1.WaitHandle;
@@ -63,7 +73,7 @@ public static class LoginProcessor
             yield break;
         }
 
-        G.User = new UserRef(new SlimActorRef { Id = t1.Result.UserActorBindId }, new SlimRequestWaiter { Communicator = G.Comm }, null);
+        G.User = new UserRef(new SlimActorRef(t1.Result.UserActorBindId), G.SlimRequestWaiter, null);
         G.UserId = t1.Result.UserId;
         G.UserContext = t1.Result.UserContext;
 

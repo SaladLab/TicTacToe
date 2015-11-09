@@ -145,9 +145,9 @@
     <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.2.0-build0029\build\Akka.Interfaced-SlimClient.Templates-Protobuf.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.2.0-build0029\build\Akka.Interfaced-SlimClient.Templates-Protobuf.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"$(ProtobufNetPrecompileExe)" "$(TargetPath)" -o:DomainProtobufSerializer.dll -t:DomainProtobufSerializer "-f:.NETFramework\v3.5\Profile\Unity Subset v3.5" -autosurrogate
-COPY /Y "$(TargetDir)DomainProtobufSerializer.dll" "$(SolutionDir)src\GameClient\Assets\Script\Domain"
-COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Script\Domain"
+    <PostBuildEvent>"$(ProtobufNetPrecompileExe)" "$(TargetPath)" -o:Domain.Unity3D.ProtobufSerializer.dll -t:DomainProtobufSerializer "-f:.NETFramework\v3.5\Profile\Unity Subset v3.5" -autosurrogate
+COPY /Y "$(TargetDir)Domain.Unity3D.ProtobufSerializer.dll" "$(SolutionDir)src\GameClient\Assets\Script"
+COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Script"
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\packages\TrackableData.Templates.0.2.0-build0057\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-build0057\build\TrackableData.Templates.targets')" />

@@ -11,6 +11,11 @@ using Akka.Configuration;
 using Akka.Interfaced;
 using Common.Logging;
 using Domain.Interfaced;
+using Akka.Interfaced.SlimSocket.Server;
+using Akka.Interfaced.SlimSocket.Base;
+using ProtoBuf.Meta;
+using TypeAlias;
+using System.Net.Sockets;
 
 namespace GameServer
 {
@@ -46,7 +51,7 @@ namespace GameServer
                   actor {
                     provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
                     serializers {
-                      proto = ""Akka.Interfaced.ProtobufSerializer.ProtobufSerializer, Akka.Interfaced-ProtobufSerializer""
+                      proto = ""Akka.Interfaced.ProtobufSerializer.ProtobufSerializer, Akka.Interfaced.ProtobufSerializer""
                     }
                     serialization-bindings {
                       ""Akka.Interfaced.NotificationMessage, Akka.Interfaced"" = proto
@@ -133,24 +138,24 @@ namespace GameServer
                 switch (role)
                 {
                     case "game-directory":
-                        rootActor = system.ActorOf(Props.Create<GameDirectoryActor>(context), "game_directory");
+                        rootActor = system.ActorOf(Props.Create<GameDirectoryActor>(context), nameof(IGameDirectory));
                         break;
 
                     case "game-pair-maker":
-                        rootActor = system.ActorOf(Props.Create<GamePairMakerActor>(context), "game_pair_maker");
+                        rootActor = system.ActorOf(Props.Create<GamePairMakerActor>(context), nameof(IGamePairMaker));
                         break;
 
                     case "user-directory":
-                        rootActor = system.ActorOf(Props.Create<UserDirectoryActor>(context), "user_directory");
+                        rootActor = system.ActorOf(Props.Create<UserDirectoryActor>(context), nameof(IUserDirectory));
                         break;
 
                     case "game":
-                        rootActor = system.ActorOf(Props.Create<GameDirectoryWorkerActor>(context), "game_directory_worker");
+                        rootActor = system.ActorOf(Props.Create<GameDirectoryWorkerActor>(context), nameof(IGameDirectoryWorker));
                         break;
 
                     case "user":
-                        rootActor = system.ActorOf(Props.Create<ClientGateway>(context), "client_gateway");
-                        rootActor.Tell(new ClientGatewayMessage.Start { ServiceEndPoint = new IPEndPoint(IPAddress.Any, clientPort) });
+                        var userSystem = new UserClusterSystem(context);
+                        rootActor = userSystem.Start(clientPort);
                         break;
 
                     default:
@@ -160,5 +165,49 @@ namespace GameServer
             }
             return rootActors;
         }
+
+        private class UserClusterSystem
+        {
+            private ClusterNodeContext _clusterContext;
+            private TcpConnectionSettings _tcpConnectionSettings;
+
+            public UserClusterSystem(ClusterNodeContext clusterContext)
+            {
+                _clusterContext = clusterContext;
+            }
+
+            public IActorRef Start(int port)
+            {
+                var logger = LogManager.GetLogger("ClientGateway");
+
+                _tcpConnectionSettings = new TcpConnectionSettings
+                {
+                    PacketSerializer = new PacketSerializer(
+                        new PacketSerializerBase.Data(
+                            new ProtoBufMessageSerializer(TypeModel.Create()),
+                            new TypeAliasTable()))
+                };
+
+                var clientGateway = _clusterContext.System.ActorOf(Props.Create(() => new ClientGateway(logger, CreateSession)));
+                clientGateway.Tell(new ClientGatewayMessage.Start(new IPEndPoint(IPAddress.Any, port)));
+                return clientGateway;
+            }
+
+            private IActorRef CreateSession(IActorContext context, Socket socket)
+            {
+                var logger = LogManager.GetLogger($"Client({socket.RemoteEndPoint.ToString()})");
+                return context.ActorOf(Props.Create(() => new ClientSession(
+                    logger, socket, _tcpConnectionSettings, CreateInitialActor)));
+            }
+
+            private Tuple<IActorRef, Type>[] CreateInitialActor(IActorContext context, Socket socket)
+            {
+                return new[]
+                {
+                    Tuple.Create(context.ActorOf(Props.Create(() => new UserLoginActor(_clusterContext, context.Self, socket.RemoteEndPoint))),
+                                 typeof(IUserLogin))
+                };
+            }
+        };
     }
 }

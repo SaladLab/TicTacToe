@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Akka.Cluster.Utility;
 using Xunit;
+using Akka.Interfaced.SlimSocket.Server;
 
 namespace GameServer.Tests
 {
@@ -26,7 +27,7 @@ namespace GameServer.Tests
         {
             var system = _clusterContext.System;
             _clientSession = system.ActorOf(
-                Props.Create(() => new ClientSession(_clusterContext, null)));
+                Props.Create(() => new ClientSession(null, null, null, null)));
             _userLoginActor = system.ActorOf(
                 Props.Create(() => new UserLoginActor(_clusterContext, _clientSession, new IPEndPoint(0, 0))));
             return new UserLoginRef(_userLoginActor);

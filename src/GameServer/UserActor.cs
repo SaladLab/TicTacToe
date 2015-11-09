@@ -6,6 +6,7 @@ using Akka.Interfaced;
 using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;
+using Akka.Interfaced.SlimSocket.Server;
 
 namespace GameServer
 {
@@ -42,7 +43,7 @@ namespace GameServer
         }
 
         [MessageHandler]
-        protected void OnMessage(ClientSession.BoundSessionTerminatedMessage message)
+        protected void OnMessage(ClientSessionMessage.BoundSessionTerminated message)
         {
             UnlinkAll();
             Context.Stop(Self);
@@ -84,8 +85,8 @@ namespace GameServer
 
             // Bind an player actor with client session
 
-            var reply = await _clientSession.Ask<ClientSession.BindActorResponseMessage>(
-                new ClientSession.BindActorRequestMessage
+            var reply = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
+                new ClientSessionMessage.BindActorRequest
                 {
                     Actor = game.Actor,
                     InterfaceType = typeof(IGamePlayer),
@@ -110,7 +111,7 @@ namespace GameServer
             // Unbind an player actor with client session
 
             _clientSession.Tell(
-                new ClientSession.UnbindActorRequestMessage { Actor = game.Actor });
+                new ClientSessionMessage.UnbindActorRequest { Actor = game.Actor });
 
             _joinedGameMap.Remove(gameId);
         }

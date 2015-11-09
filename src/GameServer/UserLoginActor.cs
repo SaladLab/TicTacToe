@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using TrackableData;
 using TrackableData.MongoDB;
+using Akka.Interfaced.SlimSocket.Server;
 
 namespace GameServer
 {
@@ -27,16 +28,10 @@ namespace GameServer
             _clientSession = clientSession;
         }
 
-        protected override void OnReceiveUnhandled(object message)
+        [MessageHandler]
+        private void OnMessage(ClientSessionMessage.BoundSessionTerminated message)
         {
-            if (message is ClientSession.BoundSessionTerminatedMessage)
-            {
-                Context.Stop(Self);
-            }
-            else
-            {
-                base.OnReceiveUnhandled(message);
-            }
+            Context.Stop(Self);
         }
 
         private class AccountUserMapInfo
@@ -134,8 +129,8 @@ namespace GameServer
 
             // Bind user actor with client session, which makes client to communicate with this actor.
 
-            var reply = await _clientSession.Ask<ClientSession.BindActorResponseMessage>(
-                new ClientSession.BindActorRequestMessage { Actor = user, InterfaceType = typeof(IUser) });
+            var reply = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
+                new ClientSessionMessage.BindActorRequest { Actor = user, InterfaceType = typeof(IUser) });
 
             return new LoginResult { UserId = userId, UserContext = userContext, UserActorBindId = reply.ActorId };
         }

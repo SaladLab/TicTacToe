@@ -7,6 +7,7 @@ using Domain.Game;
 using Domain.Interfaced;
 using DG.Tweening;
 using System;
+using Akka.Interfaced.SlimSocket.Client;
 
 public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 {
@@ -87,7 +88,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         _pairedGame = null;
 
         var observerId = G.Comm.IssueObserverId();
-        G.Comm.AddObserver(observerId, new ObserverChannel(this));
+        G.Comm.AddObserver(observerId, new ObserverEventDispatcher(this));
         yield return G.User.RegisterPairing(observerId).WaitHandle;
 
         var startTime = DateTime.Now;
@@ -110,7 +111,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         var roomId = _pairedGame.Item1;
         var observerId2 = G.Comm.IssueObserverId();
-        var observer = new ObserverChannel(this, startPending: true, keepOrder: true);
+        var observer = new ObserverEventDispatcher(this, startPending: true, keepOrder: true);
         G.Comm.AddObserver(observerId2, observer);
         var joinRet = G.User.JoinGame(roomId, observerId2);
         yield return joinRet.WaitHandle;
@@ -126,8 +127,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         _gameInfo = joinRet.Result.Item3;
         _myPlayerId = joinRet.Result.Item2;
         _myPlayer = new GamePlayerRef(
-            new SlimActorRef { Id = joinRet.Result.Item1 }, 
-            new SlimRequestWaiter { Communicator = G.Comm }, null);
+            new SlimActorRef(joinRet.Result.Item1),  G.SlimRequestWaiter, null);
 
         observer.Pending = false;
         LoadingText.text = "Waiting for " + _pairedGame.Item2 + "...";
