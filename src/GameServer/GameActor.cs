@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Interfaced;
+using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Game;
 using Domain.Interfaced;

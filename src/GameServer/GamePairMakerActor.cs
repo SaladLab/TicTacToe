@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
+using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Interfaced;
 
 namespace GameServer
 {
+    [Log]
     public class GamePairMakerActor : InterfacedActor<GamePairMakerActor>, IExtendedInterface<IGamePairMaker>
     {
         private ILog _logger = LogManager.GetLogger("GamePairMaker");

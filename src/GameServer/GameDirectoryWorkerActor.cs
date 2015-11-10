@@ -4,11 +4,13 @@ using Akka.Interfaced;
 using Akka.Actor;
 using System.Collections.Generic;
 using Akka.Cluster.Utility;
+using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Interfaced;
 
 namespace GameServer
 {
+    [Log]
     public class GameDirectoryWorkerActor : InterfacedActor<GameDirectoryWorkerActor>, IGameDirectoryWorker
     {
         private ILog _logger = LogManager.GetLogger("GameDirectoryWorker");

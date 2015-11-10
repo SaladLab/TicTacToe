@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Interfaced;
+using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;

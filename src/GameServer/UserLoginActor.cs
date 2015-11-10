@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Interfaced;
 using Common.Logging;
 using System.Net;
+using Akka.Interfaced.LogFilter;
 using Domain.Data;
 using Domain.Interfaced;
 using MongoDB.Bson;

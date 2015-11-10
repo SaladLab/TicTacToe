@@ -2,12 +2,16 @@
 using System.Threading.Tasks;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
+using Akka.Interfaced.LogFilter;
+using Common.Logging;
 using Domain.Interfaced;
 
 namespace GameServer
 {
+    [Log]
     public class UserDirectoryActor : InterfacedActor<UserDirectoryActor>, IUserDirectory
     {
+        private ILog _logger = LogManager.GetLogger("UserDirectoryActor");
         private readonly ClusterNodeContext _clusterContext;
         private readonly Dictionary<long, IUser> _userTable;
 
