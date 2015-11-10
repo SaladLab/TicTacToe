@@ -31,7 +31,7 @@ public static class LoginProcessor
         {
             var serializer = new PacketSerializer(
                 new PacketSerializerBase.Data(
-                    new ProtoBufMessageSerializer(TypeModel.Create()),
+                    new ProtoBufMessageSerializer(new DomainProtobufSerializer()),
                     new TypeAliasTable()));
 
             G.Comm = new Communicator(LogManager.GetLogger("Communicator"),

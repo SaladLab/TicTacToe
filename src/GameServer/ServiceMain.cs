@@ -16,6 +16,7 @@ using Akka.Interfaced.SlimSocket.Base;
 using ProtoBuf.Meta;
 using TypeAlias;
 using System.Net.Sockets;
+using Akka.Interfaced.ProtobufSerializer;
 
 namespace GameServer
 {
@@ -180,11 +181,14 @@ namespace GameServer
             {
                 var logger = LogManager.GetLogger("ClientGateway");
 
+                var typeModel = TypeModel.Create();
+                AutoSurrogate.Register(typeModel);
+
                 _tcpConnectionSettings = new TcpConnectionSettings
                 {
                     PacketSerializer = new PacketSerializer(
                         new PacketSerializerBase.Data(
-                            new ProtoBufMessageSerializer(TypeModel.Create()),
+                            new ProtoBufMessageSerializer(typeModel),
                             new TypeAliasTable()))
                 };
 
