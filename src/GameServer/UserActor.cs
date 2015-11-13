@@ -43,7 +43,7 @@ namespace GameServer
         }
 
         [MessageHandler]
-        protected void OnMessage(ClientSessionMessage.BoundSessionTerminated message)
+        protected void OnMessage(ActorBoundSessionMessage.SessionTerminated message)
         {
             UnlinkAll();
             Context.Stop(Self);
@@ -86,13 +86,8 @@ namespace GameServer
 
             // Bind an player actor with client session
 
-            var reply2 = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
-                new ClientSessionMessage.BindActorRequest
-                {
-                    Actor = game.Actor,
-                    InterfaceType = typeof(IGamePlayer),
-                    TagValue = _id
-                });
+            var reply2 = await _clientSession.Ask<ActorBoundSessionMessage.BindReply>(
+                new ActorBoundSessionMessage.Bind(game.Actor, typeof(IGamePlayer), _id));
 
             _joinedGameMap[gameId] = game;
             return Tuple.Create(reply2.ActorId, joinRet.Item1, joinRet.Item2);
@@ -111,9 +106,7 @@ namespace GameServer
 
             // Unbind an player actor with client session
 
-            _clientSession.Tell(
-                new ClientSessionMessage.UnbindActorRequest { Actor = game.Actor });
-
+            _clientSession.Tell(new ActorBoundSessionMessage.Unbind(game.Actor));
             _joinedGameMap.Remove(gameId);
         }
 

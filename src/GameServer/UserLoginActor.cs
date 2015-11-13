@@ -32,7 +32,7 @@ namespace GameServer
         }
 
         [MessageHandler]
-        private void OnMessage(ClientSessionMessage.BoundSessionTerminated message)
+        private void OnMessage(ActorBoundSessionMessage.SessionTerminated message)
         {
             Context.Stop(Self);
         }
@@ -128,8 +128,8 @@ namespace GameServer
 
             // Bind user actor with client session, which makes client to communicate with this actor.
 
-            var reply2 = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
-                new ClientSessionMessage.BindActorRequest { Actor = user, InterfaceType = typeof(IUser) });
+            var reply2 = await _clientSession.Ask<ActorBoundSessionMessage.BindReply>(
+                new ActorBoundSessionMessage.Bind(user, typeof(IUser), null));
 
             return new LoginResult { UserId = userId, UserContext = userContext, UserActorBindId = reply2.ActorId };
         }

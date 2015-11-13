@@ -52,19 +52,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.0.2.0-build0035\lib\net45\Akka.Interfaced.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.0.2.0-build0037\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-Base, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.2.0-build0035\lib\net45\Akka.Interfaced-Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.2.0-build0037\lib\net45\Akka.Interfaced-Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.SlimSocket.Base, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.2.0-build0018\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.2.0-build0020\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.SlimSocket.Server, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.2.0-build0018\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.2.0-build0020\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.0.4.12, Culture=neutral, processorArchitecture=MSIL">
