@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
@@ -195,7 +196,6 @@ namespace GameServer
 
             if (_players.Count(p => p.Observer != null) == 0)
             {
-                _clusterContext.GameDirectory.WithNoReply().RemoveGame(_id);
                 Self.Tell(InterfacedPoisonPill.Instance);
             }
         }

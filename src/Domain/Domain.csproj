@@ -88,13 +88,11 @@
     <Compile Include="Game\Rule.cs" />
     <Compile Include="Interface\GameTypes.cs" />
     <Compile Include="Interface\IGame.cs" />
-    <Compile Include="Interface\IGameDirectory.cs" />
     <Compile Include="Interface\IGameObserver.cs" />
     <Compile Include="Interface\IGamePairMaker.cs" />
     <Compile Include="Interface\IGamePlayer.cs" />
     <Compile Include="Interface\IGameUserObserver.cs" />
     <Compile Include="Interface\IUser.cs" />
-    <Compile Include="Interface\IUserDirectory.cs" />
     <Compile Include="Interface\IUserEventObserver.cs" />
     <Compile Include="Interface\IUserPairingObserver.cs" />
     <Compile Include="Interface\IUserLogin.cs" />

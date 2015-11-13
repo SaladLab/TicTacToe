@@ -10,6 +10,7 @@ namespace Domain.Interfaced
         LoginFailedNoUser = 10,
         LoginFailedIncorrectPassword,
         LoginFailedAlreadyConnected,
+        LoginFailedInternalError,
         NeedToBeInGame = 20,
         NeedToBeOutOfGame,
         NotYourTurn,

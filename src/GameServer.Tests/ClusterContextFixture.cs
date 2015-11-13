@@ -3,7 +3,6 @@ using System.Configuration;
 using Akka.Actor;
 using Akka.Cluster.Utility;
 using Domain.Interfaced;
-using MongoDB.Driver;
 
 namespace GameServer.Tests
 {
@@ -27,14 +26,28 @@ namespace GameServer.Tests
 
             var context = new ClusterNodeContext { System = system };
 
-            var gameDirectory = system.ActorOf(Props.Create<GameDirectoryActor>(context));
-            var gamePairMaker = system.ActorOf(Props.Create<GamePairMakerActor>(context));
-            var userDirectory = system.ActorOf(Props.Create<UserDirectoryActor>(context));
+            context.ClusterActorDiscovery = system.ActorOf(Props.Create(
+                () => new ClusterActorDiscovery(null)));
 
-            context.ClusterActorDiscovery = system.ActorOf(Props.Create(() => new ClusterActorDiscovery(null)));
-            context.GameDirectory = new GameDirectoryRef(gameDirectory);
+            context.UserTable = system.ActorOf(Props.Create(
+                () => new DistributedActorTable<long>(
+                          "User", context.ClusterActorDiscovery, null, null)));
+
+            context.UserTableContainer = system.ActorOf(Props.Create(
+                () => new DistributedActorTableContainer<long>(
+                          "User", context.ClusterActorDiscovery, null, null)));
+
+            context.GameTable = system.ActorOf(Props.Create(
+                () => new DistributedActorTable<long>(
+                          "Game", context.ClusterActorDiscovery, typeof(IncrementalIntegerIdGenerator), null)));
+
+            context.GameTableContainer = system.ActorOf(Props.Create(
+                () => new DistributedActorTableContainer<long>(
+                          "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context })));
+
+            var gamePairMaker = system.ActorOf(Props.Create(
+                () => new GamePairMakerActor(context)));
             context.GamePairMaker = new GamePairMakerRef(gamePairMaker);
-            context.UserDirectory = new UserDirectoryRef(userDirectory);
 
             Context = context;
         }

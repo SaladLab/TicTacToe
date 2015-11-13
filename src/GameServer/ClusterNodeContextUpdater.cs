@@ -21,10 +21,10 @@ namespace GameServer
         protected override void PreStart()
         {
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IUserDirectory)), Self);
+                new ClusterActorDiscoveryMessage.MonitorActor("User"), Self);
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IGameDirectory)), Self);
+                new ClusterActorDiscoveryMessage.MonitorActor("Game"), Self);
 
             _clusterContext.ClusterActorDiscovery.Tell(
                 new ClusterActorDiscoveryMessage.MonitorActor(nameof(IGamePairMaker)), Self);
@@ -35,12 +35,12 @@ namespace GameServer
         {
             switch (m.Tag)
             {
-                case nameof(IUserDirectory):
-                    _clusterContext.UserDirectory = new UserDirectoryRef(m.Actor);
+                case "User":
+                    _clusterContext.UserTable = m.Actor;
                     break;
 
-                case nameof(IGameDirectory):
-                    _clusterContext.GameDirectory = new GameDirectoryRef(m.Actor);
+                case "Game":
+                    _clusterContext.GameTable = m.Actor;
                     break;
 
                 case nameof(IGamePairMaker):
@@ -54,12 +54,12 @@ namespace GameServer
         {
             switch (m.Tag)
             {
-                case nameof(IUserDirectory):
-                    _clusterContext.UserDirectory = null;
+                case "User":
+                    _clusterContext.UserTable = null;
                     break;
 
-                case nameof(IGameDirectory):
-                    _clusterContext.GameDirectory = null;
+                case "Game":
+                    _clusterContext.GameTable = null;
                     break;
 
                 case nameof(IGamePairMaker):

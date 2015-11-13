@@ -1,13 +1,12 @@
 ﻿using Akka.Actor;
 using Domain.Interfaced;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
-using Akka.Cluster.Utility;
 using Xunit;
 using Akka.Interfaced.SlimSocket.Server;
+using Common.Logging;
 
 namespace GameServer.Tests
 {
@@ -25,12 +24,24 @@ namespace GameServer.Tests
 
         private UserLoginRef CreateUserLogin()
         {
+            var logger = LogManager.GetLogger("Test");
             var system = _clusterContext.System;
-            _clientSession = system.ActorOf(
-                Props.Create(() => new ClientSession(null, null, null, null)));
-            _userLoginActor = system.ActorOf(
-                Props.Create(() => new UserLoginActor(_clusterContext, _clientSession, new IPEndPoint(0, 0))));
+
+            _clientSession = system.ActorOf(Props.Create(
+                () => new ClientSession(logger, null, new TcpConnectionSettings(), CreateInitialActor)));
+
             return new UserLoginRef(_userLoginActor);
+        }
+
+        private Tuple<IActorRef, Type>[] CreateInitialActor(IActorContext context, Socket socket)
+        {
+            return new[]
+            {
+                    Tuple.Create(
+                        context.ActorOf(Props.Create(
+                            () => new UserLoginActor(_clusterContext, context.Self, new IPEndPoint(0, 0)))),
+                        typeof(IUserLogin))
+                };
         }
 
         [Fact]

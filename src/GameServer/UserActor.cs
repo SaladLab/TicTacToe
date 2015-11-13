@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
@@ -39,8 +40,6 @@ namespace GameServer
             foreach (var game in _joinedGameMap.Values)
                 game.WithNoReply().Leave(_id);
             _joinedGameMap.Clear();
-
-            _clusterContext.UserDirectory.WithNoReply().UnregisterUser(_id);
         }
 
         [MessageHandler]
@@ -68,11 +67,12 @@ namespace GameServer
 
             // Try to get game ref
 
-            var gameRaw = await _clusterContext.GameDirectory.GetGame(gameId);
-            if (gameRaw == null)
+            var reply = await _clusterContext.GameTable.Ask<DistributedActorTableMessage<long>.GetOrCreateReply>(
+                new DistributedActorTableMessage<long>.GetOrCreate(gameId, null));
+            if (reply.Actor == null)
                 throw new ResultException(ResultCodeType.GameNotFound);
 
-            var game = ((GameRef)gameRaw).WithRequestWaiter(this);
+            var game = new GameRef(reply.Actor, this, null);
 
             // Let's enter the game !
 
@@ -86,7 +86,7 @@ namespace GameServer
 
             // Bind an player actor with client session
 
-            var reply = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
+            var reply2 = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
                 new ClientSessionMessage.BindActorRequest
                 {
                     Actor = game.Actor,
@@ -95,7 +95,7 @@ namespace GameServer
                 });
 
             _joinedGameMap[gameId] = game;
-            return Tuple.Create(reply.ActorId, joinRet.Item1, joinRet.Item2);
+            return Tuple.Create(reply2.ActorId, joinRet.Item1, joinRet.Item2);
         }
 
         async Task IUser.LeaveGame(long gameId)

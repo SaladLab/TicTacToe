@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.Actor;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
@@ -59,7 +60,7 @@ namespace GameServer
         [MessageHandler]
         private async Task OnSchedule(Schedule tick)
         {
-            if (_pairingQueue.Any() == false || _clusterContext.GameDirectory == null)
+            if (_pairingQueue.Any() == false || _clusterContext.GameTable == null)
                 return;
 
             // Pairing for two users
@@ -72,11 +73,13 @@ namespace GameServer
                 _pairingQueue.RemoveAt(0);
                 _pairingQueue.RemoveAt(0);
 
-                var gameId = 0L;
+                long gameId;
                 try
                 {
-                    var ret = await _clusterContext.GameDirectory.CreateGame(new CreateGameParam { WithBot = false });
-                    gameId = ret.Item1;
+                    var ret = await _clusterContext.GameTable.Ask<DistributedActorTableMessage<long>.CreateReply>(
+                        new DistributedActorTableMessage<long>.Create(
+                            new object[] { new CreateGameParam { WithBot = false } }));
+                    gameId = ret.Id;
                 }
                 catch (Exception e)
                 {
@@ -97,11 +100,13 @@ namespace GameServer
                 {
                     _pairingQueue.RemoveAt(0);
 
-                    var gameId = 0L;
+                    long gameId;
                     try
                     {
-                        var ret = await _clusterContext.GameDirectory.CreateGame(new CreateGameParam { WithBot = true });
-                        gameId = ret.Item1;
+                        var ret = await _clusterContext.GameTable.Ask<DistributedActorTableMessage<long>.CreateReply>(
+                            new DistributedActorTableMessage<long>.Create(
+                                new object[] { new CreateGameParam { WithBot = true } }));
+                        gameId = ret.Id;
                     }
                     catch (Exception e)
                     {

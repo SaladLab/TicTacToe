@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Interfaced;
 using Common.Logging;
 using System.Net;
+using Akka.Cluster.Utility;
 using Akka.Interfaced.LogFilter;
 using Domain.Data;
 using Domain.Interfaced;
@@ -22,7 +23,8 @@ namespace GameServer
         private readonly ClusterNodeContext _clusterContext;
         private readonly IActorRef _clientSession;
 
-        public UserLoginActor(ClusterNodeContext clusterContext, IActorRef clientSession, EndPoint clientRemoteEndPoint)
+        public UserLoginActor(ClusterNodeContext clusterContext,
+                              IActorRef clientSession, EndPoint clientRemoteEndPoint)
         {
             _logger = LogManager.GetLogger($"UserLoginActor({clientRemoteEndPoint})");
             _clusterContext = clusterContext;
@@ -98,28 +100,24 @@ namespace GameServer
                     Props.Create<UserActor>(_clusterContext, _clientSession, userId, userContext, observerId),
                     "user_" + userId);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new ResultException(ResultCodeType.LoginFailedAlreadyConnected);
+                _logger.Error($"Exception in creating UserActor({userId}", e);
+                throw new ResultException(ResultCodeType.LoginFailedInternalError);
             }
 
-            // Register User in UserDirectory
+            // Register User in UserTable
 
-            var userRef = new UserRef(user);
             var registered = false;
-            for (int i=0; i<10; i++)
+            for (int i = 0; i < 10; i++)
             {
-                try
+                var reply = await _clusterContext.UserTableContainer.Ask<DistributedActorTableMessage<long>.AddReply>(
+                    new DistributedActorTableMessage<long>.Add(userId, user));
+                if (reply.Added)
                 {
-                    await _clusterContext.UserDirectory.RegisterUser(userId, (IUser)userRef);
                     registered = true;
                     break;
                 }
-                catch (Exception)
-                {
-                    // TODO: Send Disconnect Message To Already Registered User.
-                }
-
                 await Task.Delay(200);
             }
             if (registered == false)
@@ -130,10 +128,10 @@ namespace GameServer
 
             // Bind user actor with client session, which makes client to communicate with this actor.
 
-            var reply = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
+            var reply2 = await _clientSession.Ask<ClientSessionMessage.BindActorResponse>(
                 new ClientSessionMessage.BindActorRequest { Actor = user, InterfaceType = typeof(IUser) });
 
-            return new LoginResult { UserId = userId, UserContext = userContext, UserActorBindId = reply.ActorId };
+            return new LoginResult { UserId = userId, UserContext = userContext, UserActorBindId = reply2.ActorId };
         }
 
         private Tuple<long, TrackableUserContext> CreateUser(string accountId)
