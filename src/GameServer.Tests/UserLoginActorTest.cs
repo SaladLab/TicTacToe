@@ -2,46 +2,44 @@
 using Domain.Interfaced;
 using System;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
+using Akka.Interfaced.TestKit;
 using Xunit;
-using Akka.Interfaced.SlimSocket.Server;
-using Common.Logging;
+using Akka.TestKit;
+using Akka.TestKit.Xunit2;
 
 namespace GameServer.Tests
 {
-    public class UserLoginActorTest : IClassFixture<MongoDbStorageFixture>, IClassFixture<ClusterContextFixture>
+    public class UserLoginActorTest : TestKit, IClassFixture<MongoDbStorageFixture>, IClassFixture<ClusterContextFixture>
     {
         private ClusterNodeContext _clusterContext;
+        private TestActorRef<TestActorBoundSession> _clientSession;
 
         public UserLoginActorTest(ClusterContextFixture clusterContext)
         {
+            clusterContext.Initialize(Sys);
             _clusterContext = clusterContext.Context;
         }
 
-        private IActorRef _clientSession;
-        private IActorRef _userLoginActor;
-
         private UserLoginRef CreateUserLogin()
         {
-            var logger = LogManager.GetLogger("Test");
             var system = _clusterContext.System;
 
-            _clientSession = system.ActorOf(Props.Create(
-                () => new ClientSession(logger, null, new TcpConnectionSettings(), CreateInitialActor)));
-
-            return new UserLoginRef(_userLoginActor);
+            _clientSession = new TestActorRef<TestActorBoundSession>(
+                system, Props.Create(() => new TestActorBoundSession(CreateInitialActor)));
+            
+            return new UserLoginRef(null, _clientSession.UnderlyingActor.GetRequestWaiter(1), null);
         }
 
-        private Tuple<IActorRef, Type>[] CreateInitialActor(IActorContext context, Socket socket)
+        private Tuple<IActorRef, Type>[] CreateInitialActor(IActorContext context)
         {
             return new[]
             {
-                    Tuple.Create(
-                        context.ActorOf(Props.Create(
-                            () => new UserLoginActor(_clusterContext, context.Self, new IPEndPoint(0, 0)))),
-                        typeof(IUserLogin))
-                };
+                Tuple.Create(
+                    context.ActorOf(Props.Create(
+                        () => new UserLoginActor(_clusterContext, context.Self, new IPEndPoint(0, 0)))),
+                    typeof(IUserLogin))
+            };
         }
 
         [Fact]
@@ -62,7 +60,7 @@ namespace GameServer.Tests
             _clientSession.Tell(PoisonPill.Instance);
 
             var userLogin2 = CreateUserLogin();
-            var ret2 = await userLogin.Login("test", "1234", 0);
+            var ret2 = await userLogin2.Login("test", "1234", 0);
             Assert.Equal("TEST", ret2.UserContext.Data.Name);
         }
     }

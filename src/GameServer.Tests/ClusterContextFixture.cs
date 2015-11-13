@@ -17,13 +17,10 @@ namespace GameServer.Tests
             var type = typeof(IUser);
             if (type == null)
                 throw new InvalidProgramException("!");
+        }
 
-            // create system
-
-            var system = ActorSystem.Create("Test");
-
-            // context 
-
+        public void Initialize(ActorSystem system)
+        {
             var context = new ClusterNodeContext { System = system };
 
             context.ClusterActorDiscovery = system.ActorOf(Props.Create(
