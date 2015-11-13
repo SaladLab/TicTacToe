@@ -21,17 +21,17 @@ namespace GameServer
         protected override void PreStart()
         {
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.MonitorActor(nameof(IUserDirectory)), Self);
+                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IUserDirectory)), Self);
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.MonitorActor(nameof(IGameDirectory)), Self);
+                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IGameDirectory)), Self);
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.MonitorActor(nameof(IGamePairMaker)), Self);
+                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IGamePairMaker)), Self);
         }
 
         [MessageHandler]
-        private void OnMessage(ClusterActorDiscoveryMessages.ActorUp m)
+        private void OnMessage(ClusterActorDiscoveryMessage.ActorUp m)
         {
             switch (m.Tag)
             {
@@ -50,7 +50,7 @@ namespace GameServer
         }
 
         [MessageHandler]
-        private void OnMessage(ClusterActorDiscoveryMessages.ActorDown m)
+        private void OnMessage(ClusterActorDiscoveryMessage.ActorDown m)
         {
             switch (m.Tag)
             {

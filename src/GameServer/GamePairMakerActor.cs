@@ -33,7 +33,7 @@ namespace GameServer
             _clusterContext = clusterContext;
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGamePairMaker)),
+                new ClusterActorDiscoveryMessage.RegisterActor(Self, nameof(IGamePairMaker)),
                 Self);
 
             _pairingQueue = new List<QueueEntity>();

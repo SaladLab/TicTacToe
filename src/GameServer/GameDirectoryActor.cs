@@ -25,10 +25,10 @@ namespace GameServer
             _clusterContext = clusterContext;
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGameDirectory)),
+                new ClusterActorDiscoveryMessage.RegisterActor(Self, nameof(IGameDirectory)),
                 Self);
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.MonitorActor(nameof(IGameDirectoryWorker)),
+                new ClusterActorDiscoveryMessage.MonitorActor(nameof(IGameDirectoryWorker)),
                 Self);
 
             _workers = new List<GameDirectoryWorkerRef>();
@@ -36,14 +36,14 @@ namespace GameServer
         }
 
         [MessageHandler]
-        private void OnMessage(ClusterActorDiscoveryMessages.ActorUp message)
+        private void OnMessage(ClusterActorDiscoveryMessage.ActorUp message)
         {
             _workers.Add(new GameDirectoryWorkerRef(message.Actor, this, null));
             _logger.InfoFormat("Registered Actor({0})", message.Actor.Path);
         }
 
         [MessageHandler]
-        private void OnMessage(ClusterActorDiscoveryMessages.ActorDown message)
+        private void OnMessage(ClusterActorDiscoveryMessage.ActorDown message)
         {
             _workers.RemoveAll(w => w.Actor.Equals(message.Actor));
             _logger.InfoFormat("Unregistered Actor({0})", message.Actor.Path);

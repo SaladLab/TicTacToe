@@ -24,7 +24,7 @@ namespace GameServer
             _clusterContext = clusterContext;
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IGameDirectoryWorker)),
+                new ClusterActorDiscoveryMessage.RegisterActor(Self, nameof(IGameDirectoryWorker)),
                 Self);
 
             _gameTable = new Dictionary<long, IGame>();

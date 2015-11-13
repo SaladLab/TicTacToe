@@ -20,7 +20,7 @@ namespace GameServer
             _clusterContext = clusterContext;
 
             _clusterContext.ClusterActorDiscovery.Tell(
-                new ClusterActorDiscoveryMessages.RegisterActor(Self, nameof(IUserDirectory)),
+                new ClusterActorDiscoveryMessage.RegisterActor(Self, nameof(IUserDirectory)),
                 Self);
 
             _userTable = new Dictionary<long, IUser>();
