@@ -69,7 +69,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="TrackableData.Protobuf, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.Protobuf.0.2.0-build0063\lib\net35\TrackableData.Protobuf.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.Protobuf.0.2.0-build0064\lib\net35\TrackableData.Protobuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
