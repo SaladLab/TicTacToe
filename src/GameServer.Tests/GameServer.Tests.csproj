@@ -48,7 +48,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Cluster.Utility, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Cluster.Utility.0.2.0-build0019\lib\net45\Akka.Cluster.Utility.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Cluster.Utility.0.2.0-build0021\lib\net45\Akka.Cluster.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -68,7 +68,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.TestKit, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.TestKit.0.2.0-build0038\lib\net45\Akka.Interfaced.TestKit.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.TestKit.0.2.0-build0040\lib\net45\Akka.Interfaced.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.0.4.12, Culture=neutral, processorArchitecture=MSIL">
@@ -138,7 +138,7 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="TrackableData, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.0.2.0-build0058\lib\net45\TrackableData.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.0.2.0-build0064\lib\net45\TrackableData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">

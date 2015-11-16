@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.props')" />
-  <Import Project="..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.props')" />
+  <Import Project="..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.props')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Domain.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Domain.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -67,11 +67,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="TrackableData, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.0.2.0-build0058\lib\net45\TrackableData.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.0.2.0-build0064\lib\net45\TrackableData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TrackableData.Protobuf, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.Protobuf.0.2.0-build0058\lib\net45\TrackableData.Protobuf.dll</HintPath>
+      <HintPath>..\..\packages\TrackableData.Protobuf.0.2.0-build0063\lib\net45\TrackableData.Protobuf.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -110,13 +110,13 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.props'))" />
-    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.props'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.targets'))" />
+    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.props'))" />
+    <Error Condition="!Exists('..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.props'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.targets'))" />
   </Target>
-  <Import Project="..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-build0058\build\TrackableData.Templates.targets')" />
-  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0037\build\Akka.Interfaced.Templates-Protobuf.targets')" />
+  <Import Project="..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-build0064\build\TrackableData.Templates.targets')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.2.0-build0040\build\Akka.Interfaced.Templates-Protobuf.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Domain.targets.
   <Target Name="BeforeBuild">
