@@ -5,7 +5,7 @@ using Akka.Interfaced;
 using Domain.Interfaced;
 using Akka.Interfaced.SlimSocket.Client;
 using Akka.Interfaced.SlimSocket.Base;
-using ProtoBuf.Meta;
+using Common.Logging;
 using TypeAlias;
 
 public static class LoginProcessor 
