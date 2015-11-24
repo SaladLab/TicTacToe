@@ -47,12 +47,6 @@ namespace GameServer
             return Task.FromResult(0);
         }
 
-        [MessageHandler]
-        private void OnShutdown(ShutdownMessage message)
-        {
-            Context.Stop(Self);
-        }
-
         private class Schedule
         {
         };
