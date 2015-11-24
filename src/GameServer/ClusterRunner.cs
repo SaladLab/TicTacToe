@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Akka.Actor;
 using Akka.Cluster;
@@ -13,6 +14,7 @@ using Akka.Interfaced.SlimSocket.Base;
 using ProtoBuf.Meta;
 using TypeAlias;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Akka.Interfaced.ProtobufSerializer;
 
 namespace GameServer
@@ -21,8 +23,26 @@ namespace GameServer
     {
         private readonly Config _commonConfig;
 
-        private readonly List<Tuple<ActorSystem, List<IActorRef>>> _nodes =
-            new List<Tuple<ActorSystem, List<IActorRef>>>();
+        public class Node
+        {
+            public ActorSystem System;
+
+            public class RoleActor
+            {
+                public string Role { get; }
+                public IActorRef[] Actors { get; }
+
+                public RoleActor(string role, IActorRef[] actors)
+                {
+                    Role = role;
+                    Actors = actors;
+                }
+            }
+
+            public RoleActor[] RoleActors;
+        }
+
+        private readonly List<Node> _nodes = new List<Node>();
 
         public ClusterRunner(Config commonConfig)
         {
@@ -47,29 +67,29 @@ namespace GameServer
             context.ClusterNodeContextUpdater =
                 system.ActorOf(Props.Create(() => new ClusterNodeContextUpdater(context)), "ClusterNodeContextUpdater");
 
-            var actors = new List<IActorRef>();
+            var roleActors = new List<Node.RoleActor>();
             foreach (var role in roles)
             {
                 switch (role)
                 {
                     case "user-table":
-                        actors.AddRange(InitUserTable(context));
+                        roleActors.Add(new Node.RoleActor(role, InitUserTable(context)));
                         break;
 
                     case "user":
-                        actors.AddRange(InitUser(context, clientPort));
+                        roleActors.Add(new Node.RoleActor(role, InitUser(context, clientPort)));
                         break;
 
                     case "game-pair-maker":
-                        actors.AddRange(InitGamePairMaker(context));
+                        roleActors.Add(new Node.RoleActor(role, InitGamePairMaker(context)));
                         break;
 
                     case "game-table":
-                        actors.AddRange(InitGameTable(context));
+                        roleActors.Add(new Node.RoleActor(role, InitGameTable(context)));
                         break;
 
                     case "game":
-                        actors.AddRange(InitGame(context));
+                        roleActors.Add(new Node.RoleActor(role, InitGame(context)));
                         break;
 
                     default:
@@ -77,24 +97,63 @@ namespace GameServer
                 }
             }
 
-            _nodes.Add(Tuple.Create(system, actors));
+            _nodes.Add(new Node
+            {
+                System = system,
+                RoleActors = roleActors.ToArray()
+            });
         }
 
         public void Shutdown()
         {
-            _nodes.Reverse();
-            foreach (var cluster in _nodes)
+            Console.WriteLine("Shutdown: User Listen");
             {
-                // stop all root-actors in reverse
+                var tasks = GetRoleActors("user").Select(
+                    actors => actors[0].GracefulStop(TimeSpan.FromMinutes(1),
+                                                     new ClientGatewayMessage.Stop()));
+                Task.WhenAll(tasks.ToArray()).Wait();
+            }
 
-                var rootActors = cluster.Item2;
-                rootActors.Reverse();
-                foreach (var actor in rootActors)
-                    actor.GracefulStop(TimeSpan.FromSeconds(30), new ShutdownMessage()).Wait();
+            Console.WriteLine("Shutdown: Users");
+            {
+                var tasks = GetRoleActors("user-table").Select(
+                    actors => actors[0].GracefulStop(TimeSpan.FromMinutes(1),
+                                                     new DistributedActorTableMessage<long>.GracefulStop(
+                                                         InterfacedPoisonPill.Instance)));
+                Task.WhenAll(tasks.ToArray()).Wait();
+            }
 
-                // stop system
+            Console.WriteLine("Shutdown: Game Pair Maker");
+            {
+                var tasks = GetRoleActors("game-pair-maker").Select(
+                    actors => actors[0].GracefulStop(TimeSpan.FromMinutes(1), InterfacedPoisonPill.Instance));
+                Task.WhenAll(tasks.ToArray()).Wait();
+            }
 
-                cluster.Item1.Shutdown();
+            Console.WriteLine("Shutdown: Games");
+            {
+                var tasks = GetRoleActors("game-table").Select(
+                    actors => actors[0].GracefulStop(TimeSpan.FromMinutes(1),
+                                                     new DistributedActorTableMessage<long>.GracefulStop(
+                                                         InterfacedPoisonPill.Instance)));
+                Task.WhenAll(tasks.ToArray()).Wait();
+            }
+
+            Console.WriteLine("Shutdown: Systems");
+            {
+                foreach (var node in Enumerable.Reverse(_nodes))
+                    node.System.Shutdown();
+            }
+        }
+
+        private IEnumerable<IActorRef[]> GetRoleActors(string role)
+        {
+            foreach (var node in _nodes)
+            {
+                foreach (var ra in node.RoleActors.Where(ra => ra.Role == role))
+                {
+                    yield return ra.Actors;
+                }
             }
         }
 
@@ -120,7 +179,7 @@ namespace GameServer
             var userSystem = new UserClusterSystem(context);
             var gateway = userSystem.Start(clientPort);
 
-            return new[] { container, gateway };
+            return new[] { gateway, container };
         }
 
         private IActorRef[] InitGameTable(ClusterNodeContext context)
