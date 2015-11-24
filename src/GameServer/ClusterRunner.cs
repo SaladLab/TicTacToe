@@ -220,7 +220,6 @@ namespace GameServer
     public class UserClusterSystem
     {
         private readonly ClusterNodeContext _context;
-        private readonly IActorRef _userTableContainer;
         private readonly TcpConnectionSettings _tcpConnectionSettings;
 
         public UserClusterSystem(ClusterNodeContext context)

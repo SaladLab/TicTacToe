@@ -14,7 +14,7 @@ namespace GameServer
     [Log]
     public class GamePairMakerActor : InterfacedActor<GamePairMakerActor>, IExtendedInterface<IGamePairMaker>
     {
-        private ILog _logger = LogManager.GetLogger("GamePairMaker");
+        private readonly ILog _logger = LogManager.GetLogger("GamePairMaker");
         private readonly ClusterNodeContext _clusterContext;
         private static readonly TimeSpan BotPairingTimeout = TimeSpan.FromSeconds(3);
 
@@ -122,6 +122,7 @@ namespace GameServer
             _pairingQueue.Add(new QueueEntity
             {
                 UserId = userId,
+                UserName = userName,
                 Observer = observer,
                 EnqueueTime = DateTime.UtcNow
             });
