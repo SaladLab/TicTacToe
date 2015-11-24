@@ -114,7 +114,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void RegisterPairing(long userId, string userName, IUserPairingObserver observer)
+        private void RegisterPairing(long userId, string userName, IUserPairingObserver observer)
         {
             if (_pairingQueue.Any(i => i.UserId == userId))
                 throw new ResultException(ResultCodeType.AlreadyPairingRegistered);
@@ -128,7 +128,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void UnregisterPairing(long userId)
+        private void UnregisterPairing(long userId)
         {
             _pairingQueue.RemoveAll(i => i.UserId == userId);
         }

@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.Cluster.Utility;
 using Akka.Configuration;
 using Akka.Interfaced;
+using Akka.Interfaced.ProtobufSerializer;
+using Akka.Interfaced.SlimSocket.Base;
+using Akka.Interfaced.SlimSocket.Server;
 using Common.Logging;
 using Domain.Interfaced;
-using Akka.Interfaced.SlimSocket.Server;
-using Akka.Interfaced.SlimSocket.Base;
 using ProtoBuf.Meta;
 using TypeAlias;
-using System.Net.Sockets;
-using System.Threading.Tasks;
-using Akka.Interfaced.ProtobufSerializer;
 
 namespace GameServer
 {
@@ -188,7 +188,7 @@ namespace GameServer
             {
                 context.System.ActorOf(
                     Props.Create(() => new DistributedActorTable<long>(
-                                           "Game", context.ClusterActorDiscovery, 
+                                           "Game", context.ClusterActorDiscovery,
                                            typeof(IncrementalIntegerIdGenerator), null)),
                     "GameTable")
             };
@@ -257,11 +257,11 @@ namespace GameServer
         {
             return new[]
             {
-                    Tuple.Create(
-                        context.ActorOf(Props.Create(
-                            () => new UserLoginActor(_context, context.Self, socket.RemoteEndPoint))),
-                        typeof(IUserLogin))
-                };
+                Tuple.Create(
+                    context.ActorOf(Props.Create(
+                        () => new UserLoginActor(_context, context.Self, socket.RemoteEndPoint))),
+                    typeof(IUserLogin))
+            };
         }
     };
 
