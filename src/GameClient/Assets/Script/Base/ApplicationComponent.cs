@@ -1,24 +1,16 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net;
-using Common.Logging;
-using UnityEngine;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Domain.Data;
 using Domain.Interfaced;
-using System.Threading;
+using UnityEngine;
 
 public class ApplicationComponent : MonoBehaviour, IUserEventObserver
 {
     private static List<Tuple<SendOrPostCallback, object>> _posts =
         new List<Tuple<SendOrPostCallback, object>>();
 
-    public static ApplicationComponent Instance
-    {
-        get; private set;
-    }
+    public static ApplicationComponent Instance { get; private set; }
 
     public static bool TryInit()
     {

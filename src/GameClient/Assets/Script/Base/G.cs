@@ -1,8 +1,8 @@
 ﻿using System.Net;
+using Akka.Interfaced.SlimSocket.Client;
 using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;
-using Akka.Interfaced.SlimSocket.Client;
 
 public static class G
 {
@@ -21,9 +21,15 @@ public static class G
         set
         {
             _comm = value;
-            _comm.ObserverEventPoster = c => ApplicationComponent.Post(c, null);
-
-            _slimRequestWaiter = new SlimRequestWaiter(_comm, ApplicationComponent.Instance);
+            if (_comm != null)
+            {
+                _comm.ObserverEventPoster = c => ApplicationComponent.Post(c, null);
+                _slimRequestWaiter = new SlimRequestWaiter(_comm, ApplicationComponent.Instance);
+            }
+            else
+            {
+                _slimRequestWaiter = null;
+            }
         }
     }
 
@@ -48,18 +54,9 @@ public static class G
 
     // User specific data
 
-    public static UserRef User
-    {
-        get; set;
-    }
+    public static UserRef User { get; set; }
 
-    public static long UserId
-    {
-        get; set;
-    }
+    public static long UserId { get; set; }
 
-    public static TrackableUserContext UserContext
-    {
-        get; set;
-    }
+    public static TrackableUserContext UserContext { get; set; }
 }

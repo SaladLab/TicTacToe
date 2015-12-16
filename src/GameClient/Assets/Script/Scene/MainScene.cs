@@ -130,6 +130,9 @@ public class MainScene : MonoBehaviour
 
     private void SwitchPanel(RectTransform panelFrom, RectTransform panelTo)
     {
+        DOTween.Kill(panelFrom.transform, true);
+        DOTween.Kill(panelTo.transform, true);
+
         var y = panelFrom.anchoredPosition.y;
         panelFrom.anchoredPosition = new Vector2(0, y);
         panelFrom.DOAnchorPos(new Vector2(-700, y), 0.25f)
