@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using DG.Tweening;
 
 public class UiManager
 {
@@ -262,7 +262,7 @@ public class UiManager
                 entity.Handle.Dialog.gameObject.SetActive(false);
             }
         });
-        
+
         // remove curtain
 
         if (entity.Curtain != null)

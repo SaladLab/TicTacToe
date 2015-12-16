@@ -1,9 +1,9 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using DG.Tweening;
 using Domain.Game;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameBoard : MonoBehaviour
 {
@@ -14,7 +14,7 @@ public class GameBoard : MonoBehaviour
     private int[,] _gridMarks = new int[Rule.BoardSize, Rule.BoardSize];
     private RectTransform[,] _gridRects = new RectTransform[Rule.BoardSize, Rule.BoardSize];
 
-    void Start()
+    private void Start()
     {
         BuildGrids();
     }

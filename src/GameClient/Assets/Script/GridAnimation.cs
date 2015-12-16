@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
-using System.Collections;
 
 public class GridAnimation : MonoBehaviour
 {
@@ -44,14 +43,14 @@ public class GridAnimation : MonoBehaviour
             var l = letter;
             var x = letter.text + "";
             var sequence = DOTween.Sequence()
-                .AppendInterval(time)
-                .Append(l.transform.DOShakePosition(1, 10, 20, 90))
-                .AppendCallback(() => l.text = Random.Range(0, 2) == 0 ? "X" : "O")
-                .AppendInterval(2)
-                .Append(l.transform.DOShakePosition(1, 10, 20, 90))
-                .AppendCallback(() => l.text = x)
-                .AppendInterval(5 - time)
-                .SetLoops(-1, LoopType.Restart);
+                                  .AppendInterval(time)
+                                  .Append(l.transform.DOShakePosition(1, 10, 20, 90))
+                                  .AppendCallback(() => l.text = Random.Range(0, 2) == 0 ? "X" : "O")
+                                  .AppendInterval(2)
+                                  .Append(l.transform.DOShakePosition(1, 10, 20, 90))
+                                  .AppendCallback(() => l.text = x)
+                                  .AppendInterval(5 - time)
+                                  .SetLoops(-1, LoopType.Restart);
         }
     }
 }

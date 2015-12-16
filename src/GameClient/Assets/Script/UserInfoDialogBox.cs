@@ -1,8 +1,7 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
 using System.Text;
 using Domain.Data;
+using UnityEngine.UI;
 
 public class UserInfoDialogBox : UiDialog
 {

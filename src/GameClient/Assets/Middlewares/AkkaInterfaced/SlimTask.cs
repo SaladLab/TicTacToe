@@ -24,10 +24,7 @@ namespace Akka.Interfaced.SlimSocket.Client
                 yield return null;
         }
 
-        public TaskStatus Status
-        {
-            get; internal set;
-        }
+        public TaskStatus Status { get; internal set; }
 
         public Exception Exception
         {

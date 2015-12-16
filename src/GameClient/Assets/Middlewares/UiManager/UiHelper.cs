@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class UiHelper
 {
-    static public GameObject AddChild(GameObject parent, string name)
+    public static GameObject AddChild(GameObject parent, string name)
     {
         if (parent == null)
             throw new ArgumentNullException("parent");
