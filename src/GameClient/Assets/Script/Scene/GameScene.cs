@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections;
-using System.Net;
-using Akka.Interfaced;
+using Akka.Interfaced.SlimSocket.Client;
+using DG.Tweening;
 using Domain.Game;
 using Domain.Interfaced;
-using DG.Tweening;
-using System;
-using Akka.Interfaced.SlimSocket.Client;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 {
@@ -39,9 +37,9 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         LoadingPanel.gameObject.SetActive(true);
         GamePanel.gameObject.SetActive(false);
 
-        StartCoroutine(G.User == null 
-            ? ProcessLoginAndJoinGame()
-            : ProcessJoinGame());
+        StartCoroutine(G.User == null
+                           ? ProcessLoginAndJoinGame()
+                           : ProcessJoinGame());
     }
 
     private IEnumerator ProcessLoginAndJoinGame()
@@ -50,8 +48,8 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         var loginPassword = PlayerPrefs.GetString("LoginPassword");
 
         // TEST
-        loginId = "editor";
-        loginPassword = "1234";
+        // loginId = "editor";
+        // loginPassword = "1234";
 
         if (string.IsNullOrEmpty(loginId))
         {
@@ -59,7 +57,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield break;
         }
 
-        yield return StartCoroutine(ProcessLoginUser("test", "1234"));
+        yield return StartCoroutine(ProcessLoginUser(loginId, loginPassword));
         if (G.User == null)
         {
             UiMessageBox.ShowMessageBox("Failed to login");
@@ -127,7 +125,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         _gameInfo = joinRet.Result.Item3;
         _myPlayerId = joinRet.Result.Item2;
         _myPlayer = new GamePlayerRef(
-            new SlimActorRef(joinRet.Result.Item1),  G.SlimRequestWaiter, null);
+            new SlimActorRef(joinRet.Result.Item1), G.SlimRequestWaiter, null);
 
         observer.Pending = false;
         LoadingText.text = "Waiting for " + _pairedGame.Item2 + "...";

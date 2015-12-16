@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Net;
 using Akka.Interfaced;
-using Domain.Interfaced;
-using Akka.Interfaced.SlimSocket.Client;
 using Akka.Interfaced.SlimSocket.Base;
+using Akka.Interfaced.SlimSocket.Client;
 using Common.Logging;
+using Domain.Interfaced;
 using TypeAlias;
 
-public static class LoginProcessor 
+public static class LoginProcessor
 {
     public static Task Login(IPEndPoint endPoint, string id, string password, Action<string> progressReport)
     {
@@ -19,7 +19,7 @@ public static class LoginProcessor
         return task;
     }
 
-    private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password, 
+    private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password,
                                               SlimTask<bool> task, Action<string> progressReport)
     {
         // Connect
