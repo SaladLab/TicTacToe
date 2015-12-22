@@ -5,6 +5,7 @@ using DG.Tweening;
 using Domain.Game;
 using Domain.Interfaced;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
@@ -44,12 +45,14 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
     private IEnumerator ProcessLoginAndJoinGame()
     {
+        var loginServer = PlayerPrefs.GetString("LoginServer");
         var loginId = PlayerPrefs.GetString("LoginId");
         var loginPassword = PlayerPrefs.GetString("LoginPassword");
 
         // TEST
-        // loginId = "editor";
-        // loginPassword = "1234";
+        loginServer = "";
+        loginId = "editor";
+        loginPassword = "1234";
 
         if (string.IsNullOrEmpty(loginId))
         {
@@ -57,7 +60,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield break;
         }
 
-        yield return StartCoroutine(ProcessLoginUser(loginId, loginPassword));
+        yield return StartCoroutine(ProcessLoginUser(loginServer, loginId, loginPassword));
         if (G.User == null)
         {
             UiMessageBox.ShowMessageBox("Failed to login");
@@ -66,11 +69,12 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         yield return StartCoroutine(ProcessJoinGame());
     }
 
-    private IEnumerator ProcessLoginUser(string id, string password)
+    private IEnumerator ProcessLoginUser(string server, string id, string password)
     {
         G.Logger.Info("ProcessLoginUser");
 
-        var task = LoginProcessor.Login(G.ServerEndPoint, id, password, null);
+        var endPoint = LoginProcessor.GetEndPointAddress(server);
+        var task = LoginProcessor.Login(endPoint, id, password, null);
         yield return task.WaitHandle;
     }
 
@@ -101,7 +105,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield return G.User.UnregisterPairing().WaitHandle;
             var box = UiMessageBox.ShowMessageBox("Cannot find game");
             yield return StartCoroutine(box.WaitForHide());
-            Application.LoadLevel("MainScene");
+            SceneManager.LoadScene("MainScene");
             yield break;
         }
 
@@ -231,7 +235,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             G.Comm.RemoveObserver(_gameObserverId);
         }
 
-        Application.LoadLevel("MainScene");
+        SceneManager.LoadScene("MainScene");
     }
 
     void IUserPairingObserver.MakePair(long gameId, string opponentName)

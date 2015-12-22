@@ -147,8 +147,8 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>"$(ProtobufNetPrecompileExe)" "$(TargetPath)" -o:Domain.Unity3D.ProtobufSerializer.dll -t:DomainProtobufSerializer "-f:.NETFramework\v3.5\Profile\Unity Subset v3.5" -autosurrogate
-COPY /Y "$(TargetDir)Domain.Unity3D.ProtobufSerializer.dll" "$(SolutionDir)src\GameClient\Assets\Script"
-COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Script"
+COPY /Y "$(TargetDir)Domain.Unity3D.ProtobufSerializer.dll" "$(SolutionDir)src\GameClient\Assets\Scripts"
+COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Scripts"
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\packages\TrackableData.Templates.0.2.0-alpha3\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.0.2.0-alpha3\build\TrackableData.Templates.targets')" />

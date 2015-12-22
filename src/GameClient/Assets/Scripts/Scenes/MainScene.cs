@@ -1,10 +1,10 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections;
 using System.Net;
 using Akka.Interfaced;
-using Domain.Interfaced;
 using DG.Tweening;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainScene : MonoBehaviour
@@ -13,6 +13,7 @@ public class MainScene : MonoBehaviour
     public RectTransform LoadingPanel;
     public RectTransform MainPanel;
 
+    public InputField ServerInput;
     public InputField IdInput;
     public InputField PasswordInput;
     public Text LoadingText;
@@ -37,26 +38,39 @@ public class MainScene : MonoBehaviour
         }
         else
         {
+            LoginPanel.gameObject.SetActive(true);
+
+            var loginServer = PlayerPrefs.GetString("LoginServer");
             var loginId = PlayerPrefs.GetString("LoginId");
             var loginPassword = PlayerPrefs.GetString("LoginPassword");
-            if (string.IsNullOrEmpty(loginId))
+
+            if (string.IsNullOrEmpty(loginId) == false)
             {
-                LoginPanel.gameObject.SetActive(true);
-            }
-            else
-            {
+                ServerInput.text = loginServer;
                 IdInput.text = loginId;
-                StartCoroutine(ProcessLoginUser(loginId, loginPassword));
+                PasswordInput.text = loginPassword;
             }
         }
     }
 
-    private IEnumerator ProcessLoginUser(string id, string password)
+    private IEnumerator ProcessLoginUser(string server, string id, string password)
     {
         G.Logger.Info("ProcessLoginUser");
+
+        IPEndPoint endPoint;
+        try
+        {
+            endPoint = LoginProcessor.GetEndPointAddress(server);
+        }
+        catch (Exception e)
+        {
+            UiMessageBox.ShowMessageBox("Server EndPoint Error: " + e);
+            yield break;
+        }
+
         SwitchPanel(LoginPanel, LoadingPanel);
 
-        var task = LoginProcessor.Login(G.ServerEndPoint, id, password, p => LoadingText.text = p + "...");
+        var task = LoginProcessor.Login(endPoint, id, password, p => LoadingText.text = p + "...");
         yield return task.WaitHandle;
 
         if (task.Status == TaskStatus.RanToCompletion)
@@ -78,6 +92,7 @@ public class MainScene : MonoBehaviour
 
     public void OnLoginButtonClick()
     {
+        var server = ServerInput.text;
         var id = IdInput.text;
         var password = PasswordInput.text;
 
@@ -87,7 +102,7 @@ public class MainScene : MonoBehaviour
             return;
         }
 
-        StartCoroutine(ProcessLoginUser(id, password));
+        StartCoroutine(ProcessLoginUser(server, id, password));
     }
 
     public void OnPlayButtonClick()
@@ -98,7 +113,7 @@ public class MainScene : MonoBehaviour
             return;
         }
 
-        Application.LoadLevel("GameScene");
+        SceneManager.LoadScene("GameScene");
     }
 
     public void OnInfoButtonClick()

@@ -40,8 +40,7 @@ public static class G
         get { return _slimRequestWaiter; }
     }
 
-    public static readonly IPEndPoint ServerEndPoint =
-        new IPEndPoint(IPAddress.Loopback, 9001); // new IPEndPoint(IPAddress.Parse("192.168.100.8"), 9001);
+    public static readonly IPEndPoint DefaultServerEndPoint = new IPEndPoint(IPAddress.Loopback, 9001);
 
     // Logger
 

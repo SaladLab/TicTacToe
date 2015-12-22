@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Net;
+using System.Net.Sockets;
 using Akka.Interfaced;
 using Akka.Interfaced.SlimSocket.Base;
 using Akka.Interfaced.SlimSocket.Client;
@@ -10,6 +11,36 @@ using TypeAlias;
 
 public static class LoginProcessor
 {
+    public static IPEndPoint GetEndPointAddress(string address)
+    {
+        var a = address.Trim();
+
+        // use deault if empty string
+        if (string.IsNullOrEmpty(a))
+        {
+            return G.DefaultServerEndPoint;
+        }
+
+        // use 192.168.100.num if *.num when local ip address is 192.168.100.~
+
+        if (a.StartsWith("*."))
+        {
+            var end = int.Parse(a.Substring(2));
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    var abytes = ip.GetAddressBytes();
+                    abytes[abytes.Length - 1] = (byte)end;
+                    return new IPEndPoint(new IPAddress(abytes), G.DefaultServerEndPoint.Port);
+                }
+            }
+        }
+
+        return IPEndPointHelper.Parse(address, G.DefaultServerEndPoint.Port);
+    }
+
     public static Task Login(IPEndPoint endPoint, string id, string password, Action<string> progressReport)
     {
         var task = new SlimTask<bool>();
