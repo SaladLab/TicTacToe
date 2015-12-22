@@ -77,6 +77,7 @@ public class MainScene : MonoBehaviour
         {
             SwitchPanel(LoadingPanel, MainPanel);
 
+            PlayerPrefs.SetString("LoginServer", server);
             PlayerPrefs.SetString("LoginId", id);
             PlayerPrefs.SetString("LoginPassword", password);
         }
@@ -85,6 +86,7 @@ public class MainScene : MonoBehaviour
             UiMessageBox.ShowMessageBox(task.Exception.Message);
             SwitchPanel(LoadingPanel, LoginPanel);
 
+            PlayerPrefs.DeleteKey("LoginServer");
             PlayerPrefs.DeleteKey("LoginId");
             PlayerPrefs.DeleteKey("LoginPassword");
         }
