@@ -9,7 +9,7 @@ public class AppPanel : MonoBehaviour
     {
         var commitId = string.IsNullOrEmpty(Version.CommitId)
                            ? ""
-                           : "(" + Version.CommitId + ")";
+                           : "(" + Version.CommitId.Substring(0, 6) + ")";
         VersionText.text = "Ver: " + Version.VersionString + " " + commitId;
     }
 }
