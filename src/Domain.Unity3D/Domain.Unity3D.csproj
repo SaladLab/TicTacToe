@@ -14,7 +14,7 @@
     <ProjectGuid>{B1C2A438-600C-43F7-BB86-4BC39B9AA187}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Domain.Unity3D</RootNamespace>
+    <RootNamespace>Domain</RootNamespace>
     <AssemblyName>Domain.Unity3D</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
