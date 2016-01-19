@@ -54,7 +54,7 @@ namespace GameServer.Tests
             if (Context == null)
                 return;
 
-            Context.System.Shutdown();
+            Context.System.Terminate();
             Context = null;
         }
     }
