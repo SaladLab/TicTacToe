@@ -21,7 +21,7 @@ namespace Akka.Interfaced.SlimSocket.Client
 
         Task IRequestWaiter.SendRequestAndWait(IActorRef target, RequestMessage requestMessage, TimeSpan? timeout)
         {
-            var task = new SlimTask<bool> {Owner = Owner};
+            var task = new SlimTask<bool> { Owner = Owner };
             Communicator.SendRequestAndWait(task, target, requestMessage, timeout);
             return task;
         }

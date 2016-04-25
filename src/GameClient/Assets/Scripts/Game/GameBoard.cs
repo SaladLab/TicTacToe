@@ -27,7 +27,7 @@ public class GameBoard : MonoBehaviour
             {
                 var grid = UiHelper.AddChild(gameObject, GridTemplate.gameObject);
                 grid.transform.SetParent(transform, false);
-                grid.transform.localPosition = new Vector3(x * 210 - 210, y * -210 + 210, 0);
+                grid.transform.localPosition = new Vector3((x * 210) - 210, (y * -210) + 210, 0);
 
                 var et = new EventTrigger.TriggerEvent();
                 var localX = x;

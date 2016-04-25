@@ -1,18 +1,16 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Interfaced;
-using Common.Logging;
-using System.Net;
 using Akka.Cluster.Utility;
+using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
+using Common.Logging;
 using Domain.Data;
 using Domain.Interfaced;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using TrackableData;
 using TrackableData.MongoDB;
-using Akka.Interfaced.SlimSocket.Server;
 
 namespace GameServer
 {
@@ -68,7 +66,7 @@ namespace GameServer
             {
                 userId = userMap.UserId;
                 userContext = (TrackableUserContext)await MongoDbStorage.UserContextMapper.LoadAsync(
-                    MongoDbStorage.Instance.UserCollection, 
+                    MongoDbStorage.Instance.UserCollection,
                     userId);
 
                 userContext.SetDefaultTracker();

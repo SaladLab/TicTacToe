@@ -17,7 +17,7 @@ public static class IPEndPointHelper
             throw new ArgumentException("Endpoint descriptor may not be empty.");
         }
 
-        if (defaultPort != -1 && (defaultPort < IPEndPoint.MinPort|| defaultPort > IPEndPoint.MaxPort))
+        if (defaultPort != -1 && (defaultPort < IPEndPoint.MinPort || defaultPort > IPEndPoint.MaxPort))
         {
             throw new ArgumentException(string.Format("Invalid default port '{0}'", defaultPort));
         }
@@ -27,8 +27,8 @@ public static class IPEndPointHelper
         int port = -1;
 
         // check if we have an IPv6 or ports
-        if (values.Length <= 2) // ipv4 or hostname
-        {
+        if (values.Length <= 2)
+        { // ipv4 or hostname
             if (values.Length == 1)
                 // no port is specified, default
                 port = defaultPort;
@@ -39,8 +39,8 @@ public static class IPEndPointHelper
             if (!IPAddress.TryParse(values[0], out ipaddy))
                 ipaddy = GetIPFromHost(values[0]);
         }
-        else if (values.Length > 2) // ipv6
-        {
+        else if (values.Length > 2)
+        { // ipv6
             // could [a:b:c]:d
             if (values[0].StartsWith("[") && values[values.Length - 2].EndsWith("]"))
             {
@@ -48,8 +48,8 @@ public static class IPEndPointHelper
                 ipaddy = IPAddress.Parse(ipaddressstring);
                 port = GetPort(values[values.Length - 1]);
             }
-            else // [a:b:c] or a:b:c
-            {
+            else
+            { // [a:b:c] or a:b:c
                 ipaddy = IPAddress.Parse(endPointString);
                 port = defaultPort;
             }

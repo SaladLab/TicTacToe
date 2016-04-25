@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 namespace Domain.Game
-{    
+{
     public static class Logic
     {
         static Logic()

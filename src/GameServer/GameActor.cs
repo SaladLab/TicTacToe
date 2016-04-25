@@ -151,7 +151,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        Tuple<int, GameInfo> Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
+        private Tuple<int, GameInfo> Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
         {
             if (_state != GameState.WaitingForPlayers)
                 throw new ResultException(ResultCodeType.GameStarted);
@@ -177,7 +177,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void Leave(long userId)
+        private void Leave(long userId)
         {
             var playerId = GetPlayerId(userId);
 
@@ -201,7 +201,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void MakeMove(PlacePosition pos, long playerUserId)
+        private void MakeMove(PlacePosition pos, long playerUserId)
         {
             var playerId = GetPlayerId(playerUserId);
             if (playerId != _currentPlayerId)
@@ -217,7 +217,7 @@ namespace GameServer
             MakeMove(pos);
         }
 
-        void MakeMove(PlacePosition pos)
+        private void MakeMove(PlacePosition pos)
         {
             _boardGridMarks[pos.X, pos.Y] = _currentPlayerId;
             _movePositions.Add(pos);
@@ -244,7 +244,7 @@ namespace GameServer
         }
 
         [ExtendedHandler]
-        void Say(string msg, long playerUserId)
+        private void Say(string msg, long playerUserId)
         {
             // TODO:
         }

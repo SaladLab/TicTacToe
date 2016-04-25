@@ -49,7 +49,7 @@ namespace GameServer
 
         private class Schedule
         {
-        };
+        }
 
         [MessageHandler]
         private async Task OnSchedule(Schedule tick)

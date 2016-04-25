@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Akka.Interfaced;
 using ProtoBuf;
-using System.Collections.Generic;
 using Domain.Game;
 
 namespace Domain.Interfaced

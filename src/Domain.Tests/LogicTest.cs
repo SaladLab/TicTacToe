@@ -1,6 +1,6 @@
-﻿using Domain.Game;
-using System;
+﻿using System;
 using System.Linq;
+using Domain.Game;
 using Xunit;
 
 namespace Domain.Tests
@@ -58,7 +58,6 @@ namespace Domain.Tests
 
             Assert.Equal(new PlacePosition(2, 2), r);
         }
-
 
         [Fact]
         public void Test_DetermineMove_SecondRule()

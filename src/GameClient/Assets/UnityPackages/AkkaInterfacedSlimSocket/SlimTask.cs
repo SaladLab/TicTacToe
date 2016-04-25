@@ -31,7 +31,10 @@ namespace Akka.Interfaced.SlimSocket.Client
 
         public Exception Exception
         {
-            get { return _exception; }
+            get
+            {
+                return _exception;
+            }
             set
             {
                 if (IsCompleted)

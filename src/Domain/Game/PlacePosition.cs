@@ -8,7 +8,8 @@ namespace Domain.Game
         [ProtoMember(1)] public int X;
         [ProtoMember(2)] public int Y;
 
-        public PlacePosition() : this(0, 0)
+        public PlacePosition()
+            : this(0, 0)
         {
         }
 

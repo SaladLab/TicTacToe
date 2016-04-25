@@ -19,7 +19,7 @@ namespace Domain.Workaround
         /*
             Without this in IL2CPP, we can get this exception.
 
-            MissingMethodException: Method not found: 
+            MissingMethodException: Method not found:
                 'Default constructor not found...ctor() of TrackableData.TrackableDictionaryTracker`2[
                 [System.Int32, mscorlib, Version=2.0.5.0, Culture=, PublicKeyToken=7cec85d7bea7798e],
                 [System.String, mscorlib, Version=2.0.5.0, Culture=, PublicKeyToken=7cec85d7bea7798e]]'.

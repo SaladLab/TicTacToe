@@ -17,7 +17,10 @@ public static class G
 
     public static Communicator Comm
     {
-        get { return _comm; }
+        get
+        {
+            return _comm;
+        }
         set
         {
             _comm = value;

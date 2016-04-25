@@ -22,10 +22,10 @@ public class GridAnimation : MonoBehaviour
         {
             for (int x = 0; x < 3; x++)
             {
-                var index = y * 3 + x;
+                var index = (y * 3) + x;
                 var text = (Text)Instantiate(LetterTemplate);
                 text.transform.SetParent(LetterTemplate.transform.parent, false);
-                text.transform.localPosition = new Vector3(x * 200 - 200, y * -200 + 200, 0);
+                text.transform.localPosition = new Vector3((x * 200) - 200, (y * -200) + 200, 0);
                 text.text = caption[index].ToString();
                 _letters[index] = text;
             }

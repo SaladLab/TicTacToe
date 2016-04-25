@@ -79,7 +79,7 @@ namespace GameServer
             var observer = new GameObserver(_clientSession, observerId);
 
             var observerIdForMe = IssueObserverId();
-            var observerForMe  = new GameUserObserver(Self, observerIdForMe);
+            var observerForMe = new GameUserObserver(Self, observerIdForMe);
             AddObserver(observerIdForMe, this);
 
             var joinRet = await game.Join(_id, _userContext.Data.Name, observer, observerForMe);

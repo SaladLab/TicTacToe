@@ -12,7 +12,7 @@ namespace GameServer
         {
             public string Id;
             public string Password;
-            public DateTime LastLoginTime; 
+            public DateTime LastLoginTime;
         }
 
         // If account exists, check password correct.

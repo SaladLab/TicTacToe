@@ -262,7 +262,7 @@ namespace GameServer
                     typeof(IUserLogin))
             };
         }
-    };
+    }
 
     public class GameActorFactory : IActorFactory
     {

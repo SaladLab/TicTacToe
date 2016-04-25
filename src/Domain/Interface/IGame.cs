@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Akka.Interfaced;
-using ProtoBuf;
 
 namespace Domain.Interfaced
 {
     public class CreateGameParam
     {
         public bool WithBot;
-    };
+    }
 
     public interface IGame : IInterfacedActor
     {

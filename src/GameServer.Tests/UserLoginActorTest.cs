@@ -1,12 +1,12 @@
-﻿using Akka.Actor;
-using Domain.Interfaced;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Akka.Actor;
 using Akka.Interfaced.TestKit;
-using Xunit;
 using Akka.TestKit;
 using Akka.TestKit.Xunit2;
+using Domain.Interfaced;
+using Xunit;
 
 namespace GameServer.Tests
 {
@@ -27,7 +27,7 @@ namespace GameServer.Tests
 
             _clientSession = new TestActorRef<TestActorBoundSession>(
                 system, Props.Create(() => new TestActorBoundSession(CreateInitialActor)));
-            
+
             return new UserLoginRef(null, _clientSession.UnderlyingActor.GetRequestWaiter(1), null);
         }
 
