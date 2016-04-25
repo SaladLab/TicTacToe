@@ -1,0 +1,61 @@
+{
+  "Id": "TrackableData",
+  "Version": "1.1.0",
+  "Authors": [
+    "Esun Kim"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "POCO, list, dictionary, set and container which can track changes. These changes can be saved or rollbacked or replayed to another object.",
+  "Dependencies": {
+    "JsonNet": {
+      "Version": ">=8.0.0",
+      "Source": "github:SaladLab/Json.Net.Unity3D"
+    },
+    "protobuf-net": {
+      "Version": "2.0.0.668",
+      "Source": "nuget:net20"
+    }
+  },
+  "MergedDependencies": {
+    "JsonNet": {
+      "Version": "8.0.3"
+    },
+    "protobuf-net": {
+      "Version": "2.0.0.668"
+    }
+  },
+  "Files": [
+    "Assets/UnityPackages/TrackableData/TrackableData.dll",
+    "Assets/UnityPackages/TrackableData/TrackableData.dll.mdb",
+    "Assets/UnityPackages/TrackableData/TrackableData.Json.dll",
+    "Assets/UnityPackages/TrackableData/TrackableData.Json.dll.mdb",
+    "Assets/UnityPackages/TrackableData/TrackableData.Protobuf.dll",
+    "Assets/UnityPackages/TrackableData/TrackableData.Protobuf.dll.mdb",
+    {
+      "Target": "Assets/UnityPackages/JsonNet.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/JsonNet/Newtonsoft.Json.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/JsonNet/Newtonsoft.Json.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net/protobuf-net.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net/protobuf-net.dll",
+      "Merged": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "AkkaInterfaced",
+  "Version": "0.2.1",
+  "Authors": [
+    "Esun Kim"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "Akka.Interfaced SlimClient for Unity3D",
+  "MergedDependencies": {},
+  "Files": [
+    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll",
+    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll.mdb",
+    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll",
+    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll.mdb"
+  ]
+}

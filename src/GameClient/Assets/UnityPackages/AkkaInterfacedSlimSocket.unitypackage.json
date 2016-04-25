@@ -1,0 +1,158 @@
+{
+  "Id": "AkkaInterfacedSlimSocket",
+  "Version": "0.2.1",
+  "Authors": [
+    "Esun Kim"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "SlimSocket-Client for Akka.Interfaced",
+  "Dependencies": {
+    "AkkaInterfaced": {
+      "Version": ">=0.2.1",
+      "Source": "github:SaladLab/Akka.Interfaced"
+    },
+    "CommonLogging": {
+      "Version": ">=3.3.1",
+      "Source": "github:SaladLab/Common.Logging.Unity3D"
+    },
+    "NetLegacySupport": {
+      "Version": ">=1.1.0",
+      "Source": "github:SaladLab/NetLegacySupport"
+    },
+    "protobuf-net": {
+      "Version": "2.0.0.668",
+      "Source": "nuget:net20"
+    },
+    "TypeAlias": {
+      "Version": ">=1.1.2",
+      "Source": "github:SaladLab/TypeAlias"
+    }
+  },
+  "MergedDependencies": {
+    "AkkaInterfaced": {
+      "Version": "0.2.1"
+    },
+    "CommonLogging": {
+      "Version": "3.3.1"
+    },
+    "NetLegacySupport": {
+      "Version": "1.1.0"
+    },
+    "protobuf-net": {
+      "Version": "2.0.0.668"
+    },
+    "TypeAlias": {
+      "Version": "1.1.2"
+    }
+  },
+  "Files": [
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Base.dll",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Base.dll.mdb",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll.mdb",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimRequestWaiter.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTask.cs",
+    {
+      "Target": "Assets/UnityPackages/AkkaInterfaced.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/TypeAlias.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Core.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Core.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Extensions.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Extensions.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net/protobuf-net.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/protobuf-net/protobuf-net.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/TypeAlias/TypeAlias.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/TypeAlias/TypeAlias.dll",
+      "Merged": true
+    }
+  ]
+}

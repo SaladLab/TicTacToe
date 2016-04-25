@@ -1,0 +1,9 @@
+{
+  "Id": "protobuf-net",
+  "Version": "2.0.0.668",
+  "Description": "Nuget package (TFM:net20)",
+  "Files": [
+    "protobuf-net.dll",
+    "protobuf-net.dll.mdb"
+  ]
+}

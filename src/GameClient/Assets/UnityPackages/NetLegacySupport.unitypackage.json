@@ -1,0 +1,19 @@
+{
+  "Id": "NetLegacySupport",
+  "Version": "1.1.0",
+  "Authors": [
+    "Microsoft"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "Action, Func, Tuple and ConcurrentDictionary for Unity3D. This is a backport from .NET Core.",
+  "Files": [
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll",
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll.mdb",
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll",
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll.mdb",
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll",
+    "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll.mdb"
+  ]
+}

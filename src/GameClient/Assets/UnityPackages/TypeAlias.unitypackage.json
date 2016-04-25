@@ -1,0 +1,54 @@
+{
+  "Id": "TypeAlias",
+  "Version": "1.1.2",
+  "Authors": [
+    "Esun Kim"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "Library that makes the unique alias of types in .NET.",
+  "Dependencies": {
+    "NetLegacySupport": {
+      "Version": ">=1.1.0",
+      "Source": "github:SaladLab/NetLegacySupport"
+    }
+  },
+  "MergedDependencies": {
+    "NetLegacySupport": {
+      "Version": "1.1.0"
+    }
+  },
+  "Files": [
+    "Assets/UnityPackages/TypeAlias/TypeAlias.dll",
+    "Assets/UnityPackages/TypeAlias/TypeAlias.dll.mdb",
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Action.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.ConcurrentDictionary.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll",
+      "Merged": true
+    }
+  ]
+}

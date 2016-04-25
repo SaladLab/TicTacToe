@@ -31,44 +31,48 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.1.0.6\lib\net45\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.0.7.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.1.0.7\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster, Version=1.0.6.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Cluster.1.0.6.17-beta\lib\net45\Akka.Cluster.dll</HintPath>
+    <Reference Include="Akka.Cluster, Version=1.0.7.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Cluster.1.0.7.18-beta\lib\net45\Akka.Cluster.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Cluster.Utility, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Cluster.Utility.0.2.0-alpha4\lib\net45\Akka.Cluster.Utility.dll</HintPath>
+    <Reference Include="Akka.Cluster.Utility, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Cluster.Utility.0.2.0-beta2\lib\net45\Akka.Cluster.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.0.2.0-alpha5\lib\net45\Akka.Interfaced.dll</HintPath>
+    <Reference Include="Akka.Interfaced, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced.0.2.1\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced-Base, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.2.0-alpha5\lib\net45\Akka.Interfaced-Base.dll</HintPath>
+    <Reference Include="Akka.Interfaced-Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.2.1\lib\net45\Akka.Interfaced-Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced.LogFilter, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.LogFilter.0.2.0-alpha5\lib\net45\Akka.Interfaced.LogFilter.dll</HintPath>
+    <Reference Include="Akka.Interfaced.LogFilter, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced.LogFilter.0.2.1\lib\net45\Akka.Interfaced.LogFilter.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced.ProtobufSerializer, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.ProtobufSerializer.0.2.0-alpha5\lib\net45\Akka.Interfaced.ProtobufSerializer.dll</HintPath>
+    <Reference Include="Akka.Interfaced.ProtobufSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced.ProtobufSerializer.0.2.1\lib\net45\Akka.Interfaced.ProtobufSerializer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced.SlimSocket.Base, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.2.0-alpha5\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
+    <Reference Include="Akka.Interfaced.SlimSocket.Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.2.0\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Interfaced.SlimSocket.Server, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.2.0-alpha5\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
+    <Reference Include="Akka.Interfaced.SlimSocket.Server, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.2.0\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Remote, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Remote.1.0.6\lib\net45\Akka.Remote.dll</HintPath>
+    <Reference Include="Akka.Remote, Version=1.0.7.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Remote.1.0.7\lib\net45\Akka.Remote.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Akka.Serialization.Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Akka.Serialization.Wire.1.0.7.18-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
@@ -95,16 +99,16 @@
       <HintPath>..\..\packages\Helios.1.4.2\lib\net45\Helios.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Bson, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MongoDB.Bson.2.2.2\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MongoDB.Bson.2.2.3\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MongoDB.Driver.2.2.2\lib\net45\MongoDB.Driver.dll</HintPath>
+    <Reference Include="MongoDB.Driver, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MongoDB.Driver.2.2.3\lib\net45\MongoDB.Driver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Driver.Core, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MongoDB.Driver.Core.2.2.2\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    <Reference Include="MongoDB.Driver.Core, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MongoDB.Driver.Core.2.2.3\lib\net45\MongoDB.Driver.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NetLegacySupport.Action, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -116,7 +120,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -128,8 +132,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration" />
@@ -140,16 +144,20 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TrackableData, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.0.2.0-alpha4\lib\net45\TrackableData.dll</HintPath>
+    <Reference Include="TrackableData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\TrackableData.1.1.3\lib\net45\TrackableData.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="TrackableData.MongoDB, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TrackableData.MongoDB.0.2.0-alpha4\lib\net45\TrackableData.MongoDB.dll</HintPath>
+    <Reference Include="TrackableData.MongoDB, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\TrackableData.MongoDB.1.1.3\lib\net45\TrackableData.MongoDB.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TypeAlias, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TypeAlias.1.1.1\lib\net40\TypeAlias.dll</HintPath>
+      <HintPath>..\..\packages\TypeAlias.1.1.2\lib\net40\TypeAlias.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Wire.0.0.6\lib\Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -175,6 +183,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

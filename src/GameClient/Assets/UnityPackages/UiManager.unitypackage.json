@@ -1,0 +1,69 @@
+{
+  "Id": "UiManager",
+  "Version": "1.0.0",
+  "Authors": [
+    "Esun Kim"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "Common UI Manager for Unity3D",
+  "Dependencies": {
+    "CommonLogging": {
+      "Version": ">=3.3.1",
+      "Source": "github:SaladLab/Common.Logging.Unity3D"
+    }
+  },
+  "MergedDependencies": {
+    "CommonLogging": {
+      "Version": "3.3.1"
+    }
+  },
+  "Files": [
+    "Assets/UnityPackages/UiManager/UiDialog.cs",
+    "Assets/UnityPackages/UiManager/UiDialogHandle.cs",
+    "Assets/UnityPackages/UiManager/UiHelper.cs",
+    "Assets/UnityPackages/UiManager/UiManager.cs",
+    "Assets/UnityPackages/UiManager/UiMessageBox.cs",
+    {
+      "Target": "Assets/UnityPackages/UiManagerSample/TestDialogBox.cs",
+      "Extra": true
+    },
+    {
+      "Target": "Assets/UnityPackages/UiManagerSample/UiManagerSample.cs",
+      "Extra": true
+    },
+    {
+      "Target": "Assets/UnityPackages/UiManagerSample/UiManagerSample.unity",
+      "Extra": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Core.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Core.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Extensions.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Extensions.dll",
+      "Merged": true
+    }
+  ]
+}
