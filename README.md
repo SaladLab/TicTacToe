@@ -1,24 +1,31 @@
 # Tic Tac Toe
 
-- Client
-  - MainScene (Login, Single, Multi, Spectate)
-  - SingleGameScene
-  - MultiGameScene
-  - SpectateGameScene
-  
-- Server
-- Webby
+Reference game for using Akka.Interfaced, Akka.Interfaced.SlimSocket and TrackableData.
 
+![Screenshot](https://raw.githubusercontent.com/SaladLab/TicTacToe/master/docs/ScreenShot.jpg)
 
-## Project Organization
+## How to run
 
-### Domain
- - Packages
-```
-PM> Install-Package Akka.Interfaced.Templates -Pre
-PM> Install-Package TrackableData.Templates -Pre
-install-pacakge protobuf-net
-Install-Package TrackableData-Protobuf -Pre
-```
+### Prerequisites
 
-### Domain.Unity3D
+- MongoDB 3 or later
+- Visual Studio 2015 or later (it's not mandatory if you can build projects)
+- Unity 5.3 or later
+
+### Steps
+
+- Make sure MongoDB is running well.
+  - By default server connects to local MongoDB.
+  - Address of MongoDB can be configured on src/GameServer-Console/App.config.
+- Run Server
+  - Open TicTacToe.sln with Visual Studio.
+  - Run GameServer-Console.
+- Run Client
+  - Open src/GameClient with Unity
+  - Open Scenes/MainScene and run.
+
+## Known issues
+
+#### Client cannot connect to GameServer sometimes
+
+Please retry to connect. It's caused by SlimSocket and will be fixed.
