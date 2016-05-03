@@ -23,9 +23,3 @@ Reference game for using Akka.Interfaced, Akka.Interfaced.SlimSocket and Trackab
 - Run Client
   - Open src/GameClient with Unity
   - Open Scenes/MainScene and run.
-
-## Known issues
-
-#### Client cannot connect to GameServer sometimes
-
-Please retry to connect. It's caused by SlimSocket and will be fixed.
