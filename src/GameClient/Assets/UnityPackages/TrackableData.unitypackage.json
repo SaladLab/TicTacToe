@@ -10,7 +10,7 @@
   "Description": "POCO, list, dictionary, set and container which can track changes. These changes can be saved or rollbacked or replayed to another object.",
   "Dependencies": {
     "JsonNet": {
-      "Version": ">=8.0.0",
+      "Version": "8.*",
       "Source": "github:SaladLab/Json.Net.Unity3D"
     },
     "protobuf-net": {

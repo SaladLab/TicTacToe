@@ -10,7 +10,7 @@
   "Description": "Library that makes the unique alias of types in .NET.",
   "Dependencies": {
     "NetLegacySupport": {
-      "Version": ">=1.1.0",
+      "Version": "1.*",
       "Source": "github:SaladLab/NetLegacySupport"
     }
   },
