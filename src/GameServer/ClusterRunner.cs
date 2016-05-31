@@ -9,11 +9,10 @@ using Akka.Cluster;
 using Akka.Cluster.Utility;
 using Akka.Configuration;
 using Akka.Interfaced;
-using Akka.Interfaced.ProtobufSerializer;
 using Akka.Interfaced.SlimSocket.Base;
 using Akka.Interfaced.SlimSocket.Server;
 using Common.Logging;
-using Domain.Interface;
+using Domain;
 using ProtoBuf.Meta;
 using TypeAlias;
 

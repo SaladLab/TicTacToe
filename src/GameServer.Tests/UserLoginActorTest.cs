@@ -5,7 +5,7 @@ using Akka.Actor;
 using Akka.Interfaced.TestKit;
 using Akka.TestKit;
 using Akka.TestKit.Xunit2;
-using Domain.Interface;
+using Domain;
 using Xunit;
 
 namespace GameServer.Tests

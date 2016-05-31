@@ -1,8 +1,8 @@
 ﻿using System;
 using Akka.Interfaced;
-using Domain.Data;
+using Domain;
 
-namespace Domain.Interface
+namespace Domain
 {
     public interface IUserEventObserver : IInterfacedObserver
     {

@@ -5,7 +5,7 @@ using Akka.Actor;
 using Akka.Cluster;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer
 {

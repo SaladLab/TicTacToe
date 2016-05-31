@@ -2,8 +2,7 @@
 using System.Collections;
 using Akka.Interfaced.SlimSocket.Client;
 using DG.Tweening;
-using Domain.Game;
-using Domain.Interface;
+using Domain;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -65,6 +64,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             UiMessageBox.ShowMessageBox("Failed to login");
             yield break;
         }
+
         yield return StartCoroutine(ProcessJoinGame());
     }
 
@@ -110,8 +110,10 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         // Join Game
 
-        var roomId = _pairedGame.Item1;
         var gameObserver = G.Comm.CreateObserver<IGameObserver>(this, startPending: true);
+        gameObserver.GetEventDispatcher().KeepingOrder = true; // remove after Akka.NET network layer is upgraded
+
+        var roomId = _pairedGame.Item1;
         var joinRet = G.User.JoinGame(roomId, gameObserver);
         yield return joinRet.WaitHandle;
 

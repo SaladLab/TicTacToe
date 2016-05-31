@@ -1,5 +1,4 @@
-﻿using Domain.Data;
-using Domain.Interface;
+﻿using Domain;
 
 public class UserEventProcessor : IUserEventObserver
 {

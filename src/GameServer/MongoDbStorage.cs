@@ -1,4 +1,4 @@
-﻿using Domain.Data;
+﻿using Domain;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using TrackableData.MongoDB;

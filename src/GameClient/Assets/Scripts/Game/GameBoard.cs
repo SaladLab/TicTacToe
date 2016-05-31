@@ -1,6 +1,6 @@
 ﻿using System;
 using DG.Tweening;
-using Domain.Game;
+using Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

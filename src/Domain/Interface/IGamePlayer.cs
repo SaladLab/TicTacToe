@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Akka.Interfaced;
-using Domain.Game;
+using Domain;
 
-namespace Domain.Interface
+namespace Domain
 {
     // Player who is playing game
     [TagOverridable("playerUserId")]

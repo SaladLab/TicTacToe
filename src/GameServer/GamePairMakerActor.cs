@@ -7,7 +7,7 @@ using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer
 {

@@ -4,8 +4,7 @@ using Akka.Actor;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
-using Domain.Game;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer
 {

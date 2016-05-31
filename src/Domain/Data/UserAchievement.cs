@@ -2,7 +2,7 @@ using System;
 using ProtoBuf;
 using TrackableData;
 
-namespace Domain.Data
+namespace Domain
 {
     public enum AchievementKey
     {

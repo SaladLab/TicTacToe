@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Domain.Game;
+using Domain;
 using Xunit;
 
 namespace Domain.Tests

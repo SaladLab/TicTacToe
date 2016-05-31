@@ -2,7 +2,7 @@ using System;
 using ProtoBuf;
 using TrackableData;
 
-namespace Domain.Data
+namespace Domain
 {
     [ProtoContract]
     public interface IUserData : ITrackablePoco<IUserData>

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Akka.Interfaced;
+﻿using System.Collections.Generic;
 using ProtoBuf;
-using Domain.Game;
 
-namespace Domain.Interface
+namespace Domain
 {
     public enum GameState
     {

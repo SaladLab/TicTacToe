@@ -1,6 +1,6 @@
 using System;
 
-namespace Domain.Game
+namespace Domain
 {
     public static class Rule
     {

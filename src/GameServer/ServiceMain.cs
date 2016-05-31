@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using Akka.Configuration;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer
 {

@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using Akka.Interfaced;
 using Akka.Interfaced.SlimSocket.Client;
-using Domain.Interface;
+using Domain;
 using UnityEngine;
 
 public static class LoginProcessor

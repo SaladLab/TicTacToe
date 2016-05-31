@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Akka.Interfaced;
-using Domain.Data;
+using Domain;
 using ProtoBuf;
 
-namespace Domain.Interface
+namespace Domain
 {
     [ProtoContract]
     public class LoginResult

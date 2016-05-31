@@ -1,7 +1,7 @@
 ﻿using Akka.Interfaced;
-using Domain.Game;
+using Domain;
 
-namespace Domain.Interface
+namespace Domain
 {
     public interface IGameObserver : IInterfacedObserver
     {

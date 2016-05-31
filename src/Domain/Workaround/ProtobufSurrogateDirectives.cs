@@ -1,8 +1,8 @@
-﻿using Domain.Data;
+﻿using Domain;
 using ProtoBuf;
 using TrackableData.Protobuf;
 
-namespace Domain.Workaround
+namespace Domain
 {
     [ProtoContract]
     public class ProtobufSurrogateDirectives

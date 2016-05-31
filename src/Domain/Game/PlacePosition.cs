@@ -1,6 +1,6 @@
 using ProtoBuf;
 
-namespace Domain.Game
+namespace Domain
 {
     [ProtoContract]
     public class PlacePosition

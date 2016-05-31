@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Domain.Data;
+using Domain;
 using TrackableData;
 
-namespace Domain.Workaround
+namespace Domain
 {
     public class UnityIl2cppWorkaround
     {

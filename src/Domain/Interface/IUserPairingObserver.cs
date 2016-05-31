@@ -1,7 +1,6 @@
-﻿using System;
-using Akka.Interfaced;
+﻿using Akka.Interfaced;
 
-namespace Domain.Interface
+namespace Domain
 {
     public interface IUserPairingObserver : IInterfacedObserver
     {

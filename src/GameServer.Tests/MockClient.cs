@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Interfaced.TestKit;
 using Akka.TestKit;
-using Domain.Data;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer.Tests
 {

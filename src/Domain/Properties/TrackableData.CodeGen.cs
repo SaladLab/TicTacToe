@@ -18,7 +18,7 @@ using ProtoBuf;
 
 #region IUserData
 
-namespace Domain.Data
+namespace Domain
 {
     [ProtoContract]
     public partial class TrackableUserData : IUserData
@@ -302,7 +302,7 @@ namespace Domain.Data
 #endregion
 #region IUserContext
 
-namespace Domain.Data
+namespace Domain
 {
     [ProtoContract]
     public partial class TrackableUserContext : IUserContext

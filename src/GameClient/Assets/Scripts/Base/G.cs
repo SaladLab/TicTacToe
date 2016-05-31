@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using Akka.Interfaced.SlimSocket.Client;
 using Common.Logging;
-using Domain.Data;
-using Domain.Interface;
+using Domain;
 
 public static class G
 {

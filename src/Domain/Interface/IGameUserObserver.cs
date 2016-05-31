@@ -1,7 +1,7 @@
 ﻿using Akka.Interfaced;
-using Domain.Game;
+using Domain;
 
-namespace Domain.Interface
+namespace Domain
 {
     // It's an observer monitoring major events for IUserActor
     public interface IGameUserObserver : IInterfacedObserver

@@ -2,7 +2,7 @@
 using ProtoBuf;
 using TypeAlias;
 
-namespace Domain.Interface
+namespace Domain
 {
     public enum ResultCodeType
     {

@@ -1,6 +1,6 @@
 ﻿using Akka;
 using Akka.Actor;
-using Domain.Interface;
+using Domain;
 
 namespace GameServer
 {

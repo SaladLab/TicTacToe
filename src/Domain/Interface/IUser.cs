@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Akka.Interfaced;
 
-namespace Domain.Interface
+namespace Domain
 {
     public interface IUser : IInterfacedActor
     {
