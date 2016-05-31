@@ -49,23 +49,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.0.2.2\lib\net45\Akka.Interfaced.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.0.3.2\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.2.1\lib\net45\Akka.Interfaced-Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.3.1\lib\net45\Akka.Interfaced-Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.SlimSocket.Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.2.1\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Base.0.3.1-beta\lib\net45\Akka.Interfaced.SlimSocket.Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.SlimSocket.Server, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.2.2\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.SlimSocket.Server.0.3.2-beta\lib\net45\Akka.Interfaced.SlimSocket.Server.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced.TestKit, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.TestKit.0.2.2\lib\net45\Akka.Interfaced.TestKit.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.TestKit.0.3.2\lib\net45\Akka.Interfaced.TestKit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.0.8.24, Culture=neutral, processorArchitecture=MSIL">
@@ -121,7 +121,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <HintPath>..\..\packages\protobuf-net.2.1.0-alpha-1\lib\net45\protobuf-net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
