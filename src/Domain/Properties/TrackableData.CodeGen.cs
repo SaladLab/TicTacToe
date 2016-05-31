@@ -230,7 +230,8 @@ namespace Domain.Data
         [ProtoMember(7)] public EnvelopedObject<int> LoseCount;
         [ProtoMember(8)] public EnvelopedObject<int> DrawCount;
 
-        public static implicit operator TrackableUserDataTrackerSurrogate(TrackablePocoTracker<IUserData> tracker)
+        [ProtoConverter]
+        public static TrackableUserDataTrackerSurrogate Convert(TrackablePocoTracker<IUserData> tracker)
         {
             if (tracker == null)
                 return null;
@@ -270,7 +271,8 @@ namespace Domain.Data
             return surrogate;
         }
 
-        public static implicit operator TrackablePocoTracker<IUserData>(TrackableUserDataTrackerSurrogate surrogate)
+        [ProtoConverter]
+        public static TrackablePocoTracker<IUserData> Convert(TrackableUserDataTrackerSurrogate surrogate)
         {
             if (surrogate == null)
                 return null;

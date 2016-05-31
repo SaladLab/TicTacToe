@@ -15,11 +15,11 @@ using ProtoBuf;
 using TypeAlias;
 using System.ComponentModel;
 
-#region Domain.Interfaced.IGame
+#region Domain.Interface.IGame
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
-    [PayloadTableForInterfacedActor(typeof(IGame))]
+    [PayloadTable(typeof(IGame), PayloadTableKind.Request)]
     public static class IGame_PayloadTable
     {
         public static Type[,] GetPayloadTypes()
@@ -32,17 +32,34 @@ namespace Domain.Interfaced
 
         [ProtoContract, TypeAlias]
         public class Join_Invoke
-            : IInterfacedPayload, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadObserverUpdatable
         {
             [ProtoMember(1)] public System.Int64 userId;
             [ProtoMember(2)] public System.String userName;
-            [ProtoMember(3)] public Domain.Interfaced.GameObserver observer;
-            [ProtoMember(4)] public Domain.Interfaced.GameUserObserver observerForUserActor;
-            public Type GetInterfaceType() { return typeof(IGame); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            [ProtoMember(3)] public Domain.Interface.IGameObserver observer;
+            [ProtoMember(4)] public Domain.Interface.IGameUserObserver observerForUserActor;
+
+            public Type GetInterfaceType()
             {
-                var __v = await ((IGame)target).Join(userId, userName, observer, observerForUserActor);
-                return (IValueGetable)(new Join_Return { v = (System.Tuple<System.Int32, Domain.Interfaced.GameInfo>)__v });
+                return typeof(IGame);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                var __v = await ((IGame)__target).Join(userId, userName, observer, observerForUserActor);
+                return (IValueGetable)(new Join_Return { v = __v });
+            }
+
+            void IPayloadObserverUpdatable.Update(Action<IInterfacedObserver> updater)
+            {
+                if (observer != null)
+                {
+                    updater(observer);
+                }
+                if (observerForUserActor != null)
+                {
+                    updater(observerForUserActor);
+                }
             }
         }
 
@@ -50,9 +67,17 @@ namespace Domain.Interfaced
         public class Join_Return
             : IInterfacedPayload, IValueGetable
         {
-            [ProtoMember(1)] public System.Tuple<System.Int32, Domain.Interfaced.GameInfo> v;
-            public Type GetInterfaceType() { return typeof(IGame); }
-            public object Value { get { return v; } }
+            [ProtoMember(1)] public System.Tuple<System.Int32, Domain.Interface.GameInfo> v;
+
+            public Type GetInterfaceType()
+            {
+                return typeof(IGame);
+            }
+
+            public object Value
+            {
+                get { return v; }
+            }
         }
 
         [ProtoContract, TypeAlias]
@@ -60,10 +85,15 @@ namespace Domain.Interfaced
             : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.Int64 userId;
-            public Type GetInterfaceType() { return typeof(IGame); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+
+            public Type GetInterfaceType()
             {
-                await ((IGame)target).Leave(userId);
+                return typeof(IGame);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IGame)__target).Leave(userId);
                 return null;
             }
         }
@@ -71,20 +101,13 @@ namespace Domain.Interfaced
 
     public interface IGame_NoReply
     {
-        void Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor);
+        void Join(System.Int64 userId, System.String userName, Domain.Interface.IGameObserver observer, Domain.Interface.IGameUserObserver observerForUserActor);
         void Leave(System.Int64 userId);
     }
 
-    [ProtoContract, TypeAlias]
     public class GameRef : InterfacedActorRef, IGame, IGame_NoReply
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return (ActorRefBase)Actor; }
-            set { Actor = value; }
-        }
-
-        private GameRef() : base(null)
+        public GameRef() : base(null)
         {
         }
 
@@ -111,12 +134,12 @@ namespace Domain.Interfaced
             return new GameRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>> Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor)
+        public Task<System.Tuple<System.Int32, Domain.Interface.GameInfo>> Join(System.Int64 userId, System.String userName, Domain.Interface.IGameObserver observer, Domain.Interface.IGameUserObserver observerForUserActor)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer, observerForUserActor = (Domain.Interfaced.GameUserObserver)observerForUserActor }
+                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = observer, observerForUserActor = observerForUserActor }
             };
-            return SendRequestAndReceive<System.Tuple<System.Int32, Domain.Interfaced.GameInfo>>(requestMessage);
+            return SendRequestAndReceive<System.Tuple<System.Int32, Domain.Interface.GameInfo>>(requestMessage);
         }
 
         public Task Leave(System.Int64 userId)
@@ -127,10 +150,10 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IGame_NoReply.Join(System.Int64 userId, System.String userName, Domain.Interfaced.IGameObserver observer, Domain.Interfaced.IGameUserObserver observerForUserActor)
+        void IGame_NoReply.Join(System.Int64 userId, System.String userName, Domain.Interface.IGameObserver observer, Domain.Interface.IGameUserObserver observerForUserActor)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.GameObserver)observer, observerForUserActor = (Domain.Interfaced.GameUserObserver)observerForUserActor }
+                InvokePayload = new IGame_PayloadTable.Join_Invoke { userId = userId, userName = userName, observer = observer, observerForUserActor = observerForUserActor }
             };
             SendRequest(requestMessage);
         }
@@ -143,14 +166,34 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIGame
+    {
+        [ProtoMember(1)] public IActorRef Actor;
+
+        [ProtoConverter]
+        public static SurrogateForIGame Convert(IGame value)
+        {
+            if (value == null) return null;
+            return new SurrogateForIGame { Actor = ((GameRef)value).Actor };
+        }
+
+        [ProtoConverter]
+        public static IGame Convert(SurrogateForIGame value)
+        {
+            if (value == null) return null;
+            return new GameRef(value.Actor);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IGamePairMaker
+#region Domain.Interface.IGamePairMaker
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
-    [PayloadTableForInterfacedActor(typeof(IGamePairMaker))]
+    [PayloadTable(typeof(IGamePairMaker), PayloadTableKind.Request)]
     public static class IGamePairMaker_PayloadTable
     {
         public static Type[,] GetPayloadTypes()
@@ -163,16 +206,29 @@ namespace Domain.Interfaced
 
         [ProtoContract, TypeAlias]
         public class RegisterPairing_Invoke
-            : IInterfacedPayload, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadObserverUpdatable
         {
             [ProtoMember(1)] public System.Int64 userId;
             [ProtoMember(2)] public System.String userName;
-            [ProtoMember(3)] public Domain.Interfaced.UserPairingObserver observer;
-            public Type GetInterfaceType() { return typeof(IGamePairMaker); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            [ProtoMember(3)] public Domain.Interface.IUserPairingObserver observer;
+
+            public Type GetInterfaceType()
             {
-                await ((IGamePairMaker)target).RegisterPairing(userId, userName, observer);
+                return typeof(IGamePairMaker);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IGamePairMaker)__target).RegisterPairing(userId, userName, observer);
                 return null;
+            }
+
+            void IPayloadObserverUpdatable.Update(Action<IInterfacedObserver> updater)
+            {
+                if (observer != null)
+                {
+                    updater(observer);
+                }
             }
         }
 
@@ -181,10 +237,15 @@ namespace Domain.Interfaced
             : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.Int64 userId;
-            public Type GetInterfaceType() { return typeof(IGamePairMaker); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+
+            public Type GetInterfaceType()
             {
-                await ((IGamePairMaker)target).UnregisterPairing(userId);
+                return typeof(IGamePairMaker);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IGamePairMaker)__target).UnregisterPairing(userId);
                 return null;
             }
         }
@@ -192,20 +253,13 @@ namespace Domain.Interfaced
 
     public interface IGamePairMaker_NoReply
     {
-        void RegisterPairing(System.Int64 userId, System.String userName, Domain.Interfaced.IUserPairingObserver observer);
+        void RegisterPairing(System.Int64 userId, System.String userName, Domain.Interface.IUserPairingObserver observer);
         void UnregisterPairing(System.Int64 userId);
     }
 
-    [ProtoContract, TypeAlias]
     public class GamePairMakerRef : InterfacedActorRef, IGamePairMaker, IGamePairMaker_NoReply
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return (ActorRefBase)Actor; }
-            set { Actor = value; }
-        }
-
-        private GamePairMakerRef() : base(null)
+        public GamePairMakerRef() : base(null)
         {
         }
 
@@ -232,10 +286,10 @@ namespace Domain.Interfaced
             return new GamePairMakerRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task RegisterPairing(System.Int64 userId, System.String userName, Domain.Interfaced.IUserPairingObserver observer)
+        public Task RegisterPairing(System.Int64 userId, System.String userName, Domain.Interface.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.UserPairingObserver)observer }
+                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, userName = userName, observer = observer }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -248,10 +302,10 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IGamePairMaker_NoReply.RegisterPairing(System.Int64 userId, System.String userName, Domain.Interfaced.IUserPairingObserver observer)
+        void IGamePairMaker_NoReply.RegisterPairing(System.Int64 userId, System.String userName, Domain.Interface.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, userName = userName, observer = (Domain.Interfaced.UserPairingObserver)observer }
+                InvokePayload = new IGamePairMaker_PayloadTable.RegisterPairing_Invoke { userId = userId, userName = userName, observer = observer }
             };
             SendRequest(requestMessage);
         }
@@ -264,14 +318,34 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIGamePairMaker
+    {
+        [ProtoMember(1)] public IActorRef Actor;
+
+        [ProtoConverter]
+        public static SurrogateForIGamePairMaker Convert(IGamePairMaker value)
+        {
+            if (value == null) return null;
+            return new SurrogateForIGamePairMaker { Actor = ((GamePairMakerRef)value).Actor };
+        }
+
+        [ProtoConverter]
+        public static IGamePairMaker Convert(SurrogateForIGamePairMaker value)
+        {
+            if (value == null) return null;
+            return new GamePairMakerRef(value.Actor);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IGamePlayer
+#region Domain.Interface.IGamePlayer
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
-    [PayloadTableForInterfacedActor(typeof(IGamePlayer))]
+    [PayloadTable(typeof(IGamePlayer), PayloadTableKind.Request)]
     public static class IGamePlayer_PayloadTable
     {
         public static Type[,] GetPayloadTypes()
@@ -284,31 +358,49 @@ namespace Domain.Interfaced
 
         [ProtoContract, TypeAlias]
         public class MakeMove_Invoke
-            : IInterfacedPayload, ITagOverridable, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadTagOverridable
         {
             [ProtoMember(1)] public Domain.Game.PlacePosition pos;
             [ProtoMember(2)] public System.Int64 playerUserId;
-            public Type GetInterfaceType() { return typeof(IGamePlayer); }
-            public void SetTag(object value) { playerUserId = (System.Int64)value; }
-            public async Task<IValueGetable> InvokeAsync(object target)
+
+            public Type GetInterfaceType()
             {
-                await ((IGamePlayer)target).MakeMove(pos, playerUserId);
+                return typeof(IGamePlayer);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IGamePlayer)__target).MakeMove(pos, playerUserId);
                 return null;
+            }
+
+            void IPayloadTagOverridable.SetTag(object value)
+            {
+                playerUserId = (System.Int64)value;
             }
         }
 
         [ProtoContract, TypeAlias]
         public class Say_Invoke
-            : IInterfacedPayload, ITagOverridable, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadTagOverridable
         {
             [ProtoMember(1)] public System.String msg;
             [ProtoMember(2)] public System.Int64 playerUserId;
-            public Type GetInterfaceType() { return typeof(IGamePlayer); }
-            public void SetTag(object value) { playerUserId = (System.Int64)value; }
-            public async Task<IValueGetable> InvokeAsync(object target)
+
+            public Type GetInterfaceType()
             {
-                await ((IGamePlayer)target).Say(msg, playerUserId);
+                return typeof(IGamePlayer);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IGamePlayer)__target).Say(msg, playerUserId);
                 return null;
+            }
+
+            void IPayloadTagOverridable.SetTag(object value)
+            {
+                playerUserId = (System.Int64)value;
             }
         }
     }
@@ -319,16 +411,9 @@ namespace Domain.Interfaced
         void Say(System.String msg, System.Int64 playerUserId = 0);
     }
 
-    [ProtoContract, TypeAlias]
     public class GamePlayerRef : InterfacedActorRef, IGamePlayer, IGamePlayer_NoReply
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return (ActorRefBase)Actor; }
-            set { Actor = value; }
-        }
-
-        private GamePlayerRef() : base(null)
+        public GamePlayerRef() : base(null)
         {
         }
 
@@ -387,14 +472,34 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIGamePlayer
+    {
+        [ProtoMember(1)] public IActorRef Actor;
+
+        [ProtoConverter]
+        public static SurrogateForIGamePlayer Convert(IGamePlayer value)
+        {
+            if (value == null) return null;
+            return new SurrogateForIGamePlayer { Actor = ((GamePlayerRef)value).Actor };
+        }
+
+        [ProtoConverter]
+        public static IGamePlayer Convert(SurrogateForIGamePlayer value)
+        {
+            if (value == null) return null;
+            return new GamePlayerRef(value.Actor);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IUser
+#region Domain.Interface.IUser
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
-    [PayloadTableForInterfacedActor(typeof(IUser))]
+    [PayloadTable(typeof(IUser), PayloadTableKind.Request)]
     public static class IUser_PayloadTable
     {
         public static Type[,] GetPayloadTypes()
@@ -409,25 +514,54 @@ namespace Domain.Interfaced
 
         [ProtoContract, TypeAlias]
         public class JoinGame_Invoke
-            : IInterfacedPayload, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadObserverUpdatable
         {
             [ProtoMember(1)] public System.Int64 gameId;
-            [ProtoMember(2)] public System.Int32 observerId;
-            public Type GetInterfaceType() { return typeof(IUser); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            [ProtoMember(2)] public Domain.Interface.IGameObserver observer;
+
+            public Type GetInterfaceType()
             {
-                var __v = await ((IUser)target).JoinGame(gameId, observerId);
-                return (IValueGetable)(new JoinGame_Return { v = (System.Tuple<System.Int32, System.Int32, Domain.Interfaced.GameInfo>)__v });
+                return typeof(IUser);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                var __v = await ((IUser)__target).JoinGame(gameId, observer);
+                return (IValueGetable)(new JoinGame_Return { v = __v });
+            }
+
+            void IPayloadObserverUpdatable.Update(Action<IInterfacedObserver> updater)
+            {
+                if (observer != null)
+                {
+                    updater(observer);
+                }
             }
         }
 
         [ProtoContract, TypeAlias]
         public class JoinGame_Return
-            : IInterfacedPayload, IValueGetable
+            : IInterfacedPayload, IValueGetable, IPayloadActorRefUpdatable
         {
-            [ProtoMember(1)] public System.Tuple<System.Int32, System.Int32, Domain.Interfaced.GameInfo> v;
-            public Type GetInterfaceType() { return typeof(IUser); }
-            public object Value { get { return v; } }
+            [ProtoMember(1)] public System.Tuple<Domain.Interface.IGamePlayer, System.Int32, Domain.Interface.GameInfo> v;
+
+            public Type GetInterfaceType()
+            {
+                return typeof(IUser);
+            }
+
+            public object Value
+            {
+                get { return v; }
+            }
+
+            void IPayloadActorRefUpdatable.Update(Action<object> updater)
+            {
+                if (v != null)
+                {
+                    if (v.Item1 != null) updater(v.Item1);
+                }
+            }
         }
 
         [ProtoContract, TypeAlias]
@@ -435,24 +569,42 @@ namespace Domain.Interfaced
             : IInterfacedPayload, IAsyncInvokable
         {
             [ProtoMember(1)] public System.Int64 gameId;
-            public Type GetInterfaceType() { return typeof(IUser); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+
+            public Type GetInterfaceType()
             {
-                await ((IUser)target).LeaveGame(gameId);
+                return typeof(IUser);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IUser)__target).LeaveGame(gameId);
                 return null;
             }
         }
 
         [ProtoContract, TypeAlias]
         public class RegisterPairing_Invoke
-            : IInterfacedPayload, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadObserverUpdatable
         {
-            [ProtoMember(1)] public System.Int32 observerId;
-            public Type GetInterfaceType() { return typeof(IUser); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            [ProtoMember(1)] public Domain.Interface.IUserPairingObserver observer;
+
+            public Type GetInterfaceType()
             {
-                await ((IUser)target).RegisterPairing(observerId);
+                return typeof(IUser);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IUser)__target).RegisterPairing(observer);
                 return null;
+            }
+
+            void IPayloadObserverUpdatable.Update(Action<IInterfacedObserver> updater)
+            {
+                if (observer != null)
+                {
+                    updater(observer);
+                }
             }
         }
 
@@ -460,10 +612,14 @@ namespace Domain.Interfaced
         public class UnregisterPairing_Invoke
             : IInterfacedPayload, IAsyncInvokable
         {
-            public Type GetInterfaceType() { return typeof(IUser); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            public Type GetInterfaceType()
             {
-                await ((IUser)target).UnregisterPairing();
+                return typeof(IUser);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                await ((IUser)__target).UnregisterPairing();
                 return null;
             }
         }
@@ -471,22 +627,15 @@ namespace Domain.Interfaced
 
     public interface IUser_NoReply
     {
-        void JoinGame(System.Int64 gameId, System.Int32 observerId);
+        void JoinGame(System.Int64 gameId, Domain.Interface.IGameObserver observer);
         void LeaveGame(System.Int64 gameId);
-        void RegisterPairing(System.Int32 observerId);
+        void RegisterPairing(Domain.Interface.IUserPairingObserver observer);
         void UnregisterPairing();
     }
 
-    [ProtoContract, TypeAlias]
     public class UserRef : InterfacedActorRef, IUser, IUser_NoReply
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return (ActorRefBase)Actor; }
-            set { Actor = value; }
-        }
-
-        private UserRef() : base(null)
+        public UserRef() : base(null)
         {
         }
 
@@ -513,12 +662,12 @@ namespace Domain.Interfaced
             return new UserRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<System.Tuple<System.Int32, System.Int32, Domain.Interfaced.GameInfo>> JoinGame(System.Int64 gameId, System.Int32 observerId)
+        public Task<System.Tuple<Domain.Interface.IGamePlayer, System.Int32, Domain.Interface.GameInfo>> JoinGame(System.Int64 gameId, Domain.Interface.IGameObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observerId = observerId }
+                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observer = observer }
             };
-            return SendRequestAndReceive<System.Tuple<System.Int32, System.Int32, Domain.Interfaced.GameInfo>>(requestMessage);
+            return SendRequestAndReceive<System.Tuple<Domain.Interface.IGamePlayer, System.Int32, Domain.Interface.GameInfo>>(requestMessage);
         }
 
         public Task LeaveGame(System.Int64 gameId)
@@ -529,10 +678,10 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        public Task RegisterPairing(System.Int32 observerId)
+        public Task RegisterPairing(Domain.Interface.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observer = observer }
             };
             return SendRequestAndWait(requestMessage);
         }
@@ -545,10 +694,10 @@ namespace Domain.Interfaced
             return SendRequestAndWait(requestMessage);
         }
 
-        void IUser_NoReply.JoinGame(System.Int64 gameId, System.Int32 observerId)
+        void IUser_NoReply.JoinGame(System.Int64 gameId, Domain.Interface.IGameObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observerId = observerId }
+                InvokePayload = new IUser_PayloadTable.JoinGame_Invoke { gameId = gameId, observer = observer }
             };
             SendRequest(requestMessage);
         }
@@ -561,10 +710,10 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
 
-        void IUser_NoReply.RegisterPairing(System.Int32 observerId)
+        void IUser_NoReply.RegisterPairing(Domain.Interface.IUserPairingObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observerId = observerId }
+                InvokePayload = new IUser_PayloadTable.RegisterPairing_Invoke { observer = observer }
             };
             SendRequest(requestMessage);
         }
@@ -577,14 +726,34 @@ namespace Domain.Interfaced
             SendRequest(requestMessage);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIUser
+    {
+        [ProtoMember(1)] public IActorRef Actor;
+
+        [ProtoConverter]
+        public static SurrogateForIUser Convert(IUser value)
+        {
+            if (value == null) return null;
+            return new SurrogateForIUser { Actor = ((UserRef)value).Actor };
+        }
+
+        [ProtoConverter]
+        public static IUser Convert(SurrogateForIUser value)
+        {
+            if (value == null) return null;
+            return new UserRef(value.Actor);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IUserLogin
+#region Domain.Interface.IUserLogin
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
-    [PayloadTableForInterfacedActor(typeof(IUserLogin))]
+    [PayloadTable(typeof(IUserLogin), PayloadTableKind.Request)]
     public static class IUserLogin_PayloadTable
     {
         public static Type[,] GetPayloadTypes()
@@ -596,44 +765,66 @@ namespace Domain.Interfaced
 
         [ProtoContract, TypeAlias]
         public class Login_Invoke
-            : IInterfacedPayload, IAsyncInvokable
+            : IInterfacedPayload, IAsyncInvokable, IPayloadObserverUpdatable
         {
             [ProtoMember(1)] public System.String id;
             [ProtoMember(2)] public System.String password;
-            [ProtoMember(3)] public System.Int32 observerId;
-            public Type GetInterfaceType() { return typeof(IUserLogin); }
-            public async Task<IValueGetable> InvokeAsync(object target)
+            [ProtoMember(3)] public Domain.Interface.IUserEventObserver observer;
+
+            public Type GetInterfaceType()
             {
-                var __v = await ((IUserLogin)target).Login(id, password, observerId);
+                return typeof(IUserLogin);
+            }
+
+            public async Task<IValueGetable> InvokeAsync(object __target)
+            {
+                var __v = await ((IUserLogin)__target).Login(id, password, observer);
                 return (IValueGetable)(new Login_Return { v = __v });
+            }
+
+            void IPayloadObserverUpdatable.Update(Action<IInterfacedObserver> updater)
+            {
+                if (observer != null)
+                {
+                    updater(observer);
+                }
             }
         }
 
         [ProtoContract, TypeAlias]
         public class Login_Return
-            : IInterfacedPayload, IValueGetable
+            : IInterfacedPayload, IValueGetable, IPayloadActorRefUpdatable
         {
-            [ProtoMember(1)] public Domain.Interfaced.LoginResult v;
-            public Type GetInterfaceType() { return typeof(IUserLogin); }
-            public object Value { get { return v; } }
+            [ProtoMember(1)] public Domain.Interface.LoginResult v;
+
+            public Type GetInterfaceType()
+            {
+                return typeof(IUserLogin);
+            }
+
+            public object Value
+            {
+                get { return v; }
+            }
+
+            void IPayloadActorRefUpdatable.Update(Action<object> updater)
+            {
+                if (v != null)
+                {
+                    if (v.User != null) updater(v.User);
+                }
+            }
         }
     }
 
     public interface IUserLogin_NoReply
     {
-        void Login(System.String id, System.String password, System.Int32 observerId);
+        void Login(System.String id, System.String password, Domain.Interface.IUserEventObserver observer);
     }
 
-    [ProtoContract, TypeAlias]
     public class UserLoginRef : InterfacedActorRef, IUserLogin, IUserLogin_NoReply
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return (ActorRefBase)Actor; }
-            set { Actor = value; }
-        }
-
-        private UserLoginRef() : base(null)
+        public UserLoginRef() : base(null)
         {
         }
 
@@ -660,133 +851,214 @@ namespace Domain.Interfaced
             return new UserLoginRef(Actor, RequestWaiter, timeout);
         }
 
-        public Task<Domain.Interfaced.LoginResult> Login(System.String id, System.String password, System.Int32 observerId)
+        public Task<Domain.Interface.LoginResult> Login(System.String id, System.String password, Domain.Interface.IUserEventObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUserLogin_PayloadTable.Login_Invoke { id = id, password = password, observerId = observerId }
+                InvokePayload = new IUserLogin_PayloadTable.Login_Invoke { id = id, password = password, observer = observer }
             };
-            return SendRequestAndReceive<Domain.Interfaced.LoginResult>(requestMessage);
+            return SendRequestAndReceive<Domain.Interface.LoginResult>(requestMessage);
         }
 
-        void IUserLogin_NoReply.Login(System.String id, System.String password, System.Int32 observerId)
+        void IUserLogin_NoReply.Login(System.String id, System.String password, Domain.Interface.IUserEventObserver observer)
         {
             var requestMessage = new RequestMessage {
-                InvokePayload = new IUserLogin_PayloadTable.Login_Invoke { id = id, password = password, observerId = observerId }
+                InvokePayload = new IUserLogin_PayloadTable.Login_Invoke { id = id, password = password, observer = observer }
             };
             SendRequest(requestMessage);
+        }
+    }
+
+    [ProtoContract]
+    public class SurrogateForIUserLogin
+    {
+        [ProtoMember(1)] public IActorRef Actor;
+
+        [ProtoConverter]
+        public static SurrogateForIUserLogin Convert(IUserLogin value)
+        {
+            if (value == null) return null;
+            return new SurrogateForIUserLogin { Actor = ((UserLoginRef)value).Actor };
+        }
+
+        [ProtoConverter]
+        public static IUserLogin Convert(SurrogateForIUserLogin value)
+        {
+            if (value == null) return null;
+            return new UserLoginRef(value.Actor);
         }
     }
 }
 
 #endregion
-#region Domain.Interfaced.IGameObserver
+#region Domain.Interface.IGameObserver
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
+    [PayloadTable(typeof(IGameObserver), PayloadTableKind.Notification)]
     public static class IGameObserver_PayloadTable
     {
+        public static Type[] GetPayloadTypes()
+        {
+            return new Type[] {
+                typeof(Abort_Invoke),
+                typeof(Begin_Invoke),
+                typeof(End_Invoke),
+                typeof(Join_Invoke),
+                typeof(Leave_Invoke),
+                typeof(MakeMove_Invoke),
+                typeof(Say_Invoke),
+            };
+        }
+
         [ProtoContract, TypeAlias]
-        public class Join_Invoke : IInvokable
+        public class Abort_Invoke : IInterfacedPayload, IInvokable
+        {
+            public Type GetInterfaceType()
+            {
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).Abort();
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Begin_Invoke : IInterfacedPayload, IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 currentPlayerId;
+
+            public Type GetInterfaceType()
+            {
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).Begin(currentPlayerId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class End_Invoke : IInterfacedPayload, IInvokable
+        {
+            [ProtoMember(1)] public System.Int32 winnerPlayerId;
+
+            public Type GetInterfaceType()
+            {
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).End(winnerPlayerId);
+            }
+        }
+
+        [ProtoContract, TypeAlias]
+        public class Join_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int32 playerId;
             [ProtoMember(2)] public System.Int64 userId;
             [ProtoMember(3)] public System.String userName;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IGameObserver)target).Join(playerId, userId, userName);
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).Join(playerId, userId, userName);
             }
         }
 
         [ProtoContract, TypeAlias]
-        public class Leave_Invoke : IInvokable
+        public class Leave_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int32 playerId;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IGameObserver)target).Leave(playerId);
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).Leave(playerId);
             }
         }
 
         [ProtoContract, TypeAlias]
-        public class Begin_Invoke : IInvokable
-        {
-            [ProtoMember(1)] public System.Int32 currentPlayerId;
-            public void Invoke(object target)
-            {
-                ((IGameObserver)target).Begin(currentPlayerId);
-            }
-        }
-
-        [ProtoContract, TypeAlias]
-        public class MakeMove_Invoke : IInvokable
+        public class MakeMove_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int32 playerId;
             [ProtoMember(2)] public Domain.Game.PlacePosition pos;
             [ProtoMember(3)] public System.Int32 nextTurnPlayerId;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IGameObserver)target).MakeMove(playerId, pos, nextTurnPlayerId);
+                return typeof(IGameObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameObserver)__target).MakeMove(playerId, pos, nextTurnPlayerId);
             }
         }
 
         [ProtoContract, TypeAlias]
-        public class Say_Invoke : IInvokable
+        public class Say_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int32 playerId;
             [ProtoMember(2)] public System.String msg;
-            public void Invoke(object target)
-            {
-                ((IGameObserver)target).Say(playerId, msg);
-            }
-        }
 
-        [ProtoContract, TypeAlias]
-        public class End_Invoke : IInvokable
-        {
-            [ProtoMember(1)] public System.Int32 winnerPlayerId;
-            public void Invoke(object target)
+            public Type GetInterfaceType()
             {
-                ((IGameObserver)target).End(winnerPlayerId);
+                return typeof(IGameObserver);
             }
-        }
 
-        [ProtoContract, TypeAlias]
-        public class Abort_Invoke : IInvokable
-        {
-            public void Invoke(object target)
+            public void Invoke(object __target)
             {
-                ((IGameObserver)target).Abort();
+                ((IGameObserver)__target).Say(playerId, msg);
             }
         }
     }
 
-    [ProtoContract, TypeAlias]
     public class GameObserver : InterfacedObserver, IGameObserver
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
-            set { Channel = new ActorNotificationChannel(value); }
-        }
-
-        [ProtoMember(2)] private int _observerId
-        {
-            get { return ObserverId; }
-            set { ObserverId = value; }
-        }
-
-        private GameObserver() : base(null, 0)
+        public GameObserver()
+            : base(null, 0)
         {
         }
 
-        public GameObserver(IActorRef target, int observerId)
+        public GameObserver(INotificationChannel channel, int observerId = 0)
+            : base(channel, observerId)
+        {
+        }
+
+        public GameObserver(IActorRef target, int observerId = 0)
             : base(new ActorNotificationChannel(target), observerId)
         {
         }
 
-        public GameObserver(INotificationChannel channel, int observerId)
-            : base(channel, observerId)
+        public void Abort()
         {
+            var payload = new IGameObserver_PayloadTable.Abort_Invoke {  };
+            Notify(payload);
+        }
+
+        public void Begin(System.Int32 currentPlayerId)
+        {
+            var payload = new IGameObserver_PayloadTable.Begin_Invoke { currentPlayerId = currentPlayerId };
+            Notify(payload);
+        }
+
+        public void End(System.Int32 winnerPlayerId)
+        {
+            var payload = new IGameObserver_PayloadTable.End_Invoke { winnerPlayerId = winnerPlayerId };
+            Notify(payload);
         }
 
         public void Join(System.Int32 playerId, System.Int64 userId, System.String userName)
@@ -801,12 +1073,6 @@ namespace Domain.Interfaced
             Notify(payload);
         }
 
-        public void Begin(System.Int32 currentPlayerId)
-        {
-            var payload = new IGameObserver_PayloadTable.Begin_Invoke { currentPlayerId = currentPlayerId };
-            Notify(payload);
-        }
-
         public void MakeMove(System.Int32 playerId, Domain.Game.PlacePosition pos, System.Int32 nextTurnPlayerId)
         {
             var payload = new IGameObserver_PayloadTable.MakeMove_Invoke { playerId = playerId, pos = pos, nextTurnPlayerId = nextTurnPlayerId };
@@ -818,76 +1084,95 @@ namespace Domain.Interfaced
             var payload = new IGameObserver_PayloadTable.Say_Invoke { playerId = playerId, msg = msg };
             Notify(payload);
         }
+    }
 
-        public void End(System.Int32 winnerPlayerId)
+    [ProtoContract]
+    public class SurrogateForIGameObserver
+    {
+        [ProtoMember(1)] public INotificationChannel Channel;
+        [ProtoMember(2)] public int ObserverId;
+
+        [ProtoConverter]
+        public static SurrogateForIGameObserver Convert(IGameObserver value)
         {
-            var payload = new IGameObserver_PayloadTable.End_Invoke { winnerPlayerId = winnerPlayerId };
-            Notify(payload);
+            if (value == null) return null;
+            var o = (GameObserver)value;
+            return new SurrogateForIGameObserver { Channel = o.Channel, ObserverId = o.ObserverId };
         }
 
-        public void Abort()
+        [ProtoConverter]
+        public static IGameObserver Convert(SurrogateForIGameObserver value)
         {
-            var payload = new IGameObserver_PayloadTable.Abort_Invoke {  };
-            Notify(payload);
+            if (value == null) return null;
+            return new GameObserver(value.Channel, value.ObserverId);
         }
     }
 }
 
 #endregion
-#region Domain.Interfaced.IGameUserObserver
+#region Domain.Interface.IGameUserObserver
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
+    [PayloadTable(typeof(IGameUserObserver), PayloadTableKind.Notification)]
     public static class IGameUserObserver_PayloadTable
     {
+        public static Type[] GetPayloadTypes()
+        {
+            return new Type[] {
+                typeof(Begin_Invoke),
+                typeof(End_Invoke),
+            };
+        }
+
         [ProtoContract, TypeAlias]
-        public class Begin_Invoke : IInvokable
+        public class Begin_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int64 gameId;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IGameUserObserver)target).Begin(gameId);
+                return typeof(IGameUserObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameUserObserver)__target).Begin(gameId);
             }
         }
 
         [ProtoContract, TypeAlias]
-        public class End_Invoke : IInvokable
+        public class End_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int64 gameId;
-            [ProtoMember(2)] public Domain.Interfaced.GameResult result;
-            public void Invoke(object target)
+            [ProtoMember(2)] public Domain.Interface.GameResult result;
+
+            public Type GetInterfaceType()
             {
-                ((IGameUserObserver)target).End(gameId, result);
+                return typeof(IGameUserObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IGameUserObserver)__target).End(gameId, result);
             }
         }
     }
 
-    [ProtoContract, TypeAlias]
     public class GameUserObserver : InterfacedObserver, IGameUserObserver
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
-            set { Channel = new ActorNotificationChannel(value); }
-        }
-
-        [ProtoMember(2)] private int _observerId
-        {
-            get { return ObserverId; }
-            set { ObserverId = value; }
-        }
-
-        private GameUserObserver() : base(null, 0)
+        public GameUserObserver()
+            : base(null, 0)
         {
         }
 
-        public GameUserObserver(IActorRef target, int observerId)
-            : base(new ActorNotificationChannel(target), observerId)
-        {
-        }
-
-        public GameUserObserver(INotificationChannel channel, int observerId)
+        public GameUserObserver(INotificationChannel channel, int observerId = 0)
             : base(channel, observerId)
+        {
+        }
+
+        public GameUserObserver(IActorRef target, int observerId = 0)
+            : base(new ActorNotificationChannel(target), observerId)
         {
         }
 
@@ -897,58 +1182,82 @@ namespace Domain.Interfaced
             Notify(payload);
         }
 
-        public void End(System.Int64 gameId, Domain.Interfaced.GameResult result)
+        public void End(System.Int64 gameId, Domain.Interface.GameResult result)
         {
             var payload = new IGameUserObserver_PayloadTable.End_Invoke { gameId = gameId, result = result };
             Notify(payload);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIGameUserObserver
+    {
+        [ProtoMember(1)] public INotificationChannel Channel;
+        [ProtoMember(2)] public int ObserverId;
+
+        [ProtoConverter]
+        public static SurrogateForIGameUserObserver Convert(IGameUserObserver value)
+        {
+            if (value == null) return null;
+            var o = (GameUserObserver)value;
+            return new SurrogateForIGameUserObserver { Channel = o.Channel, ObserverId = o.ObserverId };
+        }
+
+        [ProtoConverter]
+        public static IGameUserObserver Convert(SurrogateForIGameUserObserver value)
+        {
+            if (value == null) return null;
+            return new GameUserObserver(value.Channel, value.ObserverId);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IUserEventObserver
+#region Domain.Interface.IUserEventObserver
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
+    [PayloadTable(typeof(IUserEventObserver), PayloadTableKind.Notification)]
     public static class IUserEventObserver_PayloadTable
     {
+        public static Type[] GetPayloadTypes()
+        {
+            return new Type[] {
+                typeof(UserContextChange_Invoke),
+            };
+        }
+
         [ProtoContract, TypeAlias]
-        public class UserContextChange_Invoke : IInvokable
+        public class UserContextChange_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public Domain.Data.TrackableUserContextTracker userContextTracker;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IUserEventObserver)target).UserContextChange(userContextTracker);
+                return typeof(IUserEventObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IUserEventObserver)__target).UserContextChange(userContextTracker);
             }
         }
     }
 
-    [ProtoContract, TypeAlias]
     public class UserEventObserver : InterfacedObserver, IUserEventObserver
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
-            set { Channel = new ActorNotificationChannel(value); }
-        }
-
-        [ProtoMember(2)] private int _observerId
-        {
-            get { return ObserverId; }
-            set { ObserverId = value; }
-        }
-
-        private UserEventObserver() : base(null, 0)
+        public UserEventObserver()
+            : base(null, 0)
         {
         }
 
-        public UserEventObserver(IActorRef target, int observerId)
-            : base(new ActorNotificationChannel(target), observerId)
-        {
-        }
-
-        public UserEventObserver(INotificationChannel channel, int observerId)
+        public UserEventObserver(INotificationChannel channel, int observerId = 0)
             : base(channel, observerId)
+        {
+        }
+
+        public UserEventObserver(IActorRef target, int observerId = 0)
+            : base(new ActorNotificationChannel(target), observerId)
         {
         }
 
@@ -958,53 +1267,77 @@ namespace Domain.Interfaced
             Notify(payload);
         }
     }
+
+    [ProtoContract]
+    public class SurrogateForIUserEventObserver
+    {
+        [ProtoMember(1)] public INotificationChannel Channel;
+        [ProtoMember(2)] public int ObserverId;
+
+        [ProtoConverter]
+        public static SurrogateForIUserEventObserver Convert(IUserEventObserver value)
+        {
+            if (value == null) return null;
+            var o = (UserEventObserver)value;
+            return new SurrogateForIUserEventObserver { Channel = o.Channel, ObserverId = o.ObserverId };
+        }
+
+        [ProtoConverter]
+        public static IUserEventObserver Convert(SurrogateForIUserEventObserver value)
+        {
+            if (value == null) return null;
+            return new UserEventObserver(value.Channel, value.ObserverId);
+        }
+    }
 }
 
 #endregion
-#region Domain.Interfaced.IUserPairingObserver
+#region Domain.Interface.IUserPairingObserver
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
+    [PayloadTable(typeof(IUserPairingObserver), PayloadTableKind.Notification)]
     public static class IUserPairingObserver_PayloadTable
     {
+        public static Type[] GetPayloadTypes()
+        {
+            return new Type[] {
+                typeof(MakePair_Invoke),
+            };
+        }
+
         [ProtoContract, TypeAlias]
-        public class MakePair_Invoke : IInvokable
+        public class MakePair_Invoke : IInterfacedPayload, IInvokable
         {
             [ProtoMember(1)] public System.Int64 gameId;
             [ProtoMember(2)] public System.String opponentName;
-            public void Invoke(object target)
+
+            public Type GetInterfaceType()
             {
-                ((IUserPairingObserver)target).MakePair(gameId, opponentName);
+                return typeof(IUserPairingObserver);
+            }
+
+            public void Invoke(object __target)
+            {
+                ((IUserPairingObserver)__target).MakePair(gameId, opponentName);
             }
         }
     }
 
-    [ProtoContract, TypeAlias]
     public class UserPairingObserver : InterfacedObserver, IUserPairingObserver
     {
-        [ProtoMember(1)] private ActorRefBase _actor
-        {
-            get { return Channel != null ? (ActorRefBase)(((ActorNotificationChannel)Channel).Actor) : null; }
-            set { Channel = new ActorNotificationChannel(value); }
-        }
-
-        [ProtoMember(2)] private int _observerId
-        {
-            get { return ObserverId; }
-            set { ObserverId = value; }
-        }
-
-        private UserPairingObserver() : base(null, 0)
+        public UserPairingObserver()
+            : base(null, 0)
         {
         }
 
-        public UserPairingObserver(IActorRef target, int observerId)
-            : base(new ActorNotificationChannel(target), observerId)
-        {
-        }
-
-        public UserPairingObserver(INotificationChannel channel, int observerId)
+        public UserPairingObserver(INotificationChannel channel, int observerId = 0)
             : base(channel, observerId)
+        {
+        }
+
+        public UserPairingObserver(IActorRef target, int observerId = 0)
+            : base(new ActorNotificationChannel(target), observerId)
         {
         }
 
@@ -1012,6 +1345,28 @@ namespace Domain.Interfaced
         {
             var payload = new IUserPairingObserver_PayloadTable.MakePair_Invoke { gameId = gameId, opponentName = opponentName };
             Notify(payload);
+        }
+    }
+
+    [ProtoContract]
+    public class SurrogateForIUserPairingObserver
+    {
+        [ProtoMember(1)] public INotificationChannel Channel;
+        [ProtoMember(2)] public int ObserverId;
+
+        [ProtoConverter]
+        public static SurrogateForIUserPairingObserver Convert(IUserPairingObserver value)
+        {
+            if (value == null) return null;
+            var o = (UserPairingObserver)value;
+            return new SurrogateForIUserPairingObserver { Channel = o.Channel, ObserverId = o.ObserverId };
+        }
+
+        [ProtoConverter]
+        public static IUserPairingObserver Convert(SurrogateForIUserPairingObserver value)
+        {
+            if (value == null) return null;
+            return new UserPairingObserver(value.Channel, value.ObserverId);
         }
     }
 }
