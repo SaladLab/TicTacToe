@@ -45,11 +45,11 @@ namespace GameServer
         async Task<LoginResult> IUserLogin.Login(string id, string password, IUserEventObserver observer)
         {
             if (id == null)
-                throw new ResultException(ResultCodeType.Argument, nameof(id));
+                throw new ResultException(ResultCodeType.RequestError, nameof(id));
             if (password == null)
-                throw new ResultException(ResultCodeType.Argument, nameof(password));
+                throw new ResultException(ResultCodeType.RequestError, nameof(password));
             if (observer == null)
-                throw new ResultException(ResultCodeType.Argument, nameof(observer));
+                throw new ResultException(ResultCodeType.RequestError, nameof(observer));
 
             // Check account
 
