@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Akka.Interfaced.SlimSocket.Client
 {
-    public class SlimTask<TResult> : Task<TResult>, ISlimTaskCompletionSource<TResult>
+    public class SlimTaskCompletionSource<TResult> : Task<TResult>, ISlimTaskCompletionSource<TResult>
     {
         internal MonoBehaviour Owner { get; set; }
 
@@ -26,7 +26,7 @@ namespace Akka.Interfaced.SlimSocket.Client
 
         public TaskStatus Status
         {
-            get; internal set;
+            get; private set;
         }
 
         public Exception Exception
@@ -70,8 +70,8 @@ namespace Akka.Interfaced.SlimSocket.Client
             get
             {
                 return Status == TaskStatus.RanToCompletion ||
-                       Status == TaskStatus.Canceled ||
-                       Status == TaskStatus.Faulted;
+                        Status == TaskStatus.Canceled ||
+                        Status == TaskStatus.Faulted;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Akka.Interfaced.SlimSocket.Client
             get
             {
                 return Status == TaskStatus.Canceled ||
-                       Status == TaskStatus.Faulted;
+                        Status == TaskStatus.Faulted;
             }
         }
 
@@ -118,6 +118,11 @@ namespace Akka.Interfaced.SlimSocket.Client
                 return "Canceled";
 
             return "Status: " + Status;
+        }
+
+        public Task<TResult> Task
+        {
+            get { return this; }
         }
     }
 }

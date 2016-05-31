@@ -1,6 +1,6 @@
 {
   "Id": "AkkaInterfacedSlimSocket",
-  "Version": "0.2.2",
+  "Version": "0.3.1",
   "Authors": [
     "Esun Kim"
   ],
@@ -10,7 +10,7 @@
   "Description": "SlimSocket-Client for Akka.Interfaced",
   "Dependencies": {
     "AkkaInterfaced": {
-      "Version": "0.2.*",
+      "Version": "0.3.*",
       "Source": "github:SaladLab/Akka.Interfaced"
     },
     "CommonLogging": {
@@ -22,8 +22,8 @@
       "Source": "github:SaladLab/NetLegacySupport"
     },
     "protobuf-net": {
-      "Version": "2.0.0.668",
-      "Source": "nuget:net20"
+      "Version": "2.1.0-alpha-1",
+      "Source": "nuget:net30"
     },
     "TypeAlias": {
       "Version": "1.*",
@@ -32,7 +32,7 @@
   },
   "MergedDependencies": {
     "AkkaInterfaced": {
-      "Version": "0.2.1"
+      "Version": "0.3.1"
     },
     "CommonLogging": {
       "Version": "3.3.1"
@@ -41,7 +41,7 @@
       "Version": "1.1.0"
     },
     "protobuf-net": {
-      "Version": "2.0.0.668"
+      "Version": "2.1.0-alpha-1"
     },
     "TypeAlias": {
       "Version": "1.1.2"
@@ -52,8 +52,10 @@
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Base.dll.mdb",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll.mdb",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimRequestWaiter.cs",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTask.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/CommunicatorHelper.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/CommunicatorWorker.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTaskCompletionSource.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTaskFactory.cs",
     {
       "Target": "Assets/UnityPackages/AkkaInterfaced.unitypackage.json",
       "Merged": true
@@ -136,10 +138,6 @@
     },
     {
       "Target": "Assets/UnityPackages/NetLegacySupport/NetLegacySupport.Tuple.dll",
-      "Merged": true
-    },
-    {
-      "Target": "Assets/UnityPackages/protobuf-net/protobuf-net.dll.mdb",
       "Merged": true
     },
     {
