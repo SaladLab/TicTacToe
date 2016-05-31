@@ -2,13 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Akka.Interfaced;
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
     public interface IUser : IInterfacedActor
     {
-        Task RegisterPairing(int observerId);
+        Task RegisterPairing(IUserPairingObserver observer);
         Task UnregisterPairing();
-        Task<Tuple<int, int, GameInfo>> JoinGame(long gameId, int observerId);
+        Task<Tuple<IGamePlayer, int, GameInfo>> JoinGame(long gameId, IGameObserver observer);
         Task LeaveGame(long gameId);
     }
 }

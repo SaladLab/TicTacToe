@@ -2,7 +2,7 @@
 using System.Configuration;
 using Akka.Actor;
 using Akka.Cluster.Utility;
-using Domain.Interfaced;
+using Domain.Interface;
 
 namespace GameServer.Tests
 {

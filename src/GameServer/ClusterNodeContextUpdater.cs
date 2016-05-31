@@ -5,11 +5,11 @@ using Akka.Actor;
 using Akka.Cluster;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
-using Domain.Interfaced;
+using Domain.Interface;
 
 namespace GameServer
 {
-    public class ClusterNodeContextUpdater : InterfacedActor<ClusterNodeContextUpdater>
+    public class ClusterNodeContextUpdater : InterfacedActor
     {
         private readonly ClusterNodeContext _clusterContext;
 

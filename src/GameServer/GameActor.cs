@@ -8,12 +8,13 @@ using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Game;
-using Domain.Interfaced;
+using Domain.Interface;
 
 namespace GameServer
 {
-    [Log]
-    public class GameActor : InterfacedActor<GameActor>, IExtendedInterface<IGame, IGamePlayer>
+    [Log(LogFilterTarget.Request)]
+    [ResponsiveException(typeof(ResultException))]
+    public class GameActor : InterfacedActor, IExtendedInterface<IGame, IGamePlayer>
     {
         private ILog _logger;
         private ClusterNodeContext _clusterContext;

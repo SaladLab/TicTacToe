@@ -3,7 +3,7 @@ using System.Collections;
 using Akka.Interfaced.SlimSocket.Client;
 using DG.Tweening;
 using Domain.Game;
-using Domain.Interfaced;
+using Domain.Interface;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,13 +21,12 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
     private Tuple<long, string> _pairedGame;
     private int _myPlayerId;
-    private int _gameObserverId;
+    private IGameObserver _gameObserver;
     private GameInfo _gameInfo;
     private GamePlayerRef _myPlayer;
 
     protected void Start()
     {
-        ApplicationComponent.TryInit();
         UiManager.Initialize();
 
         StartJoinGame();
@@ -74,7 +73,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         G.Logger.Info("ProcessLoginUser");
 
         var endPoint = LoginProcessor.GetEndPointAddress(server);
-        var task = LoginProcessor.Login(endPoint, id, password, null);
+        var task = LoginProcessor.Login(this, endPoint, id, password, null);
         yield return task.WaitHandle;
     }
 
@@ -89,9 +88,8 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         _pairedGame = null;
 
-        var observerId = G.Comm.IssueObserverId();
-        G.Comm.AddObserver(observerId, new ObserverEventDispatcher(this));
-        yield return G.User.RegisterPairing(observerId).WaitHandle;
+        var pairingObserver = G.Comm.CreateObserver<IUserPairingObserver>(this);
+        yield return G.User.RegisterPairing(pairingObserver).WaitHandle;
 
         var startTime = DateTime.Now;
         while ((DateTime.Now - startTime).TotalSeconds < 5 && _pairedGame == null)
@@ -99,7 +97,8 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield return null;
         }
 
-        G.Comm.RemoveObserver(observerId);
+        pairingObserver.Dispose();
+
         if (_pairedGame == null)
         {
             yield return G.User.UnregisterPairing().WaitHandle;
@@ -112,26 +111,23 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         // Join Game
 
         var roomId = _pairedGame.Item1;
-        var observerId2 = G.Comm.IssueObserverId();
-        var observer = new ObserverEventDispatcher(this, startPending: true, keepOrder: true);
-        G.Comm.AddObserver(observerId2, observer);
-        var joinRet = G.User.JoinGame(roomId, observerId2);
+        var gameObserver = G.Comm.CreateObserver<IGameObserver>(this, startPending: true);
+        var joinRet = G.User.JoinGame(roomId, gameObserver);
         yield return joinRet.WaitHandle;
 
         if (joinRet.Exception != null)
         {
             UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
-            G.Comm.RemoveObserver(observerId2);
+            gameObserver.Dispose();
             yield break;
         }
 
-        _gameObserverId = observerId2;
+        _gameObserver = gameObserver;
         _gameInfo = joinRet.Result.Item3;
         _myPlayerId = joinRet.Result.Item2;
-        _myPlayer = new GamePlayerRef(
-            new SlimActorRef(joinRet.Result.Item1), G.SlimRequestWaiter, null);
+        _myPlayer = (GamePlayerRef)joinRet.Result.Item1;
 
-        observer.Pending = false;
+        gameObserver.GetEventDispatcher().Pending = false;
         LoadingText.text = "Waiting for " + _pairedGame.Item2 + "...";
     }
 
@@ -232,7 +228,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (_gameInfo != null)
         {
             G.User.LeaveGame(_gameInfo.Id);
-            G.Comm.RemoveObserver(_gameObserverId);
+            _gameObserver.Dispose();
         }
 
         SceneManager.LoadScene("MainScene");

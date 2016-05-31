@@ -5,7 +5,7 @@ using Akka.Interfaced;
 using ProtoBuf;
 using Domain.Game;
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
     public enum GameState
     {

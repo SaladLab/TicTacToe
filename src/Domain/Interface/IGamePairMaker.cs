@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Interfaced;
 
-namespace Domain.Interfaced
+namespace Domain.Interface
 {
     public interface IGamePairMaker : IInterfacedActor
     {

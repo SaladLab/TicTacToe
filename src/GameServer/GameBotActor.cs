@@ -5,12 +5,12 @@ using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain.Game;
-using Domain.Interfaced;
+using Domain.Interface;
 
 namespace GameServer
 {
     [Log]
-    public class GameBotActor : InterfacedActor<GameBotActor>, IGameObserver
+    public class GameBotActor : InterfacedActor, IGameObserver
     {
         private ILog _logger;
         private GameRef _game;
@@ -30,13 +30,12 @@ namespace GameServer
             _userName = userName;
         }
 
-        protected override async Task OnPreStart()
+        protected override async Task OnStart(bool restarted)
         {
             try
             {
-                var observerId = IssueObserverId();
-                AddObserver(observerId, this);
-                var ret = await _game.Join(_userId, _userName, new GameObserver(Self, observerId), null);
+                var observer = CreateObserver<IGameObserver>();
+                var ret = await _game.Join(_userId, _userName, observer, null);
                 _gamePlayer = new GamePlayerRef(_game.Actor, this, null);
                 _playerId = ret.Item1;
             }
@@ -47,7 +46,7 @@ namespace GameServer
             }
         }
 
-        protected override async Task OnPreStop()
+        protected override async Task OnGracefulStop()
         {
             try
             {

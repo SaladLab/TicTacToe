@@ -7,12 +7,13 @@ using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
-using Domain.Interfaced;
+using Domain.Interface;
 
 namespace GameServer
 {
     [Log]
-    public class GamePairMakerActor : InterfacedActor<GamePairMakerActor>, IExtendedInterface<IGamePairMaker>
+    [ResponsiveException(typeof(ResultException))]
+    public class GamePairMakerActor : InterfacedActor, IExtendedInterface<IGamePairMaker>
     {
         private readonly ILog _logger = LogManager.GetLogger("GamePairMaker");
         private readonly ClusterNodeContext _clusterContext;
@@ -40,7 +41,7 @@ namespace GameServer
             _pairingQueue = new List<QueueEntity>();
         }
 
-        protected override Task OnPreStart()
+        protected override Task OnStart(bool restarted)
         {
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), Self, new Schedule(), null);

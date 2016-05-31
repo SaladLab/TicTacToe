@@ -13,7 +13,7 @@ using Akka.Interfaced.ProtobufSerializer;
 using Akka.Interfaced.SlimSocket.Base;
 using Akka.Interfaced.SlimSocket.Server;
 using Common.Logging;
-using Domain.Interfaced;
+using Domain.Interface;
 using ProtoBuf.Meta;
 using TypeAlias;
 
@@ -227,7 +227,7 @@ namespace GameServer
             _context = context;
 
             var typeModel = TypeModel.Create();
-            AutoSurrogate.Register(typeModel);
+            Akka.Interfaced.SlimSocket.Base.AutoSurrogate.Register(typeModel);
             _tcpConnectionSettings = new TcpConnectionSettings
             {
                 PacketSerializer = new PacketSerializer(
