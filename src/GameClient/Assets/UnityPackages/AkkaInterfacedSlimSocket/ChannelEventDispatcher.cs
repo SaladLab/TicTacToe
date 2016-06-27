@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Akka.Interfaced.SlimSocket.Client
 {
-    public class CommunicatorWorker : MonoBehaviour
+    public class ChannelEventDispatcher : MonoBehaviour
     {
-        private static CommunicatorWorker s_instance;
+        private static ChannelEventDispatcher s_instance;
         private static bool s_instanceExists;
 
         private static readonly List<Tuple<SendOrPostCallback, object>> s_posts =
             new List<Tuple<SendOrPostCallback, object>>();
 
-        public static CommunicatorWorker Instance
+        public static ChannelEventDispatcher Instance
         {
             get { return s_instance; }
         }
@@ -25,8 +25,8 @@ namespace Akka.Interfaced.SlimSocket.Client
 
             s_instanceExists = true;
 
-            var go = new GameObject("_CommunicatorWorker");
-            s_instance = go.AddComponent<CommunicatorWorker>();
+            var go = new GameObject("_ChannelEventDispatcher");
+            s_instance = go.AddComponent<ChannelEventDispatcher>();
             DontDestroyOnLoad(go);
             return true;
         }

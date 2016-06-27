@@ -137,8 +137,8 @@ public class MainScene : MonoBehaviour
         PlayerPrefs.DeleteKey("LoginId");
         PlayerPrefs.DeleteKey("LoginPassword");
 
-        G.Comm.Stop();
-        G.Comm = null;
+        G.Channel.Close();
+        G.Channel = null;
         G.User = null;
 
         SwitchPanel(MainPanel, LoginPanel);

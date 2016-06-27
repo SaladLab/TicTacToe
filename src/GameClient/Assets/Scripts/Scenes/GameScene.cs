@@ -88,7 +88,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         _pairedGame = null;
 
-        var pairingObserver = G.Comm.CreateObserver<IUserPairingObserver>(this);
+        var pairingObserver = G.Channel.CreateObserver<IUserPairingObserver>(this);
         yield return G.User.RegisterPairing(pairingObserver).WaitHandle;
 
         var startTime = DateTime.Now;
@@ -97,7 +97,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield return null;
         }
 
-        pairingObserver.Dispose();
+        G.Channel.RemoveObserver(pairingObserver);
 
         if (_pairedGame == null)
         {
@@ -110,7 +110,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         // Join Game
 
-        var gameObserver = G.Comm.CreateObserver<IGameObserver>(this, startPending: true);
+        var gameObserver = G.Channel.CreateObserver<IGameObserver>(this, startPending: true);
         gameObserver.GetEventDispatcher().KeepingOrder = true; // remove after Akka.NET network layer is upgraded
 
         var roomId = _pairedGame.Item1;
@@ -120,7 +120,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (joinRet.Exception != null)
         {
             UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
-            gameObserver.Dispose();
+            G.Channel.RemoveObserver(gameObserver);
             yield break;
         }
 
@@ -230,7 +230,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (_gameInfo != null)
         {
             G.User.LeaveGame(_gameInfo.Id);
-            _gameObserver.Dispose();
+            G.Channel.RemoveObserver(_gameObserver);
         }
 
         SceneManager.LoadScene("MainScene");

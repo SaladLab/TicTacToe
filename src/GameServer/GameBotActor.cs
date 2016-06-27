@@ -35,12 +35,12 @@ namespace GameServer
             {
                 var observer = CreateObserver<IGameObserver>();
                 var ret = await _game.Join(_userId, _userName, observer, null);
-                _gamePlayer = new GamePlayerRef(_game.Actor, this, null);
+                _gamePlayer = _game.Cast<GamePlayerRef>().WithRequestWaiter(this);
                 _playerId = ret.Item1;
             }
             catch (Exception e)
             {
-                _logger.ErrorFormat("Failed to join game({0})", e, _game.Actor.Path);
+                _logger.ErrorFormat("Failed to join game({0})", e, _game.CastToIActorRef().Path);
                 Self.Tell(InterfacedPoisonPill.Instance);
             }
         }
@@ -53,7 +53,7 @@ namespace GameServer
             }
             catch (Exception e)
             {
-                _logger.ErrorFormat("Failed to leave game({0})", e, _game.Actor.Path);
+                _logger.ErrorFormat("Failed to leave game({0})", e, _game.CastToIActorRef().Path);
             }
         }
 

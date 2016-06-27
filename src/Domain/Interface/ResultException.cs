@@ -7,7 +7,7 @@ namespace Domain
     public enum ResultCodeType
     {
         None = 0,
-        RequestError = 1,
+        ArgumentError = 1,
         InternalError = 2,
         LoginFailedNoUser = 10,
         LoginFailedIncorrectPassword,

@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
+using Akka.Interfaced.SlimServer;
 using Common.Logging;
 using Domain;
 
@@ -16,22 +17,28 @@ namespace GameServer
     {
         private ILog _logger;
         private ClusterNodeContext _clusterContext;
-        private IActorRef _clientSession;
+        private ActorBoundChannelRef _channel;
         private long _id;
         private TrackableUserContext _userContext;
         private IUserEventObserver _userEventObserver;
         private Dictionary<long, GameRef> _joinedGameMap;
 
-        public UserActor(ClusterNodeContext clusterContext, IActorRef clientSession,
+        public UserActor(ClusterNodeContext clusterContext, ActorBoundChannelRef channel,
                          long id, TrackableUserContext userContext, IUserEventObserver observer)
         {
             _logger = LogManager.GetLogger($"UserActor({id})");
             _clusterContext = clusterContext;
-            _clientSession = clientSession;
+            _channel = channel;
             _id = id;
             _userContext = userContext;
             _userEventObserver = observer;
             _joinedGameMap = new Dictionary<long, GameRef>();
+        }
+
+        protected override void PostStop()
+        {
+            UnlinkAll();
+            base.PostStop();
         }
 
         private void UnlinkAll()
@@ -39,13 +46,6 @@ namespace GameServer
             foreach (var game in _joinedGameMap.Values)
                 game.WithNoReply().Leave(_id);
             _joinedGameMap.Clear();
-        }
-
-        [MessageHandler]
-        protected void OnMessage(ActorBoundSessionMessage.SessionTerminated message)
-        {
-            UnlinkAll();
-            Context.Stop(Self);
         }
 
         Task IUser.RegisterPairing(IUserPairingObserver observer)
@@ -70,18 +70,18 @@ namespace GameServer
             if (reply.Actor == null)
                 throw new ResultException(ResultCodeType.GameNotFound);
 
-            var game = new GameRef(reply.Actor, this, null);
+            var game = reply.Actor.Cast<GameRef>().WithRequestWaiter(this);
 
             // Let's enter the game !
 
             var observerForMe = CreateObserver<IGameUserObserver>();
             var joinRet = await game.Join(_id, _userContext.Data.Name, observer, observerForMe);
 
-            // Bind an player actor with client session
+            // Bind an game actor to channel
 
-            var reply2 = await _clientSession.Ask<ActorBoundSessionMessage.BindReply>(
-                new ActorBoundSessionMessage.Bind(game.Actor, typeof(IGamePlayer), _id));
-            if (reply2.ActorId == 0)
+            var boundActor = await _channel.BindActor(game.CastToIActorRef(),
+                                                      new[] { new TaggedType(typeof(IGamePlayer), _id) });
+            if (boundActor == null)
             {
                 await game.Leave(_id);
                 _logger.Error($"Failed in binding GamePlayer");
@@ -89,7 +89,7 @@ namespace GameServer
             }
 
             _joinedGameMap[gameId] = game;
-            return Tuple.Create((IGamePlayer)BoundActorRef.Create<GamePlayerRef>(reply2.ActorId), joinRet.Item1, joinRet.Item2);
+            return Tuple.Create((IGamePlayer)boundActor.Cast<GamePlayerRef>(), joinRet.Item1, joinRet.Item2);
         }
 
         async Task IUser.LeaveGame(long gameId)
@@ -98,13 +98,13 @@ namespace GameServer
             if (_joinedGameMap.TryGetValue(gameId, out game) == false)
                 throw new ResultException(ResultCodeType.NeedToBeInGame);
 
-            // Let's exit from the game !
+            // Let's leave from the game !
 
             await game.Leave(_id);
 
-            // Unbind an player actor with client session
+            // Unbind an room actor from channel
 
-            _clientSession.Tell(new ActorBoundSessionMessage.Unbind(game.Actor));
+            _channel.WithNoReply().UnbindActor(game.CastToIActorRef());
             _joinedGameMap.Remove(gameId);
         }
 

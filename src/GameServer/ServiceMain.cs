@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 using Akka.Configuration;
 using Domain;
 
@@ -7,7 +9,7 @@ namespace GameServer
 {
     public class ServiceMain
     {
-        public void Run(string[] args)
+        public async Task RunAsync(string[] args, CancellationToken cancellationToken)
         {
             // force interface assembly to be loaded before creating ProtobufSerializer
 
@@ -30,6 +32,37 @@ namespace GameServer
 
             // run cluster nodes
 
+            var clusterRunner = CreateClusterRunner();
+
+            var standAlone = args.Length > 0 && args[0] == "standalone";
+            if (standAlone)
+            {
+                await clusterRunner.LaunchNode(3001, 9001, "game-pair-maker", "game-table", "game", "user-table", "user");
+            }
+            else
+            {
+                await clusterRunner.LaunchNode(3001, 0, "game-table", "game-pair-maker");
+                await clusterRunner.LaunchNode(3002, 0, "user-table");
+                await clusterRunner.LaunchNode(3011, 0, "game");
+                await clusterRunner.LaunchNode(3012, 0, "game");
+                await clusterRunner.LaunchNode(3021, 9001, "user");
+                await clusterRunner.LaunchNode(3022, 9002, "user");
+            }
+
+            try
+            {
+                await Task.Delay(-1, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                // ignore cancellation exception
+            }
+
+            await clusterRunner.Shutdown();
+        }
+
+        private ClusterRunner CreateClusterRunner()
+        {
             var commonConfig = ConfigurationFactory.ParseString(@"
                 akka {
                   actor {
@@ -56,29 +89,7 @@ namespace GameServer
                   }
                 }");
 
-            var clusterRunner = new ClusterRunner(commonConfig);
-
-            var standAlone = args.Length > 0 && args[0] == "standalone";
-            if (standAlone)
-            {
-                clusterRunner.LaunchNode(3001, 9001, "game-pair-maker", "game-table", "game", "user-table", "user");
-            }
-            else
-            {
-                clusterRunner.LaunchNode(3001, 0, "game-table", "game-pair-maker");
-                clusterRunner.LaunchNode(3002, 0, "user-table");
-                clusterRunner.LaunchNode(3011, 0, "game");
-                clusterRunner.LaunchNode(3012, 0, "game");
-                clusterRunner.LaunchNode(3021, 9001, "user");
-                clusterRunner.LaunchNode(3022, 9002, "user");
-            }
-
-            // wait for stop signal
-
-            Console.WriteLine("Press enter key to exit.");
-            Console.ReadLine();
-
-            clusterRunner.Shutdown();
+            return new ClusterRunner(commonConfig);
         }
     }
 }

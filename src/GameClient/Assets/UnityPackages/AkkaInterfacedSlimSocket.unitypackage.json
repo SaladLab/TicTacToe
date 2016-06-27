@@ -1,6 +1,6 @@
 {
   "Id": "AkkaInterfacedSlimSocket",
-  "Version": "0.3.1",
+  "Version": "0.4.0",
   "Authors": [
     "Esun Kim"
   ],
@@ -10,12 +10,16 @@
   "Description": "SlimSocket-Client for Akka.Interfaced",
   "Dependencies": {
     "AkkaInterfaced": {
-      "Version": "0.3.*",
+      "Version": "0.4.*",
       "Source": "github:SaladLab/Akka.Interfaced"
     },
     "CommonLogging": {
       "Version": "3.*",
       "Source": "github:SaladLab/Common.Logging.Unity3D"
+    },
+    "LidgrenUdpNet": {
+      "Version": "1.*",
+      "Source": "github:SaladLab/LidgrenUdpNet"
     },
     "NetLegacySupport": {
       "Version": "1.*",
@@ -32,10 +36,13 @@
   },
   "MergedDependencies": {
     "AkkaInterfaced": {
-      "Version": "0.3.1"
+      "Version": "0.4.1"
     },
     "CommonLogging": {
       "Version": "3.3.1"
+    },
+    "LidgrenUdpNet": {
+      "Version": "1.0.4"
     },
     "NetLegacySupport": {
       "Version": "1.1.0"
@@ -52,16 +59,20 @@
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Base.dll.mdb",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll.mdb",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/CommunicatorHelper.cs",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/CommunicatorWorker.cs",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTaskCompletionSource.cs",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/SlimTaskFactory.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/ChannelEventDispatcher.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/ChannelFactoryBuilder.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/UnitySlimTaskCompletionSource.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/UnitySlimTaskFactory.cs",
     {
       "Target": "Assets/UnityPackages/AkkaInterfaced.unitypackage.json",
       "Merged": true
     },
     {
       "Target": "Assets/UnityPackages/CommonLogging.unitypackage.json",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/LidgrenUdpNet.unitypackage.json",
       "Merged": true
     },
     {
@@ -82,14 +93,6 @@
     },
     {
       "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll",
-      "Merged": true
-    },
-    {
-      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll.mdb",
-      "Merged": true
-    },
-    {
-      "Target": "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll",
       "Merged": true
     },
     {
@@ -114,6 +117,14 @@
     },
     {
       "Target": "Assets/UnityPackages/CommonLogging/Common.Logging.Extensions.dll",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/LidgrenUdpNet/LidgrenUdpNet.dll.mdb",
+      "Merged": true
+    },
+    {
+      "Target": "Assets/UnityPackages/LidgrenUdpNet/LidgrenUdpNet.dll",
       "Merged": true
     },
     {

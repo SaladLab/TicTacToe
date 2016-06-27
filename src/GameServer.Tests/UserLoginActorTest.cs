@@ -34,7 +34,7 @@ namespace GameServer.Tests
         {
             var ret = await _client.LoginAsync("test", "1234");
 
-            _client.ClientSessionActor.Tell(PoisonPill.Instance);
+            _client.ChannelRef.WithNoReply().Close();
 
             _client = new MockClient(_clusterContext);
             var ret2 = await _client.LoginAsync("test", "1234");

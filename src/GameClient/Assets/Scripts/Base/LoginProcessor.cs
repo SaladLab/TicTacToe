@@ -6,6 +6,8 @@ using Akka.Interfaced;
 using Akka.Interfaced.SlimSocket.Client;
 using Domain;
 using UnityEngine;
+using Common.Logging;
+using Akka.Interfaced.SlimSocket;
 
 public static class LoginProcessor
 {
@@ -20,7 +22,7 @@ public static class LoginProcessor
             return G.DefaultServerEndPoint;
         }
 
-        // use 192.168.100.num if *.num when local ip address is 192.168.100.~
+        // use 192.168.0.num if *.num when local ip address is 192.168.0.~
 
         if (a.StartsWith("*."))
         {
@@ -42,38 +44,38 @@ public static class LoginProcessor
 
     public static Task Login(MonoBehaviour owner, IPEndPoint endPoint, string id, string password, Action<string> progressReport)
     {
-        var task = new SlimTaskCompletionSource<bool>();
+        var task = new UnitySlimTaskCompletionSource<bool>();
         task.Owner = owner;
         owner.StartCoroutine(LoginCoroutine(endPoint, id, password, task, progressReport));
         return task;
     }
 
     private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password,
-                                              SlimTaskCompletionSource<bool> task, Action<string> progressReport)
+                                              ISlimTaskCompletionSource<bool> task, Action<string> progressReport)
     {
         // Connect
 
         if (progressReport != null)
             progressReport("Connect");
 
-        if (G.Comm == null || G.Comm.State == Communicator.StateType.Stopped)
+        if (G.Channel == null || G.Channel.State != ChannelStateType.Connected)
         {
-            G.Comm = CommunicatorHelper.CreateCommunicator<DomainProtobufSerializer>(G.Logger, endPoint);
-            G.Comm.Start();
-        }
+            var channelFactory = ChannelFactoryBuilder.Build<DomainProtobufSerializer>(
+                endPoint: endPoint,
+                createChannelLogger: () => LogManager.GetLogger("Channel"));
+            channelFactory.Type = ChannelType.Tcp;
+            var channel = channelFactory.Create();
 
-        while (true)
-        {
-            if (G.Comm.State == Communicator.StateType.Connected)
-                break;
+            // connect to gateway
 
-            if (G.Comm.State == Communicator.StateType.Stopped)
+            var t0 = channel.ConnectAsync();
+            yield return t0.WaitHandle;
+            if (t0.Exception != null)
             {
-                task.Exception = new Exception("Failed to connect");
+                task.TrySetException(new Exception("Failed to connect"));
                 yield break;
             }
-
-            yield return null;
+            G.Channel = channel;
         }
 
         // Login
@@ -81,15 +83,15 @@ public static class LoginProcessor
         if (progressReport != null)
             progressReport("Login");
 
-        var userLogin = G.Comm.CreateRef<UserLoginRef>();
-        var observer = G.Comm.CreateObserver<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
+        var userLogin = G.Channel.CreateRef<UserLoginRef>();
+        var observer = G.Channel.CreateObserver<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
         var t1 = userLogin.Login(id, password, observer);
         yield return t1.WaitHandle;
 
         if (t1.Status != TaskStatus.RanToCompletion)
         {
-            observer.Dispose();
-            task.Exception = new Exception("Login Error\n" + t1.Exception, t1.Exception);
+            G.Channel.RemoveObserver(observer);
+            task.TrySetException(new Exception("Login Error\n" + t1.Exception, t1.Exception));
             yield break;
         }
 
@@ -97,7 +99,7 @@ public static class LoginProcessor
         G.UserId = t1.Result.UserId;
         G.UserContext = t1.Result.UserContext;
 
-        task.Result = true;
+        task.TrySetResult(true);
 
         observer.GetEventDispatcher().Pending = false;
     }

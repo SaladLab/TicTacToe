@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Akka;
-using Akka.Actor;
-using Akka.Cluster;
-using Akka.Cluster.Utility;
+﻿using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Domain;
 
@@ -44,7 +39,7 @@ namespace GameServer
                     break;
 
                 case nameof(IGamePairMaker):
-                    _clusterContext.GamePairMaker = new GamePairMakerRef(m.Actor);
+                    _clusterContext.GamePairMaker = m.Actor.Cast<GamePairMakerRef>();
                     break;
             }
         }

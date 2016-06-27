@@ -1,6 +1,6 @@
 {
   "Id": "AkkaInterfaced",
-  "Version": "0.3.1",
+  "Version": "0.4.1",
   "Authors": [
     "Esun Kim"
   ],
@@ -11,8 +11,6 @@
   "MergedDependencies": {},
   "Files": [
     "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll",
-    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll.mdb",
-    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll",
-    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-SlimClient.dll.mdb"
+    "Assets/UnityPackages/AkkaInterfaced/Akka.Interfaced-Base.dll.mdb"
   ]
 }

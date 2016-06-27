@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Configuration;
 using Akka.Actor;
+using Akka.Interfaced;
 using Akka.Cluster.Utility;
 using Domain;
 
@@ -42,9 +42,8 @@ namespace GameServer.Tests
                 () => new DistributedActorTableContainer<long>(
                           "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context })));
 
-            var gamePairMaker = system.ActorOf(Props.Create(
-                () => new GamePairMakerActor(context)));
-            context.GamePairMaker = new GamePairMakerRef(gamePairMaker);
+            var gamePairMaker = system.ActorOf(Props.Create(() => new GamePairMakerActor(context)));
+            context.GamePairMaker = gamePairMaker.Cast<GamePairMakerRef>();
 
             Context = context;
         }

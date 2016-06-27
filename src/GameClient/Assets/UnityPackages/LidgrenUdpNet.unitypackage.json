@@ -1,0 +1,17 @@
+{
+  "Id": "LidgrenUdpNet",
+  "Version": "1.0.4",
+  "Authors": [
+    "Michael Lidgren"
+  ],
+  "Owners": [
+    "Esun Kim"
+  ],
+  "Description": "Modifier version of Lidgren.Network",
+  "Dependencies": {},
+  "MergedDependencies": {},
+  "Files": [
+    "Assets/UnityPackages/LidgrenUdpNet/LidgrenUdpNet.dll",
+    "Assets/UnityPackages/LidgrenUdpNet/LidgrenUdpNet.dll.mdb"
+  ]
+}

@@ -11,7 +11,7 @@ using Domain;
 
 namespace GameServer
 {
-    [Log]
+    [Log(LogFilterTarget.Request)]
     [ResponsiveException(typeof(ResultException))]
     public class GamePairMakerActor : InterfacedActor, IExtendedInterface<IGamePairMaker>
     {
