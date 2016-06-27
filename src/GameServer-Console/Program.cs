@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GameServer;
 
-namespace GameServer_Console
+namespace GameServer
 {
     internal class Program
     {

@@ -102,7 +102,7 @@ namespace GameServer
 
             await game.Leave(_id);
 
-            // Unbind an room actor from channel
+            // Unbind an game actor from channel
 
             _channel.WithNoReply().UnbindActor(game.CastToIActorRef());
             _joinedGameMap.Remove(gameId);

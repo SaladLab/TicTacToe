@@ -89,12 +89,12 @@ namespace GameServer
                     PacketSerializer = serializer,
                     CreateInitialActors = (context, connection) => new[]
                     {
-                    Tuple.Create(
-                        context.ActorOf(Props.Create(() =>
-                            new UserLoginActor(Context, context.Self.Cast<ActorBoundChannelRef>(), GatewayInitiator.GetRemoteEndPoint(connection)))),
-                        new TaggedType[] { typeof(IUserLogin) },
-                        (ActorBindingFlags)0)
-                }
+                        Tuple.Create(
+                            context.ActorOf(Props.Create(() =>
+                                new UserLoginActor(Context, context.Self.Cast<ActorBoundChannelRef>(), GatewayInitiator.GetRemoteEndPoint(connection)))),
+                            new TaggedType[] { typeof(IUserLogin) },
+                            (ActorBindingFlags)0)
+                    }
                 };
 
                 var gateway = (_channelType == ChannelType.Tcp)

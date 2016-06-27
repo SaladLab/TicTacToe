@@ -7,7 +7,7 @@
     <ProjectGuid>{B83E0DE7-F181-40B7-A3BC-1D0E77D78969}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GameServer_Console</RootNamespace>
+    <RootNamespace>GameServer</RootNamespace>
     <AssemblyName>GameServer-Console</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
