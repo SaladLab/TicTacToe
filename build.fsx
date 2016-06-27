@@ -26,6 +26,9 @@ Target "Coverity" <| fun _ -> coveritySolution solution "SaladLab/TicTacToe"
 
 Target "CI" <| fun _ -> ()
 
+Target "DevLink" <| fun _ ->
+    devlink "./packages" [ "../Akka.Interfaced"; "../Akka.Interfaced.SlimSocket"; "../Akka.Cluster.Utility" ]
+
 Target "Help" <| fun _ -> 
     showUsage solution (fun _ -> None)
 
