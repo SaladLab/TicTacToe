@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.props')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.5.0-beta\build\Akka.Interfaced.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.5.0-beta\build\Akka.Interfaced.Templates-Protobuf.props')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.props" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.props')" />
   <Import Project="..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -42,11 +43,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced.0.4.1\lib\net45\Akka.Interfaced.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced.0.5.0\lib\net45\Akka.Interfaced.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Interfaced-Base, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Akka.Interfaced-Base.0.4.1\lib\net45\Akka.Interfaced-Base.dll</HintPath>
+      <HintPath>..\..\packages\Akka.Interfaced-Base.0.5.0\lib\net45\Akka.Interfaced-Base.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NetLegacySupport.Action, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -126,11 +127,12 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.props'))" />
     <Error Condition="!Exists('..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.props'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.props'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.5.0-beta\build\Akka.Interfaced.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced.Templates-Protobuf.0.5.0-beta\build\Akka.Interfaced.Templates-Protobuf.props'))" />
   </Target>
   <Import Project="..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.1.1.5\build\TrackableData.Templates.targets')" />
-  <Import Project="..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates-Protobuf.0.4.2-beta\build\Akka.Interfaced.Templates-Protobuf.targets')" />
+  <Import Project="..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.targets" Condition="Exists('..\..\packages\Akka.Interfaced.Templates.0.5.0\build\Akka.Interfaced.Templates.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Domain.targets.
   <Target Name="BeforeBuild">

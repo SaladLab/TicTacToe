@@ -32,7 +32,7 @@ namespace GameServer.Tests
 
             context.UserTableContainer = system.ActorOf(Props.Create(
                 () => new DistributedActorTableContainer<long>(
-                          "User", context.ClusterActorDiscovery, null, null)));
+                          "User", context.ClusterActorDiscovery, null, null, InterfacedPoisonPill.Instance)));
 
             context.GameTable = system.ActorOf(Props.Create(
                 () => new DistributedActorTable<long>(
@@ -40,7 +40,7 @@ namespace GameServer.Tests
 
             context.GameTableContainer = system.ActorOf(Props.Create(
                 () => new DistributedActorTableContainer<long>(
-                          "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context })));
+                          "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context }, InterfacedPoisonPill.Instance)));
 
             var gamePairMaker = system.ActorOf(Props.Create(() => new GamePairMakerActor(context)));
             context.GamePairMaker = gamePairMaker.Cast<GamePairMakerRef>();

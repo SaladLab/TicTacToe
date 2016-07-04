@@ -31,7 +31,7 @@ namespace Akka.Interfaced.SlimSocket.Client
             return true;
         }
 
-        public static void Post(SendOrPostCallback callback, object state)
+        public static void Post(SendOrPostCallback callback, object state = null)
         {
             lock (s_posts)
             {

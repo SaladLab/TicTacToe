@@ -70,7 +70,7 @@ namespace GameServer
             // create UserTableContainer
 
             _userContainer = Context.System.ActorOf(
-                Props.Create(() => new DistributedActorTableContainer<long>("User", Context.ClusterActorDiscovery, null, null)),
+                Props.Create(() => new DistributedActorTableContainer<long>("User", Context.ClusterActorDiscovery, null, null, InterfacedPoisonPill.Instance)),
                 "UserTableContainer");
             Context.UserTableContainer = _userContainer;
 
@@ -183,7 +183,7 @@ namespace GameServer
 
             _gameContainer = Context.System.ActorOf(
                 Props.Create(() => new DistributedActorTableContainer<long>(
-                    "Game", Context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { Context })),
+                    "Game", Context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { Context }, InterfacedPoisonPill.Instance)),
                 "GameTableContainer");
             Context.GameTableContainer = _gameContainer;
 

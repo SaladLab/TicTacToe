@@ -1,6 +1,6 @@
 {
   "Id": "AkkaInterfacedSlimSocket",
-  "Version": "0.4.0",
+  "Version": "0.5.0",
   "Authors": [
     "Esun Kim"
   ],
@@ -10,7 +10,7 @@
   "Description": "SlimSocket-Client for Akka.Interfaced",
   "Dependencies": {
     "AkkaInterfaced": {
-      "Version": "0.4.*",
+      "Version": "0.5.*",
       "Source": "github:SaladLab/Akka.Interfaced"
     },
     "CommonLogging": {
@@ -36,7 +36,7 @@
   },
   "MergedDependencies": {
     "AkkaInterfaced": {
-      "Version": "0.4.1"
+      "Version": "0.5.0"
     },
     "CommonLogging": {
       "Version": "3.3.1"
@@ -60,7 +60,7 @@
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/Akka.Interfaced.SlimSocket.Client.dll.mdb",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/ChannelEventDispatcher.cs",
-    "Assets/UnityPackages/AkkaInterfacedSlimSocket/ChannelFactoryBuilder.cs",
+    "Assets/UnityPackages/AkkaInterfacedSlimSocket/UnityCommunicatorFactory.cs",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/UnitySlimTaskCompletionSource.cs",
     "Assets/UnityPackages/AkkaInterfacedSlimSocket/UnitySlimTaskFactory.cs",
     {
