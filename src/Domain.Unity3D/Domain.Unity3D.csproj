@@ -112,6 +112,9 @@
     <Compile Include="..\Domain\Interface\IUserEventObserver.cs">
       <Link>Interface\IUserEventObserver.cs</Link>
     </Compile>
+    <Compile Include="..\Domain\Interface\IUserInitiator.cs">
+      <Link>Interface\IUserInitiator.cs</Link>
+    </Compile>
     <Compile Include="..\Domain\Interface\IUserLogin.cs">
       <Link>Interface\IUserLogin.cs</Link>
     </Compile>

@@ -104,6 +104,7 @@
     <Compile Include="Interface\IGameUserObserver.cs" />
     <Compile Include="Interface\IUser.cs" />
     <Compile Include="Interface\IUserEventObserver.cs" />
+    <Compile Include="Interface\IUserInitiator.cs" />
     <Compile Include="Interface\IUserPairingObserver.cs" />
     <Compile Include="Interface\IUserLogin.cs" />
     <Compile Include="Interface\ResultException.cs" />

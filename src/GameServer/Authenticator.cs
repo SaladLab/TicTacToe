@@ -17,17 +17,17 @@ namespace GameServer
 
         // If account exists, check password correct.
         // Otherwise create new account with id and password.
-        public static async Task<string> AuthenticateAsync(string id, string password)
+        public static async Task<long> AuthenticateAsync(string id, string password)
         {
             if (string.IsNullOrWhiteSpace(id))
-                return string.Empty;
+                return -1;
 
             var accountCollection = MongoDbStorage.Instance.Database.GetCollection<AccountInfo>("Account");
             var account = await accountCollection.Find(a => a.Id == id).FirstOrDefaultAsync();
             if (account != null)
             {
                 if (account.Password != password)
-                    return string.Empty;
+                    return -1;
 
                 account.LastLoginTime = DateTime.UtcNow;
             }
@@ -42,7 +42,7 @@ namespace GameServer
             }
 
             await accountCollection.ReplaceOneAsync(a => a.Id == id, account, new UpdateOptions { IsUpsert = true });
-            return id;
+            return Math.Abs(id.GetHashCode()); // TODO: USE UNIQUE COUNTER
         }
     }
 }
