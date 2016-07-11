@@ -188,17 +188,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />
-    <Compile Include="ClusterNodeContextUpdater.cs" />
     <Compile Include="ClusterNodeContext.cs" />
     <Compile Include="ClusterRoleWorker.cs" />
     <Compile Include="GameActor.cs" />
     <Compile Include="GameBotActor.cs" />
     <Compile Include="GamePairMakerActor.cs" />
-    <Compile Include="LinkDirectives.cs" />
     <Compile Include="MongoDbStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ClusterRunner.cs" />
     <Compile Include="GameService.cs" />
     <Compile Include="UserActor.cs" />
     <Compile Include="UserLoginActor.cs" />

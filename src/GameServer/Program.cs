@@ -1,5 +1,4 @@
-﻿using System;
-using Topshelf;
+﻿using Topshelf;
 
 namespace GameServer
 {
@@ -12,9 +11,9 @@ namespace GameServer
                 string runner = null;
                 x.AddCommandLineDefinition("runner", val => runner = val);
 
-                x.SetServiceName("GameServer");
-                x.SetDisplayName("GameServer for YourProject");
-                x.SetDescription("GameServer for YourProject using Akka.NET and Akka.Interfaced.");
+                x.SetServiceName("TicTacToe");
+                x.SetDisplayName("TicTacToe Service");
+                x.SetDescription("TicTacToe Service using Akka.NET and Akka.Interfaced. (https://github.com/SaladLab/TicTacToe)");
 
                 x.UseAssemblyInfoForServiceInfo();
                 x.RunAsLocalSystem();

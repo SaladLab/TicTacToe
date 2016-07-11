@@ -1,21 +1,18 @@
-﻿using Akka;
-using Akka.Actor;
+﻿using Aim.ClusterNode;
+using Akka.Cluster.Utility;
 using Domain;
 
 namespace GameServer
 {
-    public class ClusterNodeContext
+    public class ClusterNodeContext : ClusterNodeContextBase
     {
-        public ActorSystem System;
-        public IActorRef ClusterActorDiscovery;
-        public IActorRef ClusterNodeContextUpdater;
+        [ClusterActor("User")]
+        public DistributedActorTableRef<long> UserTable;
 
-        // quick access point for actors. but these are shared variables.
-        // if there is a neat way to avoid this dirty hack, please improve it.
-        public IActorRef UserTable;
-        public IActorRef UserTableContainer;
-        public IActorRef GameTable;
-        public IActorRef GameTableContainer;
+        [ClusterActor("Game")]
+        public DistributedActorTableRef<long> GameTable;
+
+        [ClusterActor(nameof(IGamePairMaker))]
         public GamePairMakerRef GamePairMaker;
     }
 }
