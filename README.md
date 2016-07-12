@@ -1,7 +1,7 @@
 # Tic Tac Toe
 
 [![Build status](https://ci.appveyor.com/api/projects/status/8vk6qnrts10p3mt4?svg=true)](https://ci.appveyor.com/project/veblush/tictactoe)
-[![Coverage Status](https://coveralls.io/repos/github/SaladLab/TicTacToe/badge.svg?branch=master)](https://coveralls.io/github/TicTacToe/Chatty?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/SaladLab/TicTacToe/badge.svg?branch=master)](https://coveralls.io/github/SaladLab/TicTacToe?branch=master)
 
 Reference game for using Akka.Interfaced, Akka.Interfaced.SlimSocket and TrackableData.
 
