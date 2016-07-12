@@ -23,24 +23,28 @@ namespace GameServer.Tests
         {
             var context = new ClusterNodeContext { System = system };
 
-            context.ClusterActorDiscovery = system.ActorOf(Props.Create(
-                () => new ClusterActorDiscovery(null)));
+            context.ClusterActorDiscovery = system.ActorOf(
+                Props.Create(() => new ClusterActorDiscovery(null)));
 
-            context.UserTable = system.ActorOf(Props.Create(
-                () => new DistributedActorTable<long>(
-                          "User", context.ClusterActorDiscovery, null, null)));
+            context.UserTable = new DistributedActorTableRef<long>(system.ActorOf(
+                Props.Create(() => new DistributedActorTable<long>(
+                    "User", context.ClusterActorDiscovery, null, null)),
+                "UserTable"));
 
-            context.UserTableContainer = system.ActorOf(Props.Create(
-                () => new DistributedActorTableContainer<long>(
-                          "User", context.ClusterActorDiscovery, null, null, InterfacedPoisonPill.Instance)));
+            var userTableContainer = system.ActorOf(
+                Props.Create(() => new DistributedActorTableContainer<long>(
+                    "User", context.ClusterActorDiscovery, typeof(UserActorFactory), new object[] { context }, InterfacedPoisonPill.Instance)),
+                "UserTableContainer");
 
-            context.GameTable = system.ActorOf(Props.Create(
-                () => new DistributedActorTable<long>(
-                          "Game", context.ClusterActorDiscovery, typeof(IncrementalIntegerIdGenerator), null)));
+            context.GameTable = new DistributedActorTableRef<long>(system.ActorOf(
+                Props.Create(() => new DistributedActorTable<long>(
+                    "Game", context.ClusterActorDiscovery, typeof(IncrementalIntegerIdGenerator), null)),
+                "GameTable"));
 
-            context.GameTableContainer = system.ActorOf(Props.Create(
-                () => new DistributedActorTableContainer<long>(
-                          "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context }, InterfacedPoisonPill.Instance)));
+            var gameTableContainer = system.ActorOf(
+                Props.Create(() => new DistributedActorTableContainer<long>(
+                    "Game", context.ClusterActorDiscovery, typeof(GameActorFactory), new object[] { context }, InterfacedPoisonPill.Instance)),
+                "GameTableContainer");
 
             var gamePairMaker = system.ActorOf(Props.Create(() => new GamePairMakerActor(context)));
             context.GamePairMaker = gamePairMaker.Cast<GamePairMakerRef>();

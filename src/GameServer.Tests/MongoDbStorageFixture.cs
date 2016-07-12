@@ -8,7 +8,7 @@ namespace GameServer.Tests
     {
         public MongoDbStorageFixture()
         {
-            var cstr = ConfigurationManager.ConnectionStrings["TestDb"].ConnectionString;
+            var cstr = ConfigurationManager.ConnectionStrings["Mongo"].ConnectionString;
             MongoDbStorage.Instance = new MongoDbStorage(cstr, "Test");
             MongoDbStorage.Instance.Client.DropDatabaseAsync(MongoDbStorage.Instance.DatabaseName).Wait();
         }

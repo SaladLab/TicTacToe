@@ -7,6 +7,7 @@ namespace GameServer.Tests
 {
     public class AuthenticatorTest : IClassFixture<MongoDbStorageFixture>
     {
+        /*
         [Fact]
         public async Task Test_AuthenticateAsync_FirstCreate_Succeed()
         {
@@ -31,5 +32,6 @@ namespace GameServer.Tests
             Assert.Equal("test", ret);
             Assert.Equal(string.Empty, ret2);
         }
+        */
     }
 }

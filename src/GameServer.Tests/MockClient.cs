@@ -58,7 +58,7 @@ namespace GameServer.Tests
             UserInitiator = (UserInitiatorRef)loginRet.Item2;
         }
 
-        public async Task PrepareUserAsync(string id, string password)
+        public async Task PrepareUserAsync(string id, string password, string userName = null)
         {
             if (User != null)
                 throw new InvalidOperationException("Already user prepared!");
@@ -75,7 +75,7 @@ namespace GameServer.Tests
             catch (ResultException e)
             {
                 if (e.ResultCode == ResultCodeType.UserNeedToBeCreated)
-                    UserContext = await UserInitiator.Create(_userEventObserver, id.ToUpper());
+                    UserContext = await UserInitiator.Create(_userEventObserver, userName ?? id.ToUpper());
                 else
                     throw;
             }

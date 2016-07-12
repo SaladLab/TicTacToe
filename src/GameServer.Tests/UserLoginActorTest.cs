@@ -25,20 +25,21 @@ namespace GameServer.Tests
         [Fact]
         public async Task Test_UserLogin_NewUser_Succeed()
         {
-            var ret = await _client.LoginAsync("test", "1234");
-            Assert.Equal("TEST", ret.UserContext.Data.Name);
+            await _client.PrepareUserAsync("test", "1234", "CreatedUser");
+            Assert.Equal("CreatedUser", _client.UserContext.Data.Name);
         }
 
         [Fact]
         public async Task Test_UserLogin_ExistingUser_Succeed()
         {
-            var ret = await _client.LoginAsync("test", "1234");
+            await _client.PrepareUserAsync("test", "1234", "CreatedUser");
 
             _client.ChannelRef.WithNoReply().Close();
+            await Task.Delay(100);
 
             _client = new MockClient(_clusterContext);
-            var ret2 = await _client.LoginAsync("test", "1234");
-            Assert.Equal("TEST", ret2.UserContext.Data.Name);
+            await _client.PrepareUserAsync("test", "1234");
+            Assert.Equal("CreatedUser", _client.UserContext.Data.Name);
         }
     }
 }
