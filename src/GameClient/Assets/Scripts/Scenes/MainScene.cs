@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Net;
 using Akka.Interfaced;
 using DG.Tweening;
@@ -137,8 +138,10 @@ public class MainScene : MonoBehaviour
         PlayerPrefs.DeleteKey("LoginId");
         PlayerPrefs.DeleteKey("LoginPassword");
 
-        G.Channel.Close();
-        G.Channel = null;
+        foreach (var channel in G.Communicator.Channels.ToList())
+            channel.Close();
+
+        G.Communicator = null;
         G.User = null;
 
         SwitchPanel(MainPanel, LoginPanel);

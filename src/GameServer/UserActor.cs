@@ -183,7 +183,7 @@ namespace GameServer
                 boundTarget = await _channel.BindActorOrOpenChannel(
                     game.CastToIActorRef(), new[] { new TaggedType(typeof(IGamePlayer), _id) },
                     ActorBindingFlags.OpenThenNotification | ActorBindingFlags.CloseThenNotification,
-                    "GameGateway", null);
+                    "GameGateway", _id);
             }
             catch (Exception e)
             {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Cluster.Utility;
 using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
+using Akka.Interfaced.SlimServer;
 using Common.Logging;
 using Domain;
 
@@ -13,7 +12,7 @@ namespace GameServer
 {
     [Log(LogFilterTarget.Request)]
     [ResponsiveException(typeof(ResultException))]
-    public class GameActor : InterfacedActor, IExtendedInterface<IGame, IGamePlayer>
+    public class GameActor : InterfacedActor, IGameSync, IGamePlayerSync, IActorBoundChannelObserver
     {
         private ILog _logger;
         private ClusterNodeContext _clusterContext;
@@ -150,8 +149,7 @@ namespace GameServer
             }
         }
 
-        [ExtendedHandler]
-        private Tuple<int, GameInfo> Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
+        Tuple<int, GameInfo> IGameSync.Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
         {
             if (_state != GameState.WaitingForPlayers)
                 throw new ResultException(ResultCodeType.GameStarted);
@@ -176,8 +174,7 @@ namespace GameServer
             return Tuple.Create(playerId, GetGameInfo());
         }
 
-        [ExtendedHandler]
-        private void Leave(long userId)
+        void IGameSync.Leave(long userId)
         {
             var playerId = GetPlayerId(userId);
 
@@ -186,9 +183,8 @@ namespace GameServer
 
             NotifyToAllObservers((id, o) => o.Leave(playerId));
 
-            if (_state != GameState.Ended)
+            if (_state != GameState.Ended && _state != GameState.Aborted)
             {
-                // TODO: STATE
                 _state = GameState.Aborted;
                 NotifyToAllObservers((id, o) => o.Abort());
                 NotifyToAllObserversForUserActor((id, o) => o.End(_id, GameResult.None));
@@ -200,8 +196,7 @@ namespace GameServer
             }
         }
 
-        [ExtendedHandler]
-        private void MakeMove(PlacePosition pos, long playerUserId)
+        void IGamePlayerSync.MakeMove(PlacePosition pos, long playerUserId)
         {
             var playerId = GetPlayerId(playerUserId);
             if (playerId != _currentPlayerId)
@@ -243,10 +238,44 @@ namespace GameServer
             }
         }
 
-        [ExtendedHandler]
-        private void Say(string msg, long playerUserId)
+        void IGamePlayerSync.Say(string msg, long playerUserId)
         {
-            // TODO:
+            var playerId = GetPlayerId(playerUserId);
+            NotifyToAllObservers((id, o) => o.Say(playerId, msg));
+        }
+
+        void IActorBoundChannelObserver.ChannelOpen(IActorBoundChannel channel, object tag)
+        {
+            if (tag == null)
+                return;
+
+            // Change notification message route to open channel
+
+            var userId = (long)tag;
+            var player = _players.FirstOrDefault(p => p.UserId == userId);
+            if (player != null && player.Observer != null)
+            {
+                var observerChannel = player.Observer.Channel as AkkaReceiverNotificationChannel;
+                if (observerChannel != null)
+                    player.Observer.Channel = new AkkaReceiverNotificationChannel(((ActorBoundChannelRef)channel).CastToIActorRef());
+            }
+        }
+
+        void IActorBoundChannelObserver.ChannelOpenTimeout(object tag)
+        {
+        }
+
+        void IActorBoundChannelObserver.ChannelClose(IActorBoundChannel channel, object tag)
+        {
+            if (tag == null)
+                return;
+
+            // Deactivate observer bound to closed channel
+
+            var userId = (long)tag;
+            var player = _players.FirstOrDefault(p => p.UserId == userId);
+            if (player != null)
+                player.Observer = null;
         }
     }
 }

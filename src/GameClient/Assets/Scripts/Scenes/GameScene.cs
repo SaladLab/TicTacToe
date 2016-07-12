@@ -88,7 +88,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         _pairedGame = null;
 
-        var pairingObserver = G.Channel.CreateObserver<IUserPairingObserver>(this);
+        var pairingObserver = G.Communicator.ObserverRegistry.Create<IUserPairingObserver>(this);
         yield return G.User.RegisterPairing(pairingObserver).WaitHandle;
 
         var startTime = DateTime.Now;
@@ -97,7 +97,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield return null;
         }
 
-        G.Channel.RemoveObserver(pairingObserver);
+        G.Communicator.ObserverRegistry.Remove(pairingObserver);
 
         if (_pairedGame == null)
         {
@@ -110,7 +110,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         // Join Game
 
-        var gameObserver = G.Channel.CreateObserver<IGameObserver>(this, startPending: true);
+        var gameObserver = G.Communicator.ObserverRegistry.Create<IGameObserver>(this, startPending: true);
         gameObserver.GetEventDispatcher().KeepingOrder = true; // remove after Akka.NET network layer is upgraded
 
         var roomId = _pairedGame.Item1;
@@ -120,7 +120,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (joinRet.Exception != null)
         {
             UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
-            G.Channel.RemoveObserver(gameObserver);
+            G.Communicator.ObserverRegistry.Remove(gameObserver);
             yield break;
         }
 
@@ -128,6 +128,18 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         _gameInfo = joinRet.Result.Item3;
         _myPlayerId = joinRet.Result.Item2;
         _myPlayer = (GamePlayerRef)joinRet.Result.Item1;
+
+        if (_myPlayer.IsChannelConnected() == false)
+        {
+            var connectTask = _myPlayer.ConnectChannelAsync();
+            yield return connectTask.WaitHandle;
+            if (connectTask.Exception != null)
+            {
+                UiMessageBox.ShowMessageBox("Failed to connect\n" + joinRet.Exception);
+                G.Communicator.ObserverRegistry.Remove(gameObserver);
+                yield break;
+            }
+        }
 
         gameObserver.GetEventDispatcher().Pending = false;
         LoadingText.text = "Waiting for " + _pairedGame.Item2 + "...";
@@ -230,7 +242,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (_gameInfo != null)
         {
             G.User.LeaveGame(_gameInfo.Id);
-            G.Channel.RemoveObserver(_gameObserver);
+            G.Communicator.ObserverRegistry.Remove(_gameObserver);
         }
 
         SceneManager.LoadScene("MainScene");

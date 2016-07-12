@@ -3,14 +3,127 @@ using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using Akka.Interfaced;
+using Akka.Interfaced.SlimSocket;
 using Akka.Interfaced.SlimSocket.Client;
+using Common.Logging;
 using Domain;
 using UnityEngine;
-using Common.Logging;
-using Akka.Interfaced.SlimSocket;
 
 public static class LoginProcessor
 {
+    public static Task Login(MonoBehaviour owner, IPEndPoint endPoint, string id, string password, Action<string> progressReport)
+    {
+        var task = new UnitySlimTaskCompletionSource<bool>();
+        task.Owner = owner;
+        owner.StartCoroutine(LoginCoroutine(endPoint, id, password, task, progressReport));
+        return task;
+    }
+
+    private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password,
+                                              ISlimTaskCompletionSource<bool> task, Action<string> progressReport)
+    {
+        // Connect
+
+        if (progressReport != null)
+            progressReport("Connect");
+
+        IChannel channel = null;
+        if (G.Communicator == null || G.Communicator.Channels.Count == 0)
+        {
+            var communicator = UnityCommunicatorFactory.Create();
+            {
+                var channelFactory = communicator.ChannelFactory;
+                channelFactory.Type = ChannelType.Tcp;
+                channelFactory.ConnectEndPoint = endPoint;
+                channelFactory.CreateChannelLogger = () => LogManager.GetLogger("Channel");
+                channelFactory.PacketSerializer = PacketSerializer.CreatePacketSerializer<DomainProtobufSerializer>();
+            }
+            channel = communicator.CreateChannel();
+
+            // connect to gateway
+
+            var t0 = channel.ConnectAsync();
+            yield return t0.WaitHandle;
+            if (t0.Exception != null)
+            {
+                UiMessageBox.ShowMessageBox("Connect error:\n" + t0.Exception.Message);
+                yield break;
+            }
+
+            G.Communicator = communicator;
+        }
+
+        // Login
+
+        if (progressReport != null)
+            progressReport("Login");
+
+        channel = G.Communicator.Channels[0];
+        var userLogin = channel.CreateRef<UserLoginRef>();
+        var t1 = userLogin.Login(id, password);
+        yield return t1.WaitHandle;
+
+        if (t1.Status != TaskStatus.RanToCompletion)
+        {
+            task.TrySetException(new Exception("Login Error\n" + t1.Exception, t1.Exception));
+            yield break;
+        }
+
+        // Query User
+
+        var userId = t1.Result.Item1;
+        var userInitiator = (UserInitiatorRef)t1.Result.Item2;
+
+        if (userInitiator.IsChannelConnected() == false)
+        {
+            channel.Close();
+            var t2 = userInitiator.ConnectChannelAsync();
+            yield return t2.WaitHandle;
+            if (t2.Exception != null)
+            {
+                UiMessageBox.ShowMessageBox("ConnectToUser error:\n" + t2.Exception.ToString());
+                yield break;
+            }
+        }
+
+        var observer = channel.CreateObserver<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
+
+        var t3 = userInitiator.Load(observer);
+        yield return t3.WaitHandle;
+        if (t3.Exception != null)
+        {
+            if (t3.Exception is ResultException && ((ResultException)t3.Exception).ResultCode == ResultCodeType.UserNeedToBeCreated)
+            {
+                // TODO: Naming
+                var userName = "NewUser";
+                var t4 = userInitiator.Create(observer, userName);
+                yield return t4.WaitHandle;
+                if (t4.Exception != null)
+                {
+                    UiMessageBox.ShowMessageBox("CreateUser error:\n" + t4.Exception.ToString());
+                    yield break;
+                }
+                G.UserContext = t4.Result;
+            }
+            else
+            {
+                UiMessageBox.ShowMessageBox("Load error:\n" + t3.Exception.ToString());
+                yield break;
+            }
+        }
+        else
+        {
+            G.UserContext = t3.Result;
+        }
+
+        G.User = userInitiator.Cast<UserRef>();
+        G.UserId = userId;
+
+        task.TrySetResult(true);
+
+        observer.GetEventDispatcher().Pending = false;
+    }
+
     public static IPEndPoint GetEndPointAddress(string address)
     {
         var a = address.Trim();
@@ -40,67 +153,5 @@ public static class LoginProcessor
         }
 
         return IPEndPointHelper.Parse(address, G.DefaultServerEndPoint.Port);
-    }
-
-    public static Task Login(MonoBehaviour owner, IPEndPoint endPoint, string id, string password, Action<string> progressReport)
-    {
-        var task = new UnitySlimTaskCompletionSource<bool>();
-        task.Owner = owner;
-        owner.StartCoroutine(LoginCoroutine(endPoint, id, password, task, progressReport));
-        return task;
-    }
-
-    private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password,
-                                              ISlimTaskCompletionSource<bool> task, Action<string> progressReport)
-    {
-        // Connect
-
-        if (progressReport != null)
-            progressReport("Connect");
-
-        if (G.Channel == null || G.Channel.State != ChannelStateType.Connected)
-        {
-            var channelFactory = ChannelFactoryBuilder.Build<DomainProtobufSerializer>(
-                endPoint: endPoint,
-                createChannelLogger: () => LogManager.GetLogger("Channel"));
-            channelFactory.Type = ChannelType.Tcp;
-            var channel = channelFactory.Create();
-
-            // connect to gateway
-
-            var t0 = channel.ConnectAsync();
-            yield return t0.WaitHandle;
-            if (t0.Exception != null)
-            {
-                task.TrySetException(new Exception("Failed to connect"));
-                yield break;
-            }
-            G.Channel = channel;
-        }
-
-        // Login
-
-        if (progressReport != null)
-            progressReport("Login");
-
-        var userLogin = G.Channel.CreateRef<UserLoginRef>();
-        var observer = G.Channel.CreateObserver<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
-        var t1 = userLogin.Login(id, password, observer);
-        yield return t1.WaitHandle;
-
-        if (t1.Status != TaskStatus.RanToCompletion)
-        {
-            G.Channel.RemoveObserver(observer);
-            task.TrySetException(new Exception("Login Error\n" + t1.Exception, t1.Exception));
-            yield break;
-        }
-
-        G.User = (UserRef)t1.Result.User;
-        G.UserId = t1.Result.UserId;
-        G.UserContext = t1.Result.UserContext;
-
-        task.TrySetResult(true);
-
-        observer.GetEventDispatcher().Pending = false;
     }
 }

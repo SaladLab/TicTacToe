@@ -12,7 +12,7 @@ namespace GameServer
 {
     [Log(LogFilterTarget.Request)]
     [ResponsiveException(typeof(ResultException))]
-    public class GamePairMakerActor : InterfacedActor, IExtendedInterface<IGamePairMaker>
+    public class GamePairMakerActor : InterfacedActor, IGamePairMakerSync
     {
         private readonly ILog _logger = LogManager.GetLogger("GamePairMaker");
         private readonly ClusterNodeContext _clusterContext;
@@ -109,8 +109,7 @@ namespace GameServer
             }
         }
 
-        [ExtendedHandler]
-        private void RegisterPairing(long userId, string userName, IUserPairingObserver observer)
+        void IGamePairMakerSync.RegisterPairing(long userId, string userName, IUserPairingObserver observer)
         {
             if (_pairingQueue.Any(i => i.UserId == userId))
                 throw new ResultException(ResultCodeType.AlreadyPairingRegistered);
@@ -124,8 +123,7 @@ namespace GameServer
             });
         }
 
-        [ExtendedHandler]
-        private void UnregisterPairing(long userId)
+        void IGamePairMakerSync.UnregisterPairing(long userId)
         {
             _pairingQueue.RemoveAll(i => i.UserId == userId);
         }

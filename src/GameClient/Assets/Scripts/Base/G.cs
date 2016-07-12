@@ -10,14 +10,14 @@ public static class G
         _logger = LogManager.GetLogger("G");
     }
 
-    // Channel
+    // Communicator
 
-    private static IChannel _channel;
+    private static Communicator _communicator;
 
-    public static IChannel Channel
+    public static Communicator Communicator
     {
-        get { return _channel; }
-        set { _channel = value; }
+        get { return _communicator; }
+        set { _communicator = value; }
     }
 
     public static readonly IPEndPoint DefaultServerEndPoint = new IPEndPoint(IPAddress.Loopback, 9001);

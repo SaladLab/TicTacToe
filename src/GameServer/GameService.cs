@@ -31,7 +31,7 @@ namespace GameServer
 
             try
             {
-                var cstr = ConfigurationManager.ConnectionStrings["MongoDb"].ConnectionString;
+                var cstr = ConfigurationManager.ConnectionStrings["Mongo"].ConnectionString;
                 MongoDbStorage.Instance = new MongoDbStorage(cstr);
             }
             catch (Exception e)
