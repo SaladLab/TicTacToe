@@ -7,6 +7,7 @@ using Akka.Interfaced;
 using Akka.Interfaced.LogFilter;
 using Common.Logging;
 using Domain;
+using Akka.Actor;
 
 namespace GameServer
 {
@@ -28,6 +29,7 @@ namespace GameServer
 
         // NOTE: If more performance required, lookup could be optimized further.
         private readonly List<QueueEntity> _pairingQueue;
+        private ICancelable _scheduleTimerCancelable;
 
         public GamePairMakerActor(ClusterNodeContext clusterContext)
         {
@@ -42,9 +44,16 @@ namespace GameServer
 
         protected override Task OnStart(bool restarted)
         {
-            Context.System.Scheduler.ScheduleTellRepeatedly(
+            _scheduleTimerCancelable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
                 TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), Self, new Schedule(), null);
             return Task.FromResult(0);
+        }
+
+        protected override void PostStop()
+        {
+            if (_scheduleTimerCancelable != null)
+                _scheduleTimerCancelable.Cancel();
+            base.PostStop();
         }
 
         private class Schedule
