@@ -33,12 +33,12 @@ namespace GameServer
                 throw new ResultException(ResultCodeType.ArgumentError, nameof(password));
 
             // verify crendential
-            var userId = await Authenticator.AuthenticateAsync(id, password);
-            if (userId <= 0)
+            var account = await Authenticator.AuthenticateAsync(id, password);
+            if (account == null)
                 throw new ResultException(ResultCodeType.LoginCredentialError);
 
             // try to create user actor with user-id
-            var user = await _clusterContext.UserTable.WithTimeout(TimeSpan.FromSeconds(30)).GetOrCreate(userId, null);
+            var user = await _clusterContext.UserTable.WithTimeout(TimeSpan.FromSeconds(30)).GetOrCreate(account.UserId, null);
             if (user.Actor == null)
                 throw new ResultException(ResultCodeType.InternalError);
             if (user.Created == false)
@@ -55,7 +55,7 @@ namespace GameServer
             }
             catch (Exception e)
             {
-                _logger.Error($"BindActorOrOpenChannel error (UserId={userId})", e);
+                _logger.Error($"BindActorOrOpenChannel error (UserId={account.UserId})", e);
                 user.Actor.Tell(InterfacedPoisonPill.Instance);
                 throw new ResultException(ResultCodeType.InternalError);
             }
@@ -63,7 +63,7 @@ namespace GameServer
             // once login done, stop this
             Self.Tell(InterfacedPoisonPill.Instance);
 
-            return Tuple.Create(userId, (IUserInitiator)boundTarget.Cast<UserInitiatorRef>());
+            return Tuple.Create(account.UserId, (IUserInitiator)boundTarget.Cast<UserInitiatorRef>());
         }
     }
 }
