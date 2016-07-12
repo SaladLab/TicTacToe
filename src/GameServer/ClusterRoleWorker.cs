@@ -196,7 +196,7 @@ namespace GameServer
             _gamePairMaker = _context.System.ActorOf(
                 Props.Create(() => new GamePairMakerActor(_context)),
                 "GamePairMaker");
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
         public override async Task Stop()
@@ -228,7 +228,7 @@ namespace GameServer
         {
             await _gameTable.GracefulStop(
                 TimeSpan.FromMinutes(1),
-                new DistributedActorTableMessage<string>.GracefulStop(InterfacedPoisonPill.Instance));
+                new DistributedActorTableMessage<long>.GracefulStop(InterfacedPoisonPill.Instance));
         }
     }
 
