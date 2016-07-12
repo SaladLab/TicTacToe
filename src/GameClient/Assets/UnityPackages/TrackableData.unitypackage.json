@@ -1,6 +1,6 @@
 {
   "Id": "TrackableData",
-  "Version": "1.1.1",
+  "Version": "1.2.0",
   "Authors": [
     "Esun Kim"
   ],
@@ -10,7 +10,7 @@
   "Description": "POCO, list, dictionary, set and container which can track changes. These changes can be saved or rollbacked or replayed to another object.",
   "Dependencies": {
     "JsonNet": {
-      "Version": ">=8.0.0",
+      "Version": "9.*",
       "Source": "github:SaladLab/Json.Net.Unity3D"
     },
     "protobuf-net": {
@@ -20,7 +20,7 @@
   },
   "MergedDependencies": {
     "JsonNet": {
-      "Version": "8.0.3"
+      "Version": "9.0.1"
     },
     "protobuf-net": {
       "Version": "2.1.0-alpha-1"
