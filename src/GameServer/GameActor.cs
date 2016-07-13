@@ -100,14 +100,19 @@ namespace GameServer
 
         private void ScheduleTurnTimeout(int turn)
         {
+            UnscheduleTurnTimeout();
+
+            _turnTimeout = Context.System.Scheduler.ScheduleTellOnceCancelable(
+                (int)Rule.TurnTimeout.TotalMilliseconds, Self, new TurnTimeout { Turn = turn }, null);
+        }
+
+        private void UnscheduleTurnTimeout()
+        {
             if (_turnTimeout != null)
             {
                 _turnTimeout.Cancel();
                 _turnTimeout = null;
             }
-
-            _turnTimeout = Context.System.Scheduler.ScheduleTellOnceCancelable(
-                (int)Rule.TurnTimeout.TotalMilliseconds, Self, new TurnTimeout { Turn = turn }, null);
         }
 
         [MessageHandler]
@@ -142,11 +147,7 @@ namespace GameServer
                     (id, o) => o.End(_id, id == winnerPlayerId ? GameResult.Win : GameResult.Lose));
             }
 
-            if (_turnTimeout != null)
-            {
-                _turnTimeout.Cancel();
-                _turnTimeout = null;
-            }
+            UnscheduleTurnTimeout();
         }
 
         Tuple<int, GameInfo> IGameSync.Join(long userId, string userName, IGameObserver observer, IGameUserObserver observerForUserActor)
@@ -188,6 +189,7 @@ namespace GameServer
                 _state = GameState.Aborted;
                 NotifyToAllObservers((id, o) => o.Abort());
                 NotifyToAllObserversForUserActor((id, o) => o.End(_id, GameResult.None));
+                UnscheduleTurnTimeout();
             }
 
             if (_players.Count(p => p.Observer != null) == 0)
