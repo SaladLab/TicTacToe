@@ -82,13 +82,16 @@ namespace GameServer
 
         async Task<TrackableUserContext> IUserInitiator.Create(IUserEventObserver observer, string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ResultException(ResultCodeType.ArgumentError);
+
             // create context
 
             var userContext = new TrackableUserContext
             {
                 Data = new TrackableUserData
                 {
-                    Name = name,
+                    Name = name.Trim(),
                     RegisterTime = DateTime.UtcNow,
                     LastLoginTime = DateTime.UtcNow,
                     LoginCount = 1,
