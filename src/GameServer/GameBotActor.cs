@@ -49,7 +49,8 @@ namespace GameServer
         {
             try
             {
-                await _game.Leave(_userId);
+                if (_gamePlayer != null)
+                    await _game.Leave(_userId);
             }
             catch (Exception e)
             {
