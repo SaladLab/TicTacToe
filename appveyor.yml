@@ -1,11 +1,12 @@
 version: 1.0.0.{build}
 os: Visual Studio 2015
-configuration: Debug
 services:
 - mongodb
-before_build:
-- cmd: nuget restore -DisableParallelProcessing -source "https://www.nuget.org/api/v2;https://www.myget.org/F/saladbowlcreative/api/v2"
-build:
-  project: TicTacToe.sln
-  verbosity: minimal
-test: on
+environment:
+  COVERALLSKEY:
+    secure: xKdlZl4wNnzXkiLIb456OFGuLX/BqTJ9XmQUFwIzrjmwAdyDEv/svJXNH3HnvH3q
+test: off
+build_script:
+- cmd: build.cmd ci coverallskey=%COVERALLSKEY%
+cache:
+- packages -> **\packages.config
