@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Akka.Interfaced;
@@ -8,6 +9,7 @@ using Akka.Interfaced.SlimSocket.Client;
 using Common.Logging;
 using Domain;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class LoginProcessor
 {
@@ -20,38 +22,32 @@ public static class LoginProcessor
     }
 
     private static IEnumerator LoginCoroutine(IPEndPoint endPoint, string id, string password,
-                                              ISlimTaskCompletionSource<bool> task, Action<string> progressReport)
+                                              ISlimTaskCompletionSource<bool> tcs, Action<string> progressReport)
     {
         // Connect
 
         if (progressReport != null)
             progressReport("Connect");
 
-        IChannel channel = null;
-        if (G.Communicator == null || G.Communicator.Channels.Count == 0)
+        var communicator = UnityCommunicatorFactory.Create();
         {
-            var communicator = UnityCommunicatorFactory.Create();
-            {
-                var channelFactory = communicator.ChannelFactory;
-                channelFactory.Type = ChannelType.Tcp;
-                channelFactory.ConnectEndPoint = endPoint;
-                channelFactory.CreateChannelLogger = () => LogManager.GetLogger("Channel");
-                channelFactory.PacketSerializer = PacketSerializer.CreatePacketSerializer<DomainProtobufSerializer>();
-            }
-            channel = communicator.CreateChannel();
-
-            // connect to gateway
-
-            var t0 = channel.ConnectAsync();
-            yield return t0.WaitHandle;
-            if (t0.Exception != null)
-            {
-                UiMessageBox.Show("Connect error:\n" + t0.Exception.Message);
-                yield break;
-            }
-
-            G.Communicator = communicator;
+            var channelFactory = communicator.ChannelFactory;
+            channelFactory.Type = ChannelType.Tcp;
+            channelFactory.ConnectEndPoint = endPoint;
+            channelFactory.CreateChannelLogger = () => LogManager.GetLogger("Channel");
+            channelFactory.PacketSerializer = PacketSerializer.CreatePacketSerializer<DomainProtobufSerializer>();
         }
+
+        var channel = communicator.CreateChannel();
+        var t0 = channel.ConnectAsync();
+        yield return t0.WaitHandle;
+        if (t0.Exception != null)
+        {
+            tcs.TrySetException(new Exception("Connect error\n" + t0.Exception, t0.Exception));
+            yield break;
+        }
+
+        G.Communicator = communicator;
 
         // Login
 
@@ -65,11 +61,14 @@ public static class LoginProcessor
 
         if (t1.Status != TaskStatus.RanToCompletion)
         {
-            task.TrySetException(new Exception("Login Error\n" + t1.Exception, t1.Exception));
+            tcs.TrySetException(new Exception("Login Error\n" + t1.Exception, t1.Exception));
             yield break;
         }
 
         // Query User
+
+        if (progressReport != null)
+            progressReport("Query User");
 
         var userId = t1.Result.Item1;
         var userInitiator = (UserInitiatorRef)t1.Result.Item2;
@@ -81,12 +80,12 @@ public static class LoginProcessor
             yield return t2.WaitHandle;
             if (t2.Exception != null)
             {
-                UiMessageBox.Show("ConnectToUser error:\n" + t2.Exception.ToString());
+                tcs.TrySetException(new Exception("ConnectToUser error\n" + t2.Exception, t2.Exception));
                 yield break;
             }
         }
 
-        var observer = channel.CreateObserver<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
+        var observer = communicator.ObserverRegistry.Create<IUserEventObserver>(UserEventProcessor.Instance, startPending: true);
 
         var t3 = userInitiator.Load(observer);
         yield return t3.WaitHandle;
@@ -101,14 +100,16 @@ public static class LoginProcessor
                 yield return t4.WaitHandle;
                 if (t4.Exception != null)
                 {
-                    UiMessageBox.Show("CreateUser error:\n" + t4.Exception.ToString());
+                    tcs.TrySetException(new Exception("CreateUser error\n" + t4.Exception, t4.Exception));
+                    communicator.ObserverRegistry.Remove(observer);
                     yield break;
                 }
                 G.UserContext = t4.Result;
             }
             else
             {
-                UiMessageBox.Show("Load error:\n" + t3.Exception.ToString());
+                tcs.TrySetException(new Exception("LoadUser error\n" + t3.Exception, t3.Exception));
+                communicator.ObserverRegistry.Remove(observer);
                 yield break;
             }
         }
@@ -120,9 +121,21 @@ public static class LoginProcessor
         G.User = userInitiator.Cast<UserRef>();
         G.UserId = userId;
 
-        task.TrySetResult(true);
+        communicator.Channels.Last().StateChanged += (_, state) =>
+        {
+            if (state == ChannelStateType.Closed)
+                ChannelEventDispatcher.Post(OnChannelClose, _);
+        };
+
+        tcs.TrySetResult(true);
 
         observer.GetEventDispatcher().Pending = false;
+    }
+
+    private static void OnChannelClose(object channel)
+    {
+        G.User = null;
+        SceneManager.LoadScene("MainScene");
     }
 
     public static IPEndPoint GetEndPointAddress(string address)
