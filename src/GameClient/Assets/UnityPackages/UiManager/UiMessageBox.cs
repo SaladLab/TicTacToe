@@ -29,7 +29,7 @@ public class UiMessageBox : UiDialog
     public Text MessageText;
     public Button[] Buttons;
 
-    public static UiDialogHandle ShowMessageBox(string msg, QuestionResultDelegate callback = null)
+    public static UiDialogHandle Show(string msg, QuestionResultDelegate callback = null)
     {
         UiDialogHandle handle;
         {
@@ -60,7 +60,7 @@ public class UiMessageBox : UiDialog
         Hide(QuestionResult.Ok);
     }
 
-    public static UiDialogHandle ShowQuestionBox(
+    public static UiDialogHandle Show(
         string msg, QuestionType questionType,
         QuestionResultDelegate callback = null, string customOkName = null)
     {
@@ -89,15 +89,18 @@ public class UiMessageBox : UiDialog
         var b1 = msgBox.Buttons[1];
         var b1Text = b1.transform.Find("Text").GetComponent<Text>();
 
+        b1.gameObject.SetActive(questionType != QuestionType.Ok);
+
         switch (questionType)
         {
             case QuestionType.Ok:
                 b0Text.text = customOkName ?? "Ok";
                 b0.onClick.AddListener(() => msgBox.OnQuestionBoxButtonClick(QuestionResult.Ok));
+                b1.gameObject.SetActive(false);
                 break;
 
             case QuestionType.OkCancel:
-                b0Text.text = "Ok";
+                b0Text.text = customOkName ?? "Ok";
                 b0.onClick.AddListener(() => msgBox.OnQuestionBoxButtonClick(QuestionResult.Ok));
                 b1Text.text = "Cancel";
                 b1.onClick.AddListener(() => msgBox.OnQuestionBoxButtonClick(QuestionResult.Cancel));

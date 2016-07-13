@@ -1,6 +1,6 @@
 {
   "Id": "UiManager",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "Authors": [
     "Esun Kim"
   ],
@@ -23,6 +23,7 @@
     "Assets/UnityPackages/UiManager/UiDialog.cs",
     "Assets/UnityPackages/UiManager/UiDialogHandle.cs",
     "Assets/UnityPackages/UiManager/UiHelper.cs",
+    "Assets/UnityPackages/UiManager/UiInputBox.cs",
     "Assets/UnityPackages/UiManager/UiManager.cs",
     "Assets/UnityPackages/UiManager/UiMessageBox.cs",
     {

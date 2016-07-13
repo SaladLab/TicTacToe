@@ -46,7 +46,7 @@ public static class LoginProcessor
             yield return t0.WaitHandle;
             if (t0.Exception != null)
             {
-                UiMessageBox.ShowMessageBox("Connect error:\n" + t0.Exception.Message);
+                UiMessageBox.Show("Connect error:\n" + t0.Exception.Message);
                 yield break;
             }
 
@@ -81,7 +81,7 @@ public static class LoginProcessor
             yield return t2.WaitHandle;
             if (t2.Exception != null)
             {
-                UiMessageBox.ShowMessageBox("ConnectToUser error:\n" + t2.Exception.ToString());
+                UiMessageBox.Show("ConnectToUser error:\n" + t2.Exception.ToString());
                 yield break;
             }
         }
@@ -94,20 +94,21 @@ public static class LoginProcessor
         {
             if (t3.Exception is ResultException && ((ResultException)t3.Exception).ResultCode == ResultCodeType.UserNeedToBeCreated)
             {
-                // TODO: Naming
-                var userName = "NewUser";
+                var inputDialog = UiInputBox.Show("Input your name:");
+                yield return inputDialog.WaitForHide();
+                var userName = (string)inputDialog.ReturnValue;
                 var t4 = userInitiator.Create(observer, userName);
                 yield return t4.WaitHandle;
                 if (t4.Exception != null)
                 {
-                    UiMessageBox.ShowMessageBox("CreateUser error:\n" + t4.Exception.ToString());
+                    UiMessageBox.Show("CreateUser error:\n" + t4.Exception.ToString());
                     yield break;
                 }
                 G.UserContext = t4.Result;
             }
             else
             {
-                UiMessageBox.ShowMessageBox("Load error:\n" + t3.Exception.ToString());
+                UiMessageBox.Show("Load error:\n" + t3.Exception.ToString());
                 yield break;
             }
         }

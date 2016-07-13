@@ -7,7 +7,7 @@
     "TrackableData": {
       "version": "1.*",
       "source": "github:SaladLab/TrackableData"
-    },   
+    },
     "UiManager": {
       "version": "1.*",
       "source": "github:SaladLab/Unity3D.UiManager"

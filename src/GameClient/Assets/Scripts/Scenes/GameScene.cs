@@ -54,14 +54,14 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         if (string.IsNullOrEmpty(loginId))
         {
-            UiMessageBox.ShowMessageBox("Cannot find id");
+            UiMessageBox.Show("Cannot find id");
             yield break;
         }
 
         yield return StartCoroutine(ProcessLoginUser(loginServer, loginId, loginPassword));
         if (G.User == null)
         {
-            UiMessageBox.ShowMessageBox("Failed to login");
+            UiMessageBox.Show("Failed to login");
             yield break;
         }
 
@@ -102,7 +102,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
         if (_pairedGame == null)
         {
             yield return G.User.UnregisterPairing().WaitHandle;
-            var box = UiMessageBox.ShowMessageBox("Cannot find game");
+            var box = UiMessageBox.Show("Cannot find game");
             yield return StartCoroutine(box.WaitForHide());
             SceneManager.LoadScene("MainScene");
             yield break;
@@ -119,7 +119,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
 
         if (joinRet.Exception != null)
         {
-            UiMessageBox.ShowMessageBox("Failed to join\n" + joinRet.Exception);
+            UiMessageBox.Show("Failed to join\n" + joinRet.Exception);
             G.Communicator.ObserverRegistry.Remove(gameObserver);
             yield break;
         }
@@ -135,7 +135,7 @@ public class GameScene : MonoBehaviour, IUserPairingObserver, IGameObserver
             yield return connectTask.WaitHandle;
             if (connectTask.Exception != null)
             {
-                UiMessageBox.ShowMessageBox("Failed to connect\n" + joinRet.Exception);
+                UiMessageBox.Show("Failed to connect\n" + joinRet.Exception);
                 G.Communicator.ObserverRegistry.Remove(gameObserver);
                 yield break;
             }
