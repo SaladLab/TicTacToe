@@ -55,7 +55,7 @@ namespace GameServer
         public UserWorker(ClusterNodeContext context, Config config)
         {
             _context = context;
-            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), false);
+            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), true);
             _listenEndPoint = new IPEndPoint(IPAddress.Any, config.GetInt("port", 0));
 
             var connectAddress = config.GetString("connect-address");
@@ -140,7 +140,7 @@ namespace GameServer
         public UserLoginWorker(ClusterNodeContext context, Config config)
         {
             _context = context;
-            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), false);
+            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), true);
             _listenEndPoint = new IPEndPoint(IPAddress.Any, config.GetInt("port", 0));
         }
 
@@ -245,7 +245,7 @@ namespace GameServer
         public GameWorker(ClusterNodeContext context, Config config)
         {
             _context = context;
-            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), false);
+            _channelType = (ChannelType)Enum.Parse(typeof(ChannelType), config.GetString("type", "Tcp"), true);
             _listenEndPoint = new IPEndPoint(IPAddress.Any, config.GetInt("port", 0));
             _connectEndPoint = new IPEndPoint(IPAddress.Parse(config.GetString("address", "127.0.0.1")), config.GetInt("port", 0));
         }

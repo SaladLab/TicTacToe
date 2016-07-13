@@ -32,7 +32,7 @@ public static class LoginProcessor
         var communicator = UnityCommunicatorFactory.Create();
         {
             var channelFactory = communicator.ChannelFactory;
-            channelFactory.Type = ChannelType.Tcp;
+            channelFactory.Type = ChannelType.Udp;
             channelFactory.ConnectEndPoint = endPoint;
             channelFactory.CreateChannelLogger = () => LogManager.GetLogger("Channel");
             channelFactory.PacketSerializer = PacketSerializer.CreatePacketSerializer<DomainProtobufSerializer>();
