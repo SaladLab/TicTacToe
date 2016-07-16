@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.3-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.3-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props')" />
+  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.props" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.props')" />
   <Import Project="..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.props" Condition="Exists('..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.props')" />
-  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.2-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.2-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props')" />
-  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.props" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.props')" />
   <PropertyGroup>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -153,14 +153,14 @@ COPY /Y "$(TargetPath)" "$(SolutionDir)src\GameClient\Assets\Scripts"
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.props'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.2-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.2-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props'))" />
     <Error Condition="!Exists('..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.props'))" />
     <Error Condition="!Exists('..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.props'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.3-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Akka.Interfaced-SlimClient.Templates-Protobuf.0.5.3-beta\build\Akka.Interfaced-SlimClient.Templates-Protobuf.props'))" />
   </Target>
-  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.targets" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.2\build\Akka.Interfaced-SlimClient.Templates.targets')" />
   <Import Project="..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.targets" Condition="Exists('..\..\packages\TrackableData.Templates.1.2.0\build\TrackableData.Templates.targets')" />
+  <Import Project="..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.targets" Condition="Exists('..\..\packages\Akka.Interfaced-SlimClient.Templates.0.5.3\build\Akka.Interfaced-SlimClient.Templates.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Domain.targets.
   <Target Name="BeforeBuild">
