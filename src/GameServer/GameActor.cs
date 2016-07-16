@@ -257,9 +257,8 @@ namespace GameServer
             var player = _players.FirstOrDefault(p => p.UserId == userId);
             if (player != null && player.Observer != null)
             {
-                var observerChannel = player.Observer.Channel as AkkaReceiverNotificationChannel;
-                if (observerChannel != null)
-                    player.Observer.Channel = new AkkaReceiverNotificationChannel(((ActorBoundChannelRef)channel).CastToIActorRef());
+                AkkaReceiverNotificationChannel.OverrideReceiver(
+                    player.Observer.Channel, ((ActorBoundChannelRef)channel).CastToIActorRef());
             }
         }
 
